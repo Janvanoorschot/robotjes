@@ -4,4 +4,11 @@ class Maze(object):
 
     def __init__(self, map):
         self.map = map
+        self.bots = []
+        self.paints = []
+        self.beacons = []
+
+
+
+
 
