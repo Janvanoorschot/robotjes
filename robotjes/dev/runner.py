@@ -13,14 +13,6 @@ class DevRunner(object):
         self.robo = Robo(self.requestor)
         self.engine = Engine(self.handler)
 
-
-    def handler(self):
-        return self.handler
-
-    def requestor(self):
-        return self.requestor
-
-
     def run(self, map_file, script_file):
         self.engine.start(map_file)
         self.robo.start(script_file)

@@ -12,10 +12,11 @@ class RunnerTestCase(unittest.TestCase):
         map_file = os.path.join(DIR, os.pardir, 'datafiles/challenges/findBeacon1/findBeacon1.map')
         script_file = os.path.join(DIR, os.pardir, 'datafiles/challenges/findBeacon1/solution101.py')
         # compose the run-time environment
-        runner = DevRunner(requestor, handler)
+        runner = DevRunner()
 
         recording = runner.run(map_file, script_file)
 
+        self.assertIsNotNone(recording)
 
 
 if __name__ == '__main__':
