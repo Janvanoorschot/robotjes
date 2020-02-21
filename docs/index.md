@@ -3,23 +3,14 @@
 Robotjes is a simulation environment where Robomind scripts can be executed. The execution of a script 
 results in a Recording. A Recording can be played in a browser.
 
-## Next step
+## Developing the Software
 
-Create a DevIFace, a Runner so we can develop the Engine/Maze/Recorder
+The simulation in Robomind Academy has two aspects, the Client side and the Server side. 
+The client side consists of a script being execute which triggers calls the Robo (forward, pickup, etc).
+The server side contains the simulation of the world where Robo lives. 
 
-DeviIFace is passed to robo so it can use it to implement commands. DevIFace itself gets 
-the Runner so it can do a Request/Reply dance with the Runner.
+![Components](images/components.png "Logo Title Text 1")
 
-The Runner has a Recorder and a Maze. The latter has a Map.
-
-The last thing to determine is the heartbeat.
-
-## Components
-
-* Map
-* Maze
-* Engine
-* Recorder
-* Player
-* Runner
+In the final setup there will be more distance between client-side and and server-side. During
+development they are glued together using RevRunner/DevRequestor/DevHandler.
 
