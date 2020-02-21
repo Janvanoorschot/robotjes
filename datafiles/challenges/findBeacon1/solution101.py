@@ -1,0 +1,3 @@
+global robo
+
+robo.forward()

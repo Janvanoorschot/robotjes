@@ -1,8 +1,8 @@
 
 class Robo(object):
 
-    def __init__(self, handler):
-        pass
+    def __init__(self, requestor):
+        self.requestor = requestor
 
     def forward(self, steps=1):
         pass
