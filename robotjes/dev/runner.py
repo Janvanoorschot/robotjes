@@ -12,12 +12,10 @@ class DevRunner(object):
         pass
 
     def run(self, map_file, script_file):
-        asyncio.run(self.run_async(map_file, script_file))
+        return asyncio.run(self.run_async(map_file, script_file))
 
     async def run_async(self, map_file, script_file):
-
-        # prepare loop
-        loop = asyncio.get_running_loop()
+        loop = asyncio.new_event_loop()
 
         # prepare the objects and connect them
         engine = Engine(map_file)
@@ -29,12 +27,13 @@ class DevRunner(object):
 
         # run client and server using asyncio
         task1 = asyncio.gather(handler.run())
-        pool = concurrent.futures.ThreadPoolExecutor()
-        task2 = asyncio.gather(loop.run_in_executor(pool, robo_shell.run))
+        # pool = concurrent.futures.ThreadPoolExecutor()
+        task2 = asyncio.gather(loop.run_in_executor(None, robo_shell.run, script_file))
         all_tasks = asyncio.gather(task1, task2)
         loop.run_until_complete(all_tasks)
 
         loop.close()
+
 
         # gather the resulting recording
         recording = self.engine.get_recording()
