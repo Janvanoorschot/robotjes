@@ -1,11 +1,13 @@
+import uuid
 
 class Robo(object):
 
     def __init__(self, requestor):
         self.requestor = requestor
+        self.id = uuid.uuid4()
 
     def forward(self, steps=1):
-        pass
+        result = self.requestor.execute([self.id, 'forward', steps])
 
     def backward(self, steps=1):
         pass
