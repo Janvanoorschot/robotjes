@@ -1,13 +1,11 @@
 class Engine(object):
 
-    def __init__(self, handler):
-        self.handler = handler
+    def __init__(self, map_file):
+        self.map_file = map_file
 
-    def run(self, map_file):
-        ready = False
-        while not ready:
-            cmd = self.handler.get()
-            cmd.append("this is a response")
-            self.handler.put(cmd)
-            ready = True
+    def execute(self, cmd):
+        cmd.append("this is a response")
+        return cmd
 
+    def get_recording(self):
+        return None

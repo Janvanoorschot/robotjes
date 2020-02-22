@@ -6,5 +6,7 @@ class RoboShell(object):
         self.robo = Robo(requestor)
 
     def run(self, script_file):
-        exec(script_file, {"robo": self.robo})
+        with open(script_file, 'r') as file:
+            data = file.read()
+        exec(data, {"robo": self.robo})
 

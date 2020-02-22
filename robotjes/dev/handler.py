@@ -1,11 +1,12 @@
 class DevHandler(object):
 
-    def __init__(self, in_queue, out_queue):
-        self.in_queue = in_queue
-        self.out_queue = out_queue
+    def __init__(self, cmd_queue, result_queue, engine):
+        self.cmd_queue = cmd_queue
+        self.result_queue = result_queue
+        self.engine = engine
 
-    async def get(self):
-        return self.in_queue.get()
+    async def run(self):
+        cmd = await self.cmd_queue.get()
+        result = self.engine.execute(cmd)
+        await self.result_queue.put(result)
 
-    async def put(self, response):
-        self.out_queue.put(response)

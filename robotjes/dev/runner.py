@@ -2,26 +2,40 @@ from asyncio import Queue
 from . import DevRequestor, DevHandler
 from ..bot import RoboShell
 from ..sim import Engine
+
 import asyncio
+import concurrent.futures
 
 class DevRunner(object):
 
     def __init__(self):
-        self.in_queue = Queue()
-        self.out_queue = Queue()
-        self.requestor = DevRequestor(self.in_queue, self.out_queue)
-        self.handler = DevHandler(self.out_queue, self.in_queue)
-        self.robo_shell = RoboShell(self.requestor)
-        self.engine = Engine(self.handler)
+        pass
 
     def run(self, map_file, script_file):
+        asyncio.run(self.run_async(map_file, script_file))
+
+    async def run_async(self, map_file, script_file):
+
+        # prepare loop
+        loop = asyncio.get_running_loop()
+
+        # prepare the objects and connect them
+        engine = Engine(map_file)
+        cmd_queue = Queue()
+        result_queue = Queue()
+        requestor = DevRequestor(loop, cmd_queue, result_queue)
+        robo_shell = RoboShell(requestor)
+        handler = DevHandler(cmd_queue, result_queue, engine)
+
         # run client and server using asyncio
-        loop = asyncio.get_event_loop()
-        task1 = asyncio.gather(self.engine.run(map_file))
-        task2 = asyncio.gather(self.robo_shell.run(script_file))
+        task1 = asyncio.gather(handler.run())
+        pool = concurrent.futures.ThreadPoolExecutor()
+        task2 = asyncio.gather(loop.run_in_executor(pool, robo_shell.run))
         all_tasks = asyncio.gather(task1, task2)
-        results = loop.run_until_complete(all_tasks)
+        loop.run_until_complete(all_tasks)
+
         loop.close()
+
         # gather the resulting recording
         recording = self.engine.get_recording()
         return recording
