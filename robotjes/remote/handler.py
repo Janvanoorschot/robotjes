@@ -1,12 +1,24 @@
+from multiprocessing.connection import Listener
+
+
 class Handler(object):
 
-    def __init__(self, cmd_queue, result_queue, engine):
-        self.cmd_queue = cmd_queue
-        self.result_queue = result_queue
+    def __init__(self, host, port, authkey, engine):
+        address = (host, port)
+        self.listener = Listener(address)
         self.engine = engine
 
-    async def run(self):
-        cmd = await self.cmd_queue.get()
-        result = self.engine.execute(cmd)
-        await self.result_queue.put(result)
+    def run(self):
+        con = self.listener.accept()
+        while not con.closed:
+            try:
+                cmd = con.recv()
+            except EOFError:
+                break
+            result = self.engine.execute(cmd)
+            if result:
+                con.send(result)
+            else:
+                break
+        con.close()
 
