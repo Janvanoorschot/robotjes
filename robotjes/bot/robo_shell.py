@@ -2,11 +2,11 @@ from .robo import Robo
 
 class RoboShell(object):
 
-    def __init__(self, requestor):
-        self.robo = Robo(requestor)
+    def __init__(self):
+        pass
 
-    def run(self, script_file):
+    def run(self, robo, script_file):
         with open(script_file, 'r') as file:
             data = file.read()
-        exec(data, {"robo": self.robo})
+        exec(data, {"robo": robo})
 
