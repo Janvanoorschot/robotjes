@@ -12,7 +12,7 @@ class Map(object):
         self.startposses = []
         self.beacons = []
 
-    def start_bots(self):
+    def start_positions(self):
         return list(self.startposses)
 
     def start_paints(self):
