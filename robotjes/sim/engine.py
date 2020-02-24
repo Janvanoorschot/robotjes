@@ -33,6 +33,10 @@ class Engine(object):
     def execute(self, cmd):
         [command, *args] = self.clean_cmd(cmd)
         if command == "forward":
+            steps = 1 if len(args) < 1 else args[0]
+            for i in range(steps):
+                pass
+                # tcoord = self.maze.target_coord(self.maze.bot.coord, self.maze.bot)
             reply = ["forward_reply"]
         elif command == "backward":
             reply = ["backward_reply"]

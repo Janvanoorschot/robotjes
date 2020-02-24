@@ -1,3 +1,3 @@
 global robo
 
-robo.forward()
+robo.forward(2)
