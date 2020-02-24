@@ -1,3 +1,6 @@
+from .maze import Maze
+from .recording import Recording
+
 LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickup", "putDown",
                   "eatUp", "paintwhite", "paintBlack", "stopPainting",
                   "leftIsClear", "leftisBeacon", "leftIsWhite", "leftIsBlack",
@@ -8,6 +11,8 @@ class Engine(object):
 
     def __init__(self, map_file):
         self.map_file = map_file
+        self.maze = Maze(self.map_file)
+        self.recording = Recording()
 
     def get_recording(self):
         return None

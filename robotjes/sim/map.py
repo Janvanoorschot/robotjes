@@ -12,6 +12,15 @@ class Map(object):
         self.startposses = []
         self.beacons = []
 
+    def start_bots(self):
+        return list(self.startposses)
+
+    def start_paints(self):
+        return list(self.paints)
+
+    def start_beacons(self):
+        return list(self.beacons)
+
     @classmethod
     def fromfile(cls, file):
         with open(file) as f:
