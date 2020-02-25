@@ -5,15 +5,15 @@ class Maze(object):
 
     def __init__(self, map_file):
         self.map = Map.fromfile(map_file)
-        self.paints = self.map.start_paints()
+        self.paints = self.map.paints_blacks()
         self.beacons = self.map.start_beacons()
 
         start_positions = self.map.start_positions()
-        self.bot = Bot(start_positions[0])
+        self.bot = Bot(start_positions[0], 90)
 
     def calc_pos(self, pos, dir, dist):
-        x = dir[0]
-        y = dir[1]
+        x = pos[0]
+        y = pos[1]
         if dir == 0:
             x = x + dist
         elif dir == 90:

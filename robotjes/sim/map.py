@@ -7,19 +7,30 @@ class Map(object):
         self.height = 0
         self.width = 0
         self.extras = []
-        self.paints = []
+        self.extras_type = {}
+        self.paints_black = []
+        self.paints_black_type = {}
+        self.paints_white = []
+        self.paints_white_type = {}
         self.tiles = []
+        self.tiles_type = {}
         self.startposses = []
         self.beacons = []
 
     def start_positions(self):
         return list(self.startposses)
 
-    def start_paints(self):
-        return list(self.paints)
+    def paints_blacks(self):
+        return list(self.paints_black)
+
+    def paints_whites(self):
+        return list(self.paints_white)
 
     def start_beacons(self):
         return list(self.beacons)
+
+    def contains_pos(self, pos):
+        return pos[0]>=0 and pos[0]<self.width and pos[1]>=0 and pos[1]<self.height
 
     @classmethod
     def fromfile(cls, file):
@@ -35,28 +46,40 @@ class MapBuilder(object):
         self.height = 0
         self.width = 0
         self.extras = []
-        self.paints = []
+        self.extras_type = {}
+        self.paints_black = []
+        self.paints_black_type = {}
+        self.paints_white = []
+        self.paints_white_type = {}
         self.tiles = []
+        self.tiles_type = {}
         self.startposses = []
         self.beacons = []
 
     def extra(self,type,x,y):
-        self.extras.append([type,x,y])
+        self.extras.append((x,y))
+        self.extras_type[(x,y)] = type
 
     def paint(self,color,type,x,y):
-        self.paints.append([color,type,x,y])
+        if color == "b":
+            self.paints_black.append((x,y))
+            self.paints_black_type[(x,y)] = type
+        else:
+            self.paints_white.append((x,y))
+            self.paints_white_type[(x,y)] = type
 
     def beacon(self, x, y):
         self.coord(x,y)
-        self.beacons.append([x,y])
+        self.beacons.append((x,y))
 
     def startpos(self, x, y):
         self.coord(x,y)
-        self.startposses.append([x,y])
+        self.startposses.append((x,y))
 
     def tile(self, x, y, t):
         self.coord(x,y)
-        self.tiles.append([x,y,t])
+        self.tiles.append((x,y))
+        self.tiles_type[(x,y)] = t
 
     def coord(self, x, y):
         if self.width < x:
@@ -69,8 +92,13 @@ class MapBuilder(object):
         mapper.width = self.width
         mapper.height = self.height
         mapper.extras = self.extras
-        mapper.paints = self.paints
+        mapper.extras_type = self.extras_type
+        mapper.paints_black = self.paints_black
+        mapper.paints_black_type = self.paints_black_type
+        mapper.paints_white = self.paints_white
+        mapper.paints_white_type = self.paints_white_type
         mapper.tiles = self.tiles
+        mapper.tiles_type = self.tiles_type
         mapper.startposses = self.startposses
         mapper.beacons = self.beacons
         return mapper
