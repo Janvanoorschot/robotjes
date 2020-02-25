@@ -35,9 +35,14 @@ class Engine(object):
         if command == "forward":
             steps = 1 if len(args) < 1 else args[0]
             for i in range(steps):
-                pass
-                # tcoord = self.maze.target_coord(self.maze.bot.coord, self.maze.bot)
-            reply = ["forward_reply"]
+                next_pos = self.maze.calc_pos(self.maze.bot.pos, self.maze.bot.dir, +1)
+                if next_pos and self.maze.available_pos(next_pos):
+                    self.maze.move_to(next_pos)
+                    self.recording.move(cmd, next_pos)
+                    reply = ["forward_reply"]
+                else:
+                    self.recording.boom(cmd)
+                    reply = ["forward_reply"]
         elif command == "backward":
             reply = ["backward_reply"]
         elif command == "left":
