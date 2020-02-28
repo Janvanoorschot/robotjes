@@ -1,3 +1,4 @@
+import random
 from .map import Map
 
 class Maze(object):
@@ -80,10 +81,22 @@ class Maze(object):
         return True
 
     def check(self, dir, cond):
-        pass
+        pos = calc_pos(self.bot.pos, dir, 1)
+        if cond == self.CLEAR:
+            self.map.available_pos() and not pos in self.beacons
+        elif cond == self.BEACON:
+            return pos in self.beacons
+        elif cond == self.WHITE:
+            return pos in self.paints_white
+        elif cond == self.BLACK:
+            return pos in self.paints_black
+        elif cond == self.NOPAINT:
+            return pos not in self.paints_white and pos not in self.paints_black
+        else:
+            return False
 
     def flipCoin(self):
-        pass
+        return bool(random.getrandbits(1))
 
 
 DIRS = [0, 90, 180, 270]
