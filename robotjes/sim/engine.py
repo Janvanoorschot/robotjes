@@ -1,4 +1,4 @@
-from .maze import Maze, calc_pos
+from .maze import Maze
 from .recording import Recording
 
 LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
@@ -37,7 +37,7 @@ class Engine(object):
         if command == "forward":
             steps = 1 if len(args) < 1 else args[0]
             for i in range(steps):
-                next_pos = calc_pos(self.maze.bot.pos, self.maze.bot.dir, +1)
+                next_pos = self.maze.calc_pos(self.maze.bot.pos, self.maze.bot.dir, +1)
                 if next_pos and self.maze.available_pos(next_pos):
                     success = self.maze.move_to(next_pos)
                     self.recording.move_to(cmd, success, next_pos)
@@ -48,7 +48,7 @@ class Engine(object):
         elif command == "backward":
             steps = 1 if len(args) < 1 else args[0]
             for i in range(steps):
-                next_pos = calc_pos(self.maze.bot.pos, self.maze.bot.dir, -1)
+                next_pos = self.maze.calc_pos(self.maze.bot.pos, self.maze.bot.dir, -1)
                 if next_pos and self.maze.available_pos(next_pos):
                     success = self.maze.move_to(next_pos)
                     self.recording.move_to(cmd, success, next_pos)

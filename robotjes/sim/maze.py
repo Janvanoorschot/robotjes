@@ -26,7 +26,24 @@ class Maze(object):
         self.bot = Bot(start_positions[0], 90)
 
     def available_pos(self, pos):
-        return self.map.available_pos() and not pos in self.beacons and not pos != self.bot.pos
+        return self.map.available_pos(pos) and not pos in self.beacons and pos != self.bot.pos
+
+    def calc_pos(self, pos, dir, dist):
+        x = pos[0]
+        y = pos[1]
+        if dir == 0:
+            x = x + dist
+        elif dir == 90:
+            y = y + dist
+        elif dir == 180 :
+            x = x - dist
+        elif dir == 270:
+            y = y - dist
+        new_pos = (x,y)
+        if self.map.contains_pos(new_pos):
+            return new_pos
+        else:
+            return None
 
     def move_to(self, pos):
         if self.map.available_pos() and not pos in self.beacons:
@@ -81,7 +98,7 @@ class Maze(object):
         return True
 
     def check(self, dir, cond):
-        pos = calc_pos(self.bot.pos, dir, 1)
+        pos = self.calc_pos(self.bot.pos, dir, 1)
         if cond == self.CLEAR:
             self.map.available_pos() and not pos in self.beacons
         elif cond == self.BEACON:
@@ -111,23 +128,6 @@ def dir_right(dir):
     if not dir in DIRS:
         raise ValueError(f"invalid direction {dir}")
     return (dir + 270) % 360
-
-def calc_pos(self, pos, dir, dist):
-    x = pos[0]
-    y = pos[1]
-    if dir == 0:
-        x = x + dist
-    elif dir == 90:
-        y = y + dist
-    elif dir == 180 :
-        x = x - dist
-    elif dir == 270:
-        y = y - dist
-    new_pos = (x,y)
-    if self.map.contains_pos(new_pos):
-        return new_pos
-    else:
-        return None
 
 
 class Bot(object):
