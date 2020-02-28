@@ -1,15 +1,14 @@
 from multiprocessing.connection import Listener
 
-
 class Handler(object):
 
     def __init__(self, host, port, authkey, engine):
-        address = (host, port)
-        self.listener = Listener(address)
+        self.address = (host, port)
         self.engine = engine
 
     def run(self):
-        con = self.listener.accept()
+        listener = Listener(self.address)
+        con = listener.accept()
         while not con.closed:
             try:
                 cmd = con.recv()
@@ -21,4 +20,6 @@ class Handler(object):
             else:
                 break
         con.close()
+        listener.close()
+
 
