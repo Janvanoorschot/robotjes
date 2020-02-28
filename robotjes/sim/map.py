@@ -32,6 +32,9 @@ class Map(object):
     def contains_pos(self, pos):
         return pos[0]>=0 and pos[0]<self.width and pos[1]>=0 and pos[1]<self.height
 
+    def available_pos(self, pos):
+        return pos not in self.tiles
+
     @classmethod
     def fromfile(cls, file):
         with open(file) as f:

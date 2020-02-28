@@ -1,11 +1,12 @@
-from .maze import Maze
+from .maze import Maze, calc_pos
 from .recording import Recording
 
-LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickup", "putDown",
-                  "eatUp", "paintwhite", "paintBlack", "stopPainting",
-                  "leftIsClear", "leftisBeacon", "leftIsWhite", "leftIsBlack",
-                  "frontIsClear", "frontisBeacon", "frontIsWhite", "frontIsBlack",
-                  "rightIsClear", "rightisBeacon", "rightIsWhite", "rightIsBlack",
+LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
+                  "eatUp", "paintWhite", "paintBlack", "stopPainting",
+                  "leftIsClear", "leftIsBeacon", "leftIsWhite", "leftIsBlack",
+                  "frontIsClear", "frontIsBeacon", "frontIsWhite", "frontIsBlack",
+                  "rightIsClear", "rightIsBeacon", "rightIsWhite", "rightIsBlack",
+                  "flipCoin"
                   ]
 class Engine(object):
 
@@ -32,59 +33,118 @@ class Engine(object):
 
     def execute(self, cmd):
         [command, *args] = self.clean_cmd(cmd)
+        reply = []
         if command == "forward":
             steps = 1 if len(args) < 1 else args[0]
-            reply = []
             for i in range(steps):
-                next_pos = self.maze.calc_pos(self.maze.bot.pos, self.maze.bot.dir, +1)
+                next_pos = calc_pos(self.maze.bot.pos, self.maze.bot.dir, +1)
                 if next_pos and self.maze.available_pos(next_pos):
-                    self.maze.move_to(next_pos)
-                    reply.append(self.recording.move_to(cmd, next_pos))
+                    success = self.maze.move_to(next_pos)
+                    self.recording.move_to(cmd, success, next_pos)
+                    reply.append([success, next_pos])
                 else:
-                    reply.append(self.recording.boom(cmd))
+                    self.recording.boom(cmd)
+                    reply.append([False, next_pos])
         elif command == "backward":
-            reply = ["backward_reply"]
+            steps = 1 if len(args) < 1 else args[0]
+            for i in range(steps):
+                next_pos = calc_pos(self.maze.bot.pos, self.maze.bot.dir, -1)
+                if next_pos and self.maze.available_pos(next_pos):
+                    success = self.maze.move_to(next_pos)
+                    self.recording.move_to(cmd, success, next_pos)
+                    reply.append([success, next_pos])
+                else:
+                    self.recording.boom(cmd)
+                    reply.append([False, next_pos])
         elif command == "left":
-            reply = ["left_reply"]
+            steps = 1 if len(args) < 1 else args[0]
+            for i in range(steps):
+                dir = self.maze.right()
+                self.recording.right(cmd, dir)
+                reply.append([True, dir])
         elif command == "right":
-            reply = ["right_reply"]
-        elif command == "pickup":
-            reply = ["pickup_reply"]
+            steps = 1 if len(args) < 1 else args[0]
+            for i in range(steps):
+                dir = self.maze.left()
+                self.recording.left(cmd, dir)
+                reply.append([True, dir])
+        elif command == "pickUp":
+            success = self.maze.pickUp()
+            self.recording.pickUp(cmd, success)
+            reply.append([success])
         elif command == "putDown":
-            reply = ["putDown_reply"]
+            success = self.maze.putDown()
+            self.recording.putDown(cmd, success)
+            reply.append([True])
         elif command == "eatUp":
-            reply = ["eatUp_reply"]
-        elif command == "paintwhite":
-            reply = ["paintwhite_reply"]
+            success = self.maze.eatUp()
+            self.recording.eatUp(cmd, success)
+            reply.append([True])
+        elif command == "paintWhite":
+            success = self.maze.paintWhite()
+            self.recording.paintWhite(cmd, success)
+            reply.append([success])
         elif command == "paintBlack":
-            reply = ["paintBlack_reply"]
+            success = self.maze.paintBlack()
+            self.recording.paintBlack(cmd, success)
+            reply.append([success])
         elif command == "stopPainting":
-            reply = ["stopPainting_reply"]
+            success = self.maze.stopPainting()
+            self.recording.stopPainting(cmd, success)
+            reply.append([success])
         elif command == "leftIsClear":
-            reply = ["leftIsClear_reply"]
+            success = self.maze.check(Maze.LEFT, Maze.CLEAR)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "leftisBeacon":
-            reply = ["leftisBeacon_reply"]
+            success = self.maze.check(Maze.LEFT, Maze.BEACON)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "leftIsWhite":
-            reply = ["leftIsWhite_reply"]
+            success = self.maze.check(Maze.LEFT, Maze.WHITE)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "leftIsBlack":
-            reply = ["leftIsBlack_reply"]
+            success = self.maze.check(Maze.LEFT, Maze.BLACK)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "frontIsClear":
-            reply = ["frontIsClear_reply"]
+            success = self.maze.check(Maze.FRONT, Maze.CLEAR)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "frontisBeacon":
-            reply = ["frontisBeacon_reply"]
+            success = self.maze.check(Maze.FRONT, Maze.BEACON)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "frontIsWhite":
-            reply = ["frontIsWhite_reply"]
+            success = self.maze.check(Maze.FRONT, Maze.WHITE)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "frontIsBlack":
-            reply = ["frontIsBlack_reply"]
+            success = self.maze.check(Maze.FRONT, Maze.BLACK)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "rightIsClear":
-            reply = ["rightIsClear_reply"]
+            success = self.maze.check(Maze.RIGHT, Maze.CLEAR)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "rightisBeacon":
-            reply = ["rightisBeacon_reply"]
+            success = self.maze.check(Maze.RIGHT, Maze.BEACON)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "rightIsWhite":
-            reply = ["rightIsWhite_reply"]
+            success = self.maze.check(Maze.RIGHT, Maze.WHITE)
+            self.recording.see(cmd, success)
+            reply.append([success])
         elif command == "rightIsBlack":
-            reply = ["rightIsBlack_reply"]
+            success = self.maze.check(Maze.RIGHT, Maze.BLACK)
+            self.recording.see(cmd, success)
+            reply.append([success])
+        elif command == "flipCoin":
+            result = self.maze.flipCoin()
+            self.recording.flipCoin(cmd, result)
+            reply.append([result])
         else:
-            reply = ["error"]
-        return self.prepare_reply(reply)
+            reply.append([False])
+        return self.prepare_reply(cmd, reply)
 
