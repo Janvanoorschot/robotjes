@@ -34,11 +34,11 @@ class Maze(object):
         if dir == 0:
             x = x + dist
         elif dir == 90:
-            y = y + dist
+            y = y - dist
         elif dir == 180 :
             x = x - dist
         elif dir == 270:
-            y = y - dist
+            y = y + dist
         new_pos = (x,y)
         if self.map.contains_pos(new_pos):
             return new_pos

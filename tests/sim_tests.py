@@ -47,8 +47,8 @@ class SimTestCase(unittest.TestCase):
         [engine] = self.init('sim1.map', 'sim103.py')
         self.assertEqual(0, len(engine.maze.bot.beacons))
         [engine] = self.exec()
-        self.assertEqual((10, 12), engine.maze.bot.pos)
-        self.assertEqual(90, engine.maze.bot.dir)
+        self.assertEqual((11, 13), engine.maze.bot.pos)
+        self.assertEqual(0, engine.maze.bot.dir)
         self.assertEqual(1, len(engine.maze.bot.beacons))
 
 
