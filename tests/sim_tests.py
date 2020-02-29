@@ -8,29 +8,24 @@ from robotjes.sim import Engine
 DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-class RunnerTestCase(unittest.TestCase):
+class SimTestCase(unittest.TestCase):
 
-    def test_runner101(self):
-        # input files
-        map_file = os.path.join(DIR, os.pardir, 'datafiles/challenges/findBeacon1/findBeacon1.map')
-        script_file = os.path.join(DIR, os.pardir, 'datafiles/challenges/findBeacon1/solution101.py')
+    def exec(self, map_file_name, script_file_name):
+        map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', map_file_name)
+        script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', script_file_name)
         host = "localhost"
         port = 6000
         secret = b"secret"
-
-        # create the engine
         engine = Engine(map_file)
         handler = Handler(host, port, secret, engine)
-
-        # run the script in its own shell
         command = f"bin/runscript {host} {port} {secret} {script_file} &"
         call(command, shell=True)
-
-        # start the handler
         handler.run()
+        return [engine]
 
-        # check the resulting recording
-        self.assertTrue(1 == 1)
+    def test_runner101(self):
+        [engine] = self.exec('sim101.map', 'sim101.py')
+        self.assertEqual((11, 10), engine.maze.bot.pos)
 
 
 if __name__ == '__main__':

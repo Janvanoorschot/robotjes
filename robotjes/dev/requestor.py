@@ -1,5 +1,6 @@
 import asyncio
 
+
 class DevRequestor(object):
 
     def __init__(self, loop, cmd_queue, result_queue):
@@ -10,7 +11,6 @@ class DevRequestor(object):
     def execute(self, cmd):
         future = asyncio.run_coroutine_threadsafe(self.async_execute(cmd), self.loop)
         return future.result()
-
 
     async def async_execute(self, cmd):
         await self.cmd_queue.put(cmd)
