@@ -51,6 +51,13 @@ class SimTestCase(unittest.TestCase):
         self.assertEqual(0, engine.maze.bot.dir)
         self.assertEqual(1, len(engine.maze.bot.beacons))
 
+    def test_sim104(self):
+        # bot starts at (11,11)
+        [engine] = self.init('sim1.map', 'sim104.py')
+        self.assertEqual(0, len(engine.maze.paints_white))
+        [engine] = self.exec()
+        self.assertEqual(2, len(engine.maze.paints_white))
+
 
 if __name__ == '__main__':
     unittest.main()

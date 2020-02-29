@@ -48,6 +48,10 @@ class Maze(object):
     def move_to(self, pos):
         if self.map.available_pos(pos) and not pos in self.beacons:
             self.bot.pos = pos
+            self.paint()
+            return True
+        else:
+            return False
 
     def left(self):
         return self.bot.left()
@@ -82,20 +86,26 @@ class Maze(object):
             return False
 
     def paintWhite(self):
-        self.paints_black.remove(self.bot.pos)
-        self.paints_white.add(self.bot.pos)
         self.bot.paint = self.WHITE
+        self.paint()
         return True
 
     def paintBlack(self):
-        self.paints_white.remove(self.bot.pos)
-        self.paints_black.add(self.bot.pos)
         self.bot.paint = self.BLACK
+        self.paint()
         return True
 
     def stopPainting(self):
         self.bot.paint = self.NOPAINT
         return True
+
+    def paint(self):
+        if self.bot.paint == self.BLACK:
+            self.paints_white.discard(self.bot.pos)
+            self.paints_black.add(self.bot.pos)
+        elif self.bot.paint == self.WHITE:
+            self.paints_black.discard(self.bot.pos)
+            self.paints_white.add(self.bot.pos)
 
     def check(self, dir, cond):
         pos = self.calc_pos(self.bot.pos, dir, 1)
