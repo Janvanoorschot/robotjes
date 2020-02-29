@@ -152,13 +152,11 @@ class MapReader(object):
         for ch in line:
             if ch == '@':
                 self.builder.startpos(self.nextx, self.nexty)
-                self.nextx = self.nextx + 1
             elif ch == '*':
                     self.builder.beacon(self.nextx, self.nexty)
-                    self.nextx = self.nextx + 1
             elif ch in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
                     self.builder.tile(self.nextx, self.nexty, ch)
-                    self.nextx = self.nextx + 1
+            self.nextx = self.nextx + 1
         self.nexty = self.nexty + 1
 
     def paint_line(self, line):

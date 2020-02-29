@@ -46,7 +46,7 @@ class Maze(object):
             return None
 
     def move_to(self, pos):
-        if self.map.available_pos() and not pos in self.beacons:
+        if self.map.available_pos(pos) and not pos in self.beacons:
             self.bot.pos = pos
 
     def left(self):
@@ -141,12 +141,12 @@ class Bot(object):
         self.paint = None
 
     def left(self):
-        self.pos = dir_left(self.pos)
-        return self.pos
+        self.dir = dir_left(self.dir)
+        return self.dir
 
     def right(self):
-        self.pos = dir_right(self.pos)
-        return self.pos
+        self.dir = dir_right(self.dir)
+        return self.dir
 
 
 

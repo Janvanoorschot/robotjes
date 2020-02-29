@@ -56,13 +56,13 @@ class Engine(object):
                 else:
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
-        elif command == "left":
+        elif command == "right":
             steps = 1 if len(args) < 1 else args[0]
             for i in range(steps):
                 dir = self.maze.right()
                 self.recording.right(cmd, dir)
                 reply.append([True, dir])
-        elif command == "right":
+        elif command == "left":
             steps = 1 if len(args) < 1 else args[0]
             for i in range(steps):
                 dir = self.maze.left()

@@ -24,9 +24,10 @@ class SimTestCase(unittest.TestCase):
         return [engine]
 
     def test_runner101(self):
+        # bot starts at (11,11)
         [engine] = self.exec('sim101.map', 'sim101.py')
-        self.assertEqual((11, 10), engine.maze.bot.pos)
+        self.assertEqual((10, 11), engine.maze.bot.pos)
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.maileftn()
