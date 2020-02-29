@@ -10,23 +10,30 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 
 class SimTestCase(unittest.TestCase):
 
-    def exec(self, map_file_name, script_file_name):
+    def init(self, map_file_name, script_file_name):
         map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', map_file_name)
         script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', script_file_name)
         host = "localhost"
         port = 6000
         secret = b"secret"
-        engine = Engine(map_file)
-        handler = Handler(host, port, secret, engine)
-        command = f"bin/runscript {host} {port} {secret} {script_file} &"
-        call(command, shell=True)
-        handler.run()
-        return [engine]
+        self.engine = Engine(map_file)
+        self.handler = Handler(host, port, secret, self.engine)
+        self.command = f"bin/runscript {host} {port} {secret} {script_file} &"
+        return [self.engine]
+
+    def exec(self):
+        call(self.command, shell=True)
+        self.handler.run()
+        return [self.engine]
 
     def test_runner101(self):
         # bot starts at (11,11)
-        [engine] = self.exec('sim101.map', 'sim101.py')
+        [engine] = self.init('sim1.map', 'sim101.py')
+        self.assertEqual((11, 11), engine.maze.bot.pos)
+        self.assertEqual(90, engine.maze.bot.dir)
+        [engine] = self.exec()
         self.assertEqual((10, 11), engine.maze.bot.pos)
+        self.assertEqual(180, engine.maze.bot.dir)
 
 
 if __name__ == '__main__':

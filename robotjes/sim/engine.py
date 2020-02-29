@@ -28,7 +28,6 @@ class Engine(object):
             return [command, *args]
 
     def prepare_reply(self, cmd, *args):
-        print(f"!!!!!{cmd}")
         return [cmd]
 
     def execute(self, cmd):
