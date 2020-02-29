@@ -26,7 +26,7 @@ class SimTestCase(unittest.TestCase):
         self.handler.run()
         return [self.engine]
 
-    def test_runner101(self):
+    def test_sim101(self):
         # bot starts at (11,11)
         [engine] = self.init('sim1.map', 'sim101.py')
         self.assertEqual((11, 11), engine.maze.bot.pos)
@@ -34,6 +34,22 @@ class SimTestCase(unittest.TestCase):
         [engine] = self.exec()
         self.assertEqual((10, 11), engine.maze.bot.pos)
         self.assertEqual(180, engine.maze.bot.dir)
+
+    def test_sim102(self):
+        # bot starts at (11,11)
+        [engine] = self.init('sim1.map', 'sim102.py')
+        [engine] = self.exec()
+        self.assertEqual((11, 11), engine.maze.bot.pos)
+        self.assertEqual(90, engine.maze.bot.dir)
+
+    def test_sim103(self):
+        # bot starts at (11,11)
+        [engine] = self.init('sim1.map', 'sim103.py')
+        self.assertEqual(0, len(engine.maze.bot.beacons))
+        [engine] = self.exec()
+        self.assertEqual((10, 12), engine.maze.bot.pos)
+        self.assertEqual(90, engine.maze.bot.dir)
+        self.assertEqual(1, len(engine.maze.bot.beacons))
 
 
 if __name__ == '__main__':

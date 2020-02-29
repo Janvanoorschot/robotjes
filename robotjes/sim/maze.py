@@ -57,7 +57,7 @@ class Maze(object):
 
     def pickUp(self):
         if self.check(Maze.FRONT, Maze.BEACON):
-            front = calc_pos(self.bot.pos, self.FRONT, 1)
+            front = self.calc_pos(self.bot.pos, self.FRONT, 1)
             self.beacons.remove(front)
             self.bot.beacons.add(front)
             return True
@@ -66,7 +66,7 @@ class Maze(object):
 
     def eatUp(self):
         if self.check(Maze.FRONT, Maze.BEACON):
-            front = calc_pos(self.bot.pos, self.FRONT, 1)
+            front = self.calc_pos(self.bot.pos, self.FRONT, 1)
             self.beacons.remove(front)
             return True
         else:
@@ -74,7 +74,7 @@ class Maze(object):
 
     def putDown(self):
         if self.check(Maze.FRONT, Maze.CLEAR) and len(self.bot.beacons) > 0:
-            front = calc_pos(self.bot.pos, self.FRONT, 1)
+            front = self.calc_pos(self.bot.pos, self.FRONT, 1)
             self.bot.beacons.remove(front)
             self.beacons.add(front)
             return True
