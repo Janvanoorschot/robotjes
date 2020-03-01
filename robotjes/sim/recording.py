@@ -15,46 +15,87 @@ class Recording(object):
         self.finalize(keyframe)
 
     def backward(self, actual, expected):
-        pass
+        keyframe = {}
+        keyframe['action'] = ['b', actual, expected]
+        self.finalize(keyframe)
 
-    def right(self, expected):
-        pass
+    def left(self, actual):
+        keyframe = {}
+        keyframe['action'] = ['l', actual]
+        self.finalize(keyframe)
 
-    def left(self, expected):
-        pass
+    def right(self, actual):
+        keyframe = {}
+        keyframe['action'] = ['r', actual]
+        self.finalize(keyframe)
 
     def see(self, direction, subject):
         # direction ["left"|"front"|right"]
         # subject ["obstacle"|"clear"|"beacon"|"white"|"black"]
-        pass
+        keyframe = {}
+        keyframe['action'] = ['s', direction, subject]
+        self.finalize(keyframe)
 
     def pickUp(self, success):
-        pass
+        keyframe = {}
+        if success:
+            keyframe['action'] = ['gg', "success"]
+        else:
+            keyframe['action'] = ['gg', "failure"]
+        self.finalize(keyframe)
 
     def eatUp(self, success):
-        pass
+        keyframe = {}
+        if success:
+            keyframe['action'] = ['ge', "success"]
+        else:
+            keyframe['action'] = ['ge', "failure"]
+        self.finalize(keyframe)
 
     def putDown(self, success):
-        pass
+        keyframe = {}
+        if success:
+            keyframe['action'] = ['gp', "success"]
+        else:
+            keyframe['action'] = ['gp', "failure"]
+        self.finalize(keyframe)
 
-    def paintWhite(self, msg):
+    def paintWhite(self, start):
         # msg ["success"|"again"]
-        pass
+        keyframe = {}
+        if start:
+            keyframe['action'] = ['pw', "success"]
+        else:
+            keyframe['action'] = ['pw', "again"]
+        self.finalize(keyframe)
 
     def paintBlack(self, msg):
-        pass
+        keyframe = {}
+        if start:
+            keyframe['action'] = ['pb', "success"]
+        else:
+            keyframe['action'] = ['pb', "again"]
+        self.finalize(keyframe)
 
-    def stopPainting(self, msg):
-        pass
+    def stopPainting(self):
+        keyframe = {}
+        keyframe['action'] = ['sp', "success"]
+        self.finalize(keyframe)
 
     def flipCoin(self):
-        pass
+        keyframe = {}
+        keyframe['action'] = ['fp']
+        self.finalize(keyframe)
 
     def happy(self):
-        pass
+        keyframe = {}
+        keyframe['action'] = ['happy']
+        self.finalize(keyframe)
 
     def nonono(self):
-        pass
+        keyframe = {}
+        keyframe['action'] = ['nonono']
+        self.finalize(keyframe)
 
 
 
