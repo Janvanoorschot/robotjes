@@ -86,18 +86,24 @@ class Maze(object):
             return False
 
     def paintWhite(self):
+        start = True
+        if self.bot.paint == self.WHITE:
+            start = False
         self.bot.paint = self.WHITE
         self.paint()
-        return True
+        return start
 
     def paintBlack(self):
+        start = True
+        if self.bot.paint == self.BLACK:
+            start = False
         self.bot.paint = self.BLACK
         self.paint()
-        return True
+        return start
 
     def stopPainting(self):
         self.bot.paint = self.NOPAINT
-        return True
+        return False
 
     def paint(self):
         if self.bot.paint == self.BLACK:

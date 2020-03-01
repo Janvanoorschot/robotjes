@@ -3,7 +3,7 @@ class Recording(object):
     def __init__(self):
         self.keyframes = []
 
-    def finalize_keyframe(self, keyframe):
+    def finalize(self, keyframe):
         keyframe['sprite'] = 'r'
         keyframe['src'] = len(self.keyframes)
         keyframe['score'] = len(self.keyframes)
@@ -69,7 +69,7 @@ class Recording(object):
             keyframe['action'] = ['pw', "again"]
         self.finalize(keyframe)
 
-    def paintBlack(self, msg):
+    def paintBlack(self, start):
         keyframe = {}
         if start:
             keyframe['action'] = ['pb', "success"]
