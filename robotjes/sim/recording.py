@@ -1,42 +1,59 @@
 class Recording(object):
 
     def __init__(self):
+        self.keyframes = []
+
+    def finalize_keyframe(self, keyframe):
+        keyframe['sprite'] = 'r'
+        keyframe['src'] = len(self.keyframes)
+        keyframe['score'] = len(self.keyframes)
+
+
+    def forward(self, actual , expected):
+        keyframe = {}
+        keyframe['action'] = ['f', actual, expected]
+        self.finalize(keyframe)
+
+    def backward(self, actual, expected):
         pass
 
-    def boom(self, cmd):
+    def right(self, expected):
         pass
 
-    def move_to(self, cmd, success, pos):
+    def left(self, expected):
         pass
 
-    def right(self, cmd, dir):
+    def see(self, direction, subject):
+        # direction ["left"|"front"|right"]
+        # subject ["obstacle"|"clear"|"beacon"|"white"|"black"]
         pass
 
-    def left(self, cmd, dir):
+    def pickUp(self, success):
         pass
 
-    def pickUp(self, cmd, success):
+    def eatUp(self, success):
         pass
 
-    def putDown(self, cmd, success):
+    def putDown(self, success):
         pass
 
-    def eatUp(self, cmd, success):
+    def paintWhite(self, msg):
+        # msg ["success"|"again"]
         pass
 
-    def paintWhite(self, cmd, success):
+    def paintBlack(self, msg):
         pass
 
-    def paintBlack(self, cmd, success):
+    def stopPainting(self, msg):
         pass
 
-    def stopPainting(self, cmd, success):
+    def flipCoin(self):
         pass
 
-    def see(self, cmd, success):
+    def happy(self):
         pass
 
-    def flipCoin(self, cmd, result):
+    def nonono(self):
         pass
 
 
