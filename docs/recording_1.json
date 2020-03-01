@@ -1,0 +1,62 @@
+{
+  "keyFrames": [
+    {
+      "sprite": "r",
+      "action": [
+        "r",
+        "1"
+      ],
+      "src": 1,
+      "score": 0
+    },
+    {
+      "sprite": "r",
+      "action": [
+        "f",
+        "3",
+        "3"
+      ],
+      "src": 2,
+      "score": 3
+    },
+    {
+      "sprite": "r",
+      "action": [
+        "r",
+        "1"
+      ],
+      "src": 3,
+      "score": 3
+    },
+    {
+      "sprite": "r",
+      "action": [
+        "f",
+        "1",
+        "1"
+      ],
+      "src": 4,
+      "score": 4
+    },
+    {
+      "sprite": "r",
+      "action": [
+        "s",
+        "front",
+        "beacon"
+      ],
+      "src": 5,
+      "score": 4
+    },
+    {
+      "sprite": "r",
+      "action": [
+        "gg",
+        "success",
+        "1"
+      ],
+      "src": 6,
+      "score": 4
+    }
+  ]
+}
