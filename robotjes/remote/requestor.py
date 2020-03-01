@@ -10,7 +10,7 @@ class Requestor(object):
     def execute(self, cmd):
         self.conn.send(cmd)
         reply = self.conn.recv()
-        return cmd
+        return reply
 
     def close(self):
         self.conn.close()

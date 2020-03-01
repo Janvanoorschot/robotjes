@@ -8,7 +8,7 @@ from robotjes.sim import Engine
 DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-class SimTestCase(unittest.TestCase):
+class Sim1TestCase(unittest.TestCase):
 
     def init(self, map_file_name, script_file_name):
         map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', map_file_name)

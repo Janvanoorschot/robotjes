@@ -8,5 +8,5 @@ class RoboShell(object):
     def run(self, robo, script_file):
         with open(script_file, 'r') as file:
             data = file.read()
-        exec(data, {"robo": robo})
+            exec(data, {"robo": robo})
 

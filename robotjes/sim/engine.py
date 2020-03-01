@@ -28,7 +28,8 @@ class Engine(object):
             return [command, *args]
 
     def prepare_reply(self, cmd, *args):
-        return [cmd]
+        reply = [cmd, args]
+        return reply
 
     def execute(self, cmd):
         [command, *args] = self.clean_cmd(cmd)
