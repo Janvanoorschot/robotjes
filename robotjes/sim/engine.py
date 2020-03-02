@@ -3,9 +3,9 @@ from .recording import Recording
 
 LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
                   "eatUp", "paintWhite", "paintBlack", "stopPainting",
-                  "leftIsClear", "leftIsBeacon", "leftIsWhite", "leftIsBlack",
-                  "frontIsClear", "frontIsBeacon", "frontIsWhite", "frontIsBlack",
-                  "rightIsClear", "rightIsBeacon", "rightIsWhite", "rightIsBlack",
+                  "leftIsClear", "leftIsObstacle", "leftIsBeacon", "leftIsWhite", "leftIsBlack",
+                  "frontIsClear", "frontIsObstacle", "frontIsBeacon", "frontIsWhite", "frontIsBlack",
+                  "rightIsClear", "rightIsObstacle", "rightIsBeacon", "rightIsWhite", "rightIsBlack",
                   "flipCoin"
                   ]
 class Engine(object):
@@ -100,6 +100,10 @@ class Engine(object):
             success = self.maze.check(Maze.LEFT, Maze.CLEAR)
             self.recording.see("left", "clear")
             reply.append([success])
+        elif command == "leftIsObstacle":
+            success = self.maze.check(Maze.LEFT, Maze.OBSTACLE)
+            self.recording.see("left", "obstacle")
+            reply.append([success])
         elif command == "leftisBeacon":
             success = self.maze.check(Maze.LEFT, Maze.BEACON)
             self.recording.see("left", "beacon")
@@ -116,6 +120,10 @@ class Engine(object):
             success = self.maze.check(Maze.FRONT, Maze.CLEAR)
             self.recording.see("front", "clear")
             reply.append([success])
+        elif command == "frontIsObstacle":
+            success = self.maze.check(Maze.FRONT, Maze.OBSTACLE)
+            self.recording.see("front", "obstacle")
+            reply.append([success])
         elif command == "frontisBeacon":
             success = self.maze.check(Maze.FRONT, Maze.BEACON)
             self.recording.see("front", "beacon")
@@ -131,6 +139,10 @@ class Engine(object):
         elif command == "rightIsClear":
             success = self.maze.check(Maze.RIGHT, Maze.CLEAR)
             self.recording.see("right", "clear")
+            reply.append([success])
+        elif command == "rightIsObstacle":
+            success = self.maze.check(Maze.RIGHT, Maze.OBSTACLE)
+            self.recording.see("right", "obstacle")
             reply.append([success])
         elif command == "rightisBeacon":
             success = self.maze.check(Maze.RIGHT, Maze.BEACON)

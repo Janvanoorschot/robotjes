@@ -7,6 +7,7 @@ class Recording(object):
         keyframe['sprite'] = 'r'
         keyframe['src'] = len(self.keyframes)
         keyframe['score'] = len(self.keyframes)
+        self.keyframes.append(keyframe)
 
 
     def forward(self, actual , expected):

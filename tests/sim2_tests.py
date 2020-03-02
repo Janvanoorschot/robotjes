@@ -35,6 +35,13 @@ class Sim2TestCase(unittest.TestCase):
         self.assertEqual(0, engine.maze.bot.dir)
         self.assertEqual((14, 11), engine.maze.bot.pos)
 
+    def test_sim202(self):
+        # bot starts at (11,11)
+        [engine] = self.init('sim2.map', 'sim201.py')
+        [engine] = self.exec()
+        recording = engine.recording
+        self.assertEqual(16, len(recording.keyframes))
+
 
 if __name__ == '__main__':
     unittest.main()

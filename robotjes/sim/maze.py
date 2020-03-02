@@ -10,11 +10,12 @@ class Maze(object):
     BACK = 180
 
     # status of position
-    CLEAR = 1
-    BEACON = 2
-    WHITE = 3
-    BLACK = 4
-    NOPAINT = 5
+    CLEAR = "clear"
+    OBSTACLE = "obstacle"
+    BEACON = "beacon"
+    WHITE = "white"
+    BLACK = "black"
+    NOPAINT = "nopaint"
 
     def __init__(self, map_file):
         self.map = Map.fromfile(map_file)
