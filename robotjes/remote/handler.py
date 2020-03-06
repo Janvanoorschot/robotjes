@@ -1,12 +1,17 @@
 from multiprocessing.connection import Listener
+from subprocess import call
 
 class Handler(object):
 
-    def __init__(self, host, port, authkey, engine):
+    def __init__(self, host, port, authkey, runscript="bin/runscript"):
+        self.host = host
+        self.port = port
+        self.authkey = authkey
         self.address = (host, port)
-        self.engine = engine
+        self.runscript = runscript
 
-    def run(self):
+    def run(self, engine):
+        """ Feed the Engine (read/exec/write)"""
         listener = Listener(self.address)
         con = listener.accept()
         while not con.closed:
@@ -14,12 +19,17 @@ class Handler(object):
                 cmd = con.recv()
             except EOFError:
                 break
-            result = self.engine.execute(cmd)
+            result = engine.execute(cmd)
             if result:
                 con.send(result)
             else:
                 break
         con.close()
         listener.close()
+
+    def run_client(self, script_file):
+        """ run the client (python script in script_file) in the background (write/read)"""
+        command =  f"{self.runscript} {self.host} {self.port} {self.authkey} {script_file} &"
+        call(command, shell=True)
 
 

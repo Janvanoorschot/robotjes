@@ -10,35 +10,36 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Sim2TestCase(unittest.TestCase):
 
-    def init(self, map_file_name, script_file_name):
-        map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', map_file_name)
-        script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', script_file_name)
+    def init(self, map_file):
         host = "localhost"
         port = 6000
         secret = b"secret"
         self.engine = Engine(map_file)
-        self.handler = Handler(host, port, secret, self.engine)
-        self.command = f"bin/runscript {host} {port} {secret} {script_file} &"
+        self.handler = Handler(host, port, secret)
         return [self.engine]
 
-    def exec(self):
-        call(self.command, shell=True)
-        self.handler.run()
+    def exec(self, script_file):
+        self.handler.run_client(script_file)
+        self.handler.run(self.engine)
         return [self.engine]
 
     def test_sim201(self):
+        map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim2.map')
+        script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim201.py')
         # bot starts at (11,11)
-        [engine] = self.init('sim2.map', 'sim201.py')
+        [engine] = self.init(map_file)
         self.assertEqual((7, 11), engine.maze.bot.pos)
         self.assertEqual(90, engine.maze.bot.dir)
-        [engine] = self.exec()
+        [engine] = self.exec(script_file)
         self.assertEqual(0, engine.maze.bot.dir)
         self.assertEqual((14, 11), engine.maze.bot.pos)
 
     def test_sim202(self):
+        map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim2.map')
+        script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim201.py')
         # bot starts at (11,11)
-        [engine] = self.init('sim2.map', 'sim201.py')
-        [engine] = self.exec()
+        [engine] = self.init(map_file)
+        [engine] = self.exec(script_file)
         recording = engine.recording
         self.assertEqual(16, len(recording.keyframes))
 

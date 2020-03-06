@@ -1,6 +1,9 @@
 from .robo import Robo
 
 # inspiration from https://stackoverflow.com/questions/366682/how-to-limit-execution-time-of-a-function-call-in-python
+# The goal is to execute a piece of Python code including a timeout.
+
+TIMEOUT = 1
 
 import signal
 from contextlib import contextmanager
@@ -30,7 +33,7 @@ class RoboShell(object):
             globalsParameter = {'__builtins__' : None, 'robo': robo}
             localsParameter = {'print': print}
             try:
-                with time_limit(1):
+                with time_limit(TIMEOUT):
                     exec(data, globalsParameter, localsParameter)
             except TimeoutException as e:
                 print("TimeoutException")

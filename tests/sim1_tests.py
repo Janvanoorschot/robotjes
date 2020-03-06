@@ -23,7 +23,7 @@ class Sim1TestCase(unittest.TestCase):
 
     def exec(self):
         call(self.command, shell=True)
-        self.handler.run()
+        self.handler.run(self.engine)
         return [self.engine]
 
     def test_sim101(self):
