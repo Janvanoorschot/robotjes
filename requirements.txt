@@ -1,4 +1,6 @@
 pylint
 mkdocs
 mkdocs-bootstrap
+pika
+pika-dev
 
