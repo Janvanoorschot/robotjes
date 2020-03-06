@@ -3,7 +3,7 @@ import os
 from subprocess import call
 
 from robotjes.remote import Handler
-from robotjes.sim import Engine
+from robotjes.sim import Engine, Map
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,7 +16,7 @@ class Sim1TestCase(unittest.TestCase):
         host = "localhost"
         port = 6000
         secret = b"secret"
-        self.engine = Engine(map_file)
+        self.engine = Engine(Map.fromfile(map_file))
         self.handler = Handler(host, port, secret, self.engine)
         self.command = f"bin/runscript {host} {port} {secret} {script_file} &"
         return [self.engine]

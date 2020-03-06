@@ -1,4 +1,5 @@
 from .maze import Maze
+from .map import Map
 from .recording import Recording
 
 LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
@@ -10,13 +11,13 @@ LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
                   ]
 class Engine(object):
 
-    def __init__(self, map_file):
-        self.map_file = map_file
-        self.maze = Maze(self.map_file)
+    def __init__(self, map):
+        self.map = map
+        self.maze = Maze(self.map)
         self.recording = Recording()
 
     def get_recording(self):
-        return None
+        return self.recording
 
     def clean_cmd(self, cmd):
         if not cmd or not type(cmd)==list or len(cmd)< 2:

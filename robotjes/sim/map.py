@@ -38,10 +38,19 @@ class Map(object):
     @classmethod
     def fromfile(cls, file):
         with open(file) as f:
-            builder = MapBuilder()
-            reader = MapReader(f, builder)
-            reader.read()
-            return builder.build()
+            return cls.fromlist(f)
+
+    @classmethod
+    def fromstring(cls, string):
+        list = string.split("\n")
+        return cls.fromlist(list)
+
+    @classmethod
+    def fromlist(cls, list):
+        builder = MapBuilder()
+        reader = MapReader(list, builder)
+        reader.read()
+        return builder.build()
 
 class MapBuilder(object):
 

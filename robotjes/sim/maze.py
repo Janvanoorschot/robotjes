@@ -17,8 +17,8 @@ class Maze(object):
     BLACK = "black"
     NOPAINT = "nopaint"
 
-    def __init__(self, map_file):
-        self.map = Map.fromfile(map_file)
+    def __init__(self, map):
+        self.map = map
         self.paints_black = set(self.map.paints_blacks())
         self.paints_white = set(self.map.paints_whites())
         self.beacons = set(self.map.start_beacons())
