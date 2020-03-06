@@ -37,5 +37,7 @@ class RoboShell(object):
                     exec(data, globalsParameter, localsParameter)
             except TimeoutException as e:
                 print("TimeoutException")
-
-
+        if "delete_me_" in script_file:
+            import os
+            os.unlink(script_file)
+            

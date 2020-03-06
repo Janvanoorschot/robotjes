@@ -19,7 +19,8 @@ class Sim2TestCase(unittest.TestCase):
         return [self.engine]
 
     def exec(self, script_file):
-        self.handler.run_client(script_file)
+        with open(script_file) as script:
+            self.handler.run_client(script)
         self.handler.run(self.engine)
         return [self.engine]
 

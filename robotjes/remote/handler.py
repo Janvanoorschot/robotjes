@@ -1,3 +1,4 @@
+import tempfile, os
 from multiprocessing.connection import Listener
 from subprocess import call
 
@@ -27,9 +28,13 @@ class Handler(object):
         con.close()
         listener.close()
 
-    def run_client(self, script_file):
-        """ run the client (python script in script_file) in the background (write/read)"""
-        command =  f"{self.runscript} {self.host} {self.port} {self.authkey} {script_file} &"
+    def run_client(self, script):
+        """ run the client in the background (write/read)"""
+        fd, path = tempfile.mkstemp(prefix="delete_me_")
+        with os.fdopen(fd, 'w') as fp:
+            for line in script:
+                fp.write(line)
+        command =  f"{self.runscript} {self.host} {self.port} {self.authkey} {path} &"
         call(command, shell=True)
 
 
