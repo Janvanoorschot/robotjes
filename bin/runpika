@@ -23,12 +23,14 @@ parser.add_argument('authkey', type=str, default='myownsecret', help='shared sec
 parser.add_argument('script', type=str, default='print("hello world")', help='an integer for the accumulator')
 args = parser.parse_args()
 
-# prepare pika
+# prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
 connection = pika.BlockingConnection(pika.ConnectionParameters(host=args.rmqhost, port=args.rmqport))
 channel = connection.channel()
 channel.queue_declare(queue=args.rmqqueue)
 
+
 def run_simulation(map, solution, script):
+    """ actually do the work """
     engine = Engine(Map.fromlist(map))
     handler = Handler(args.simhost, args.simport, args.authkey)
     handler.run_client(script)
@@ -36,7 +38,9 @@ def run_simulation(map, solution, script):
     recording = engine.recording
     return recording
 
+
 def on_request(ch, method, props, body):
+    """ do the request/run/reply cycle"""
     request = json.loads(body)
     # do some work
     map = request["map"]
@@ -52,6 +56,8 @@ def on_request(ch, method, props, body):
                      body=json.dumps(reply))
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
+
+# start listening for work
 channel.basic_qos(prefetch_count=1)
 channel.basic_consume(queue=args.rmqqueue, on_message_callback=on_request)
 channel.start_consuming()
