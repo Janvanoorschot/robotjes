@@ -46,23 +46,26 @@ class Sim3TestCase(unittest.TestCase):
             self.connection.process_data_events()
         return self.response
 
-    def test_sim301(self):
-        map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim3.map')
-        solution_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim3.json')
-        script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim301.py')
-        with open(map_file, 'r') as f:
+    def go(self, map_file, solution_file, script_file):
+        map_path = os.path.join(DIR, os.pardir, 'tests/datafiles', map_file)
+        solution_path = os.path.join(DIR, os.pardir, 'tests/datafiles', solution_file)
+        script_path = os.path.join(DIR, os.pardir, 'tests/datafiles', script_file)
+        with open(map_path, 'r') as f:
             map = f.read().split("\n")
-        with open(solution_file, 'r') as f:
+        with open(solution_path, 'r') as f:
             solution = f.read().split("\n")
-        with open(script_file, 'r') as f:
+        with open(script_path, 'r') as f:
             script = f.read().split("\n")
-
         request = {
             "map": map,
             "solution": solution,
             "script": script
         }
         response = self.call(request)
+        return response
+
+    def test_sim301(self):
+        response = self.go("sim3.map", "sim3.json", "sim301.py")
         self.assertTrue(response != None)
 
 
