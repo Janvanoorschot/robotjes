@@ -14,13 +14,12 @@ from robotjes.remote import Requestor
 from robotjes.bot import Robo, RoboShell
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
-parser.add_argument('rmqhost', type=str, default='localhost', help='rabbitmq host')
-parser.add_argument('rmqport', type=int, default=5672, help='rabbitmq port')
-parser.add_argument('rmqqueue', type=str, default='rpc_queue', help='rabbitmq queue to use for rpc calls')
-parser.add_argument('simhost', type=str, default='localhost', help='host used to connect simulation server and client')
-parser.add_argument('simport', type=int, default=9000, help='port on simulation server')
-parser.add_argument('authkey', type=str, default='myownsecret', help='shared secret')
-parser.add_argument('script', type=str, default='print("hello world")', help='an integer for the accumulator')
+parser.add_argument('--rmqhost', type=str, default='localhost', help='rabbitmq host')
+parser.add_argument('--rmqport', type=int, default=5672, help='rabbitmq port')
+parser.add_argument('--rmqqueue', type=str, default='rpc_queue', help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--simhost', type=str, default='localhost', help='host used to connect simulation server and client')
+parser.add_argument('--simport', type=int, default=9000, help='port on simulation server')
+parser.add_argument('--authkey', type=str, default='myownsecret', help='shared secret')
 args = parser.parse_args()
 
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
@@ -36,19 +35,24 @@ def run_simulation(map, solution, script):
     handler.run_client(script)
     handler.run(engine)
     recording = engine.recording
-    return recording
+    return recording.toMap()
 
 
 def on_request(ch, method, props, body):
     """ do the request/run/reply cycle"""
-    request = json.loads(body)
-    # do some work
-    map = request["map"]
-    solution = request["solution"]
-    script = request("script")
-    recording = run_simulation(map, solution, script)
+    try:
+        request = json.loads(body)
+        # do some work
+        map = request["map"]
+        solution = request["solution"]
+        script = request["script"]
+        recording = run_simulation(map, solution, script)
+        reply = {'recording': recording}
+    except json.decoder.JSONDecodeError as jsonerror:
+        reply = {'error': str(jsonerror)}
+    except Exception as e:
+        reply = {'error': str(e)}
 
-    reply = {'recording': recording}
     # send back reply over 'reply_to' queue
     ch.basic_publish(exchange='',
                      routing_key=props.reply_to,

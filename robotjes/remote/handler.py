@@ -34,6 +34,7 @@ class Handler(object):
         with os.fdopen(fd, 'w') as fp:
             for line in script:
                 fp.write(line)
+                fp.write("\n")
         command =  f"{self.runscript} {self.host} {self.port} {self.authkey} {path} &"
         call(command, shell=True)
 

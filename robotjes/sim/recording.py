@@ -9,6 +9,11 @@ class Recording(object):
         keyframe['score'] = len(self.keyframes)
         self.keyframes.append(keyframe)
 
+    def toMap(self):
+        result = []
+        for item in self.keyframes:
+            result.append(item)
+        return result
 
     def forward(self, actual , expected):
         keyframe = {}

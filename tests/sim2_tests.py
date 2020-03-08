@@ -43,6 +43,8 @@ class Sim2TestCase(unittest.TestCase):
         [engine] = self.exec(script_file)
         recording = engine.recording
         self.assertEqual(16, len(recording.keyframes))
+        map = recording.toMap()
+        self.assertEqual(16,len(map))
 
 
 if __name__ == '__main__':
