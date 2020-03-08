@@ -1,7 +1,7 @@
 from asyncio import Queue
 from . import DevRequestor, DevHandler
-from ..bot import RoboShell
-from ..sim import Engine
+from robotjes.bot import RoboShell
+from robotjes.sim import Engine
 
 import asyncio
 import concurrent.futures

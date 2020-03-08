@@ -11,6 +11,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class Sim3TestCase(unittest.TestCase):
+    """ Test the Pika connection to our simulation """
 
     def setUp(self):
         self.rmqhost = 'localhost'

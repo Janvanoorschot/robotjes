@@ -9,6 +9,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class Sim1TestCase(unittest.TestCase):
+    """ Test the Map and Maze."""
 
     def init(self, map_file_name, script_file_name):
         map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', map_file_name)

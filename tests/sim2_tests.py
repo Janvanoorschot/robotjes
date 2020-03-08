@@ -9,6 +9,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class Sim2TestCase(unittest.TestCase):
+    """ Test the Engine."""
 
     def init(self, map_file):
         host = "localhost"
