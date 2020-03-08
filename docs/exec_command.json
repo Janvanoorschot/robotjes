@@ -1,0 +1,11 @@
+[
+  "robo.server.ExecCommand",
+  {
+    "script": "# Description: Laat de robot\n# het baken neerzetten in het\n# hoekje linksonder.\n\n# Challenge: Oefen met de \n# commando\u0027s die je kunt\n# gebruiken in RoboMind\n\n# Solution:\n\nrechtsx\nvooruit\nvooruit\nvooruit\nrechts\nvooruit\nvooruit\npakOp\nvooruit\nrechts\nvooruit(7)\nzetNeer",
+    "options": {
+      "maxCommandsToExecute": "8000",
+      "language": "en,nl,nl",
+      "map": "/data/dev/robocontent/robomind/challenges/gettingStartedMoveBeaconClose/default.map"
+    }
+  }
+]
