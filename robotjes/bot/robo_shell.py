@@ -36,12 +36,9 @@ class RoboShell(object):
                 with time_limit(TIMEOUT):
                     exec(data, globalsParameter, localsParameter)
             except TimeoutException as e:
-                print("TimeoutException")
+                robo.message(f"script took longer then {TIMEOUT} secconds, failed by time out.")
             except Exception as e:
-                print(f"syntax error: {str(e)}")
-                print(f"type script: {type(data)}")
-                print(f"len script: {len(data)}")
-                print(f"script: {data}")
+                robo.message(f"script failure: {str(e)}")
         if "delete_me_" in script_file:
             import os
             os.unlink(script_file)

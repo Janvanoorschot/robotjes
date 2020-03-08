@@ -66,7 +66,19 @@ class Sim3TestCase(unittest.TestCase):
 
     def test_sim301(self):
         response = self.go("sim3.map", "sim3.json", "sim301.py")
-        self.assertTrue(response != None)
+        self.assertIsNotNone(response)
+
+    def test_sim302(self):
+        response = self.go("sim3.map", "sim3.json", "sim302.py")
+        self.assertIsNotNone(response)
+
+    def test_sim303(self):
+        response = self.go("sim3.map", "sim3.json", "sim303.py")
+        self.assertIsNotNone(response)
+
+    def test_sim304(self):
+        response = self.go("sim3.map", "sim3.json", "sim304.py")
+        self.assertIsNotNone(response)
 
 
 if __name__ == '__main__':

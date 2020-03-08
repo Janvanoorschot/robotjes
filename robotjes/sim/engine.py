@@ -7,7 +7,7 @@ LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
                   "leftIsClear", "leftIsObstacle", "leftIsBeacon", "leftIsWhite", "leftIsBlack",
                   "frontIsClear", "frontIsObstacle", "frontIsBeacon", "frontIsWhite", "frontIsBlack",
                   "rightIsClear", "rightIsObstacle", "rightIsBeacon", "rightIsWhite", "rightIsBlack",
-                  "flipCoin"
+                  "flipCoin", "message"
                   ]
 class Engine(object):
 
@@ -161,6 +161,9 @@ class Engine(object):
             result = self.maze.flipCoin()
             self.recording.flipCoin()
             reply.append([result])
+        elif command == "message":
+            message = "unknown" if len(args) < 1 else args[0]
+            self.recording.message(message)
         else:
             reply.append([False])
         return self.prepare_reply(cmd, reply)

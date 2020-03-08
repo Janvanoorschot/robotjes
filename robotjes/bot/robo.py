@@ -101,3 +101,5 @@ class Robo(object):
         result = self.requestor.execute([self.id, 'rightIsBlack'])
         return self.handle_boolean_result(result)
 
+    def message(self, message):
+        self.requestor.execute([self.id, 'message', message])

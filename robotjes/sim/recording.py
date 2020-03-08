@@ -103,6 +103,11 @@ class Recording(object):
         keyframe['action'] = ['nonono']
         self.finalize(keyframe)
 
+    def message(self, message):
+        keyframe = {}
+        keyframe['action'] = ['message', message]
+        self.finalize(keyframe)
+
 
 
 
