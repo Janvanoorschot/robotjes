@@ -28,9 +28,11 @@ channel = connection.channel()
 channel.queue_declare(queue=args.rmqqueue)
 
 
-def run_simulation(map, solution, script):
+def run_simulation(mapstr, success, scriptstr):
     """ actually do the work """
-    engine = Engine(Map.fromlist(map))
+    map = Map.fromstring(mapstr)
+    script = scriptstr.split('\n')
+    engine = Engine(map)
     handler = Handler(args.simhost, args.simport, args.authkey)
     handler.run_client(script)
     handler.run(engine)
@@ -43,11 +45,14 @@ def on_request(ch, method, props, body):
     try:
         request = json.loads(body)
         # do some work
-        map = request["map"]
-        solution = request["solution"]
-        script = request["script"]
-        recording = run_simulation(map, solution, script)
-        reply = {'recording': recording}
+        if "map" in request and "success" in request and "script" in request:
+            map = request["map"]
+            success = request["success"]
+            script = request["script"]
+            recording = run_simulation(map, success, script)
+            reply = {'recording': recording}
+        else:
+            reply = {'error': "missing components in request"}
     except json.decoder.JSONDecodeError as jsonerror:
         reply = {'error': str(jsonerror)}
     except Exception as e:

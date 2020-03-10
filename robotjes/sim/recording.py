@@ -1,3 +1,5 @@
+import json
+
 class Recording(object):
 
     def __init__(self):
@@ -106,6 +108,11 @@ class Recording(object):
     def message(self, message):
         keyframe = {}
         keyframe['action'] = ['message', message]
+        self.finalize(keyframe)
+
+    def boom(self, cmd):
+        keyframe = {}
+        keyframe['action'] = ['boom', json.dumps(cmd, default=str)]
         self.finalize(keyframe)
 
 
