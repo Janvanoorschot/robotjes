@@ -26,6 +26,36 @@ class Maze(object):
         start_positions = self.map.start_positions()
         self.bot = Bot(start_positions[0], 90)
 
+        self.profile = {
+            "paintWhites": 0,
+            "robotHasBumped": 0,
+            "scriptTotalCharacters": 0,
+            "scriptCalls": 0,
+            "scriptBasicCommands": 0,
+            "total": 0,
+            "see": 0,
+            "robotHasBeacon": 0,
+            "paintBlacks": 0,
+            "scriptCharacters": 0,
+            "flipCoins": 0,
+            "exploredTileCount": 0,
+            "scriptRecursive": 0,
+            "successfulGets": 0,
+            "robotOrientation": 0,
+            "gets": 0,
+            "successfulEats": 0,
+            "puts": 0,
+            "eats": 0,
+            "moves": 0,
+            "explored": 0,
+            "blackPaintUsed": 0,
+            "robotActions": 0,
+            "robotX": 0,
+            "robotY": 0,
+            "successfulPuts": 0,
+            "whitePaintUsed": 0
+        }
+
     def available_pos(self, pos):
         return self.map.available_pos(pos) and not pos in self.beacons and pos != self.bot.pos
 

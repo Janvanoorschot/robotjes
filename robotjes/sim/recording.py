@@ -17,6 +17,12 @@ class Recording(object):
             result.append(item)
         return result
 
+    def isSuccess(self):
+        return True
+
+    def messages(self):
+        return []
+
     def forward(self, actual , expected):
         keyframe = {}
         keyframe['action'] = ['f', actual, expected]

@@ -38,7 +38,24 @@ def run_simulation(mapstr, success, scriptstr):
     handler.run_client(script)
     handler.run(engine)
     recording = engine.recording
-    return recording.toMap()
+    reply = []
+    reply.append("robo.server.ExecResult")
+    content = {}
+    content["success"] = recording.isSuccess()
+    content["messages"] = recording.messages()
+    content["profile"] = {
+        "profile": engine.maze.profile
+    }
+    content["map"] = mazeMap
+    content["hint"] = {
+        "premise": "not beacon(2,13)",
+        "value": "hint.auto.beaconInWrongSpot",
+        "type": "world",
+        "x": -1,
+        "y": -1
+    }
+    reply.append(content)
+    return reply
 
 
 def on_request(ch, method, props, body):
@@ -50,8 +67,7 @@ def on_request(ch, method, props, body):
             map = request["map"]
             success = request["success"]
             script = request["script"]
-            recording = run_simulation(map, success, script)
-            reply = {'recording': recording}
+            reply = run_simulation(map, success, script)
         else:
             reply = {'error': "missing components in request"}
     except json.decoder.JSONDecodeError as jsonerror:
