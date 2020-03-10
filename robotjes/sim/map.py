@@ -35,6 +35,73 @@ class Map(object):
     def available_pos(self, pos):
         return pos not in self.tiles
 
+    def toMazeMap(self):
+        result = {}
+        mapLines = []
+        for y in range(0, self.height):
+            line = []
+            for x in range(0, self.width):
+                coord = (x,y)
+                if coord in self.tiles_type:
+                    line.append(self.tiles_type[coord])
+                else:
+                    if coord in self.beacons:
+                        line.append("*")
+                    else:
+                        if coord in self.startposses:
+                            line.append("@")
+                        else:
+                            line.append("")
+
+                    line.append("")
+            mapLines.append(line)
+        result["mapLines"] = mapLines
+        paintLines = []
+        for item in self.paints_white:
+            cell = {}
+            cell["x"] = item[0]
+            cell["y"] = item[1]
+            cell["type"] = self.paints_white_type[item]
+            cell["color"] = "w"
+            paintLines.append(cell)
+        for item in self.paints_black:
+            cell = {}
+            cell["x"] = item[0]
+            cell["y"] = item[1]
+            cell["type"] = self.paints_black_type[item]
+            cell["color"] = "b"
+            paintLines.append(cell)
+        result["paintLines"] = paintLines
+        extraLines = []
+        for item in self.extras:
+            cell = {}
+            cell["x"] = item[0]
+            cell["y"] = item[1]
+            cell["id"] = self.extras_type[item]
+            extraLines.append(cell)
+        result["extraLines"] = extraLines
+        robotLines = []
+        for item in self.startposses:
+            cell = {}
+            cell["id"] = "Robo"
+            cell["x"] = item[0]
+            cell["y"] = item[1]
+            robotLines.append(cell)
+        result["robotLines"] = robotLines
+        beaconLines = []
+        for item in self.beacons:
+            cell = {}
+            cell["x"] = item[0]
+            cell["y"] = item[1]
+            cell["type"] = "beacon"
+            cell["id"] = f"[{item[0]},{item[1]}]"
+            beaconLines.append(cell)
+        result["beaconLines"] = beaconLines
+
+        return result
+
+
+
     @classmethod
     def fromfile(cls, file):
         with open(file) as f:
@@ -101,8 +168,8 @@ class MapBuilder(object):
 
     def build(self):
         mapper = Map()
-        mapper.width = self.width
-        mapper.height = self.height
+        mapper.width = self.width+1
+        mapper.height = self.height+1
         mapper.extras = self.extras
         mapper.extras_type = self.extras_type
         mapper.paints_black = self.paints_black
@@ -178,4 +245,6 @@ class MapReader(object):
                 x = int(paintmatch.group(3))
                 y = int(paintmatch.group(4))
                 self.builder.paint(color,type,x,y)
+
+
 
