@@ -1,0 +1,227 @@
+{
+  "success": true,
+  "messages": [],
+  "profile": {
+    "profile": {
+      "paintWhites": 0,
+      "robotHasBumped": 0,
+      "scriptTotalCharacters": 12,
+      "scriptCalls": 2,
+      "scriptBasicCommands": 2,
+      "total": 8,
+      "see": 0,
+      "robotHasBeacon": 0,
+      "paintBlacks": 0,
+      "scriptCharacters": 12,
+      "flipCoins": 0,
+      "exploredTileCount": 2,
+      "scriptRecursive": 0,
+      "successfulGets": 0,
+      "robotOrientation": 90,
+      "gets": 0,
+      "successfulEats": 0,
+      "puts": 0,
+      "eats": 0,
+      "moves": 1,
+      "explored": 2,
+      "blackPaintUsed": 0,
+      "robotActions": 1,
+      "robotX": 5,
+      "robotY": 4,
+      "successfulPuts": 0,
+      "whitePaintUsed": 0
+    }
+  },
+  "recording": {
+    "keyFrames": [
+      {
+        "sprite": "r",
+        "action": [
+          "r",
+          "1"
+        ],
+        "src": 1,
+        "score": 0
+      },
+      {
+        "sprite": "r",
+        "action": [
+          "f",
+          "1",
+          "1"
+        ],
+        "src": 2,
+        "score": 1
+      }
+    ]
+  },
+  "map": {
+    "mapLines": [
+      [
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      [
+        "A",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      [
+        " ",
+        " ",
+        " ",
+        "A",
+        "A",
+        "A",
+        "A",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      [
+        " ",
+        " ",
+        " ",
+        "A",
+        "*",
+        " ",
+        "A",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      [
+        " ",
+        " ",
+        " ",
+        "A",
+        "@",
+        " ",
+        "A",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      [
+        " ",
+        " ",
+        " ",
+        "A",
+        "A",
+        "A",
+        "A",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        "A"
+      ],
+      [
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      [
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      [
+        " ",
+        " ",
+        "A",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ]
+    ],
+    "paintLines": [
+      {
+        "x": 5,
+        "y": 4,
+        "type": ".",
+        "color": "w"
+      }
+    ],
+    "extraLines": [
+      {
+        "id": "tree",
+        "x": 5,
+        "y": 4
+      }
+    ],
+    "robotLines": [
+      {
+        "id": "Robo",
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "beaconLines": [
+      {
+        "x": 4,
+        "y": 3,
+        "type": "beacon",
+        "id": "[4,3]"
+      }
+    ]
+  }
+}

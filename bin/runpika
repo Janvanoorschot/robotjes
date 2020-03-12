@@ -47,6 +47,7 @@ def run_simulation(mapstr, success, scriptstr):
         "profile": engine.maze.profile
     }
     content["map"] = mazeMap
+    content["recording"] = { "keyFrames": recording.toMap() }
     content["hint"] = {
         "premise": "not beacon(2,13)",
         "value": "hint.auto.beaconInWrongSpot",
@@ -76,10 +77,11 @@ def on_request(ch, method, props, body):
         reply = {'error': str(e)}
 
     # send back reply over 'reply_to' queue
+    j = json.dumps(reply)
     ch.basic_publish(exchange='',
                      routing_key=props.reply_to,
                      properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                     body=json.dumps(reply))
+                     body=j)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 

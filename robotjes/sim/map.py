@@ -51,9 +51,7 @@ class Map(object):
                         if coord in self.startposses:
                             line.append("@")
                         else:
-                            line.append("")
-
-                    line.append("")
+                            line.append(" ")
             mapLines.append(line)
         result["mapLines"] = mapLines
         paintLines = []

@@ -21,7 +21,14 @@ class Recording(object):
         return True
 
     def messages(self):
-        return []
+        result = []
+        result.append({
+            "msg": "Sorry, ik weet niet wat je met \u0027rechtsx\u0027 betekent. Bedoel je misschien \u0027rechts\u0027?",
+            "type": "error",
+            "line": 11
+        })
+        return result
+
 
     def forward(self, actual , expected):
         keyframe = {}
