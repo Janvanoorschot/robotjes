@@ -147,7 +147,9 @@ class Maze(object):
     def check(self, dir, cond):
         pos = self.calc_pos(self.bot.pos, dir, 1)
         if cond == self.CLEAR:
-            self.map.available_pos() and not pos in self.beacons
+            return self.map.available_pos(pos) and not pos in self.beacons
+        elif cond == self.OBSTACLE:
+            return not self.map.available_pos(pos) or pos in self.beacons
         elif cond == self.BEACON:
             return pos in self.beacons
         elif cond == self.WHITE:

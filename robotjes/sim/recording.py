@@ -18,15 +18,21 @@ class Recording(object):
         return result
 
     def isSuccess(self):
+        """ we assume success if there are no messages """
+        for frame in self.keyframes:
+            if frame["action"][0] == 'message':
+                return False
         return True
 
     def messages(self):
         result = []
-        result.append({
-            "msg": "Sorry, ik weet niet wat je met \u0027rechtsx\u0027 betekent. Bedoel je misschien \u0027rechts\u0027?",
-            "type": "error",
-            "line": 11
-        })
+        for frame in self.keyframes:
+            if frame["action"][0] == 'message':
+                result.append({
+                    "msg": frame["action"][1],
+                    "type": "error",
+                    "line": 1
+                })
         return result
 
 

@@ -57,6 +57,10 @@ class Robo(object):
         result = self.requestor.execute([self.id, 'leftIsClear'])
         return self.handle_boolean_result(result)
 
+    def leftIsObstacle(self):
+        result = self.requestor.execute([self.id, 'leftIsObstacle'])
+        return self.handle_boolean_result(result)
+
     def leftIsBeacon(self):
         result = self.requestor.execute([self.id, 'leftIsBeacon'])
         return self.handle_boolean_result(result)
@@ -73,6 +77,10 @@ class Robo(object):
         result = self.requestor.execute([self.id, 'frontIsClear'])
         return self.handle_boolean_result(result)
 
+    def frontIsObstacle(self):
+        result = self.requestor.execute([self.id, 'frontIsObstacle'])
+        return self.handle_boolean_result(result)
+
     def frontIsBeacon(self):
         result = self.requestor.execute([self.id, 'frontIsBeacon'])
         return self.handle_boolean_result(result)
@@ -87,6 +95,10 @@ class Robo(object):
 
     def rightIsClear(self):
         result = self.requestor.execute([self.id, 'rightIsClear'])
+        return self.handle_boolean_result(result)
+
+    def rightIsObstacle(self):
+        result = self.requestor.execute([self.id, 'rightIsObstacle'])
         return self.handle_boolean_result(result)
 
     def rightIsBeacon(self):
