@@ -4,16 +4,15 @@ import sys, os
 import argparse
 import pika, json
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+
 from robotjes.remote import Handler
 from robotjes.sim import Engine, Map
-
-
-sys.path.insert(0, os.path.abspath(os.getcwd()))
-
 from robotjes.remote import Requestor
 from robotjes.bot import Robo, RoboShell
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
+parser.add_argument('--pikaurl', type=str, default='amqp://guest:guest@localhost:5672/%2F', help='rabbitmq url')
 parser.add_argument('--rmqhost', type=str, default='localhost', help='rabbitmq host')
 parser.add_argument('--rmqport', type=int, default=5672, help='rabbitmq port')
 parser.add_argument('--rmqqueue', type=str, default='rpc_queue', help='rabbitmq queue to use for rpc calls')
@@ -23,7 +22,11 @@ parser.add_argument('--authkey', type=str, default='myownsecret', help='shared s
 args = parser.parse_args()
 
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
-connection = pika.BlockingConnection(pika.ConnectionParameters(host=args.rmqhost, port=args.rmqport))
+parameters = pika.URLParameters(args.pikaurl)
+# parameters = pika.ConnectionParameters(host=args.rmqhost, port=args.rmqport)
+
+connection = pika.BlockingConnection(parameters)
+
 channel = connection.channel()
 channel.queue_declare(queue=args.rmqqueue)
 
