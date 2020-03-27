@@ -194,8 +194,7 @@ class MapReader(object):
 
     def read(self):
         for line in self.f:
-            line = line.strip()
-            if not line.startswith("#") and len(line)>0:
+            if not line.startswith("#"):
                 blockhead = self.blokline.match(line)
                 if blockhead:
                     section = blockhead.group(1)

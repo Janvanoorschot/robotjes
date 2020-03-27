@@ -39,7 +39,7 @@ class Engine(object):
             expected = 1 if len(args) < 1 else args[0]
             actual = 0
             for i in range(expected):
-                next_pos = self.maze.calc_pos(self.maze.bot.pos, self.maze.bot.dir, +1)
+                next_pos = self.maze.calc_pos(self.maze.bot, self.maze.FRONT, +1)
                 if next_pos and self.maze.available_pos(next_pos):
                     success = self.maze.move_to(next_pos)
                     reply.append([success, next_pos])
@@ -52,7 +52,7 @@ class Engine(object):
             expected = 1 if len(args) < 1 else args[0]
             actual = 0
             for i in range(expected):
-                next_pos = self.maze.calc_pos(self.maze.bot.pos, self.maze.bot.dir, -1)
+                next_pos = self.maze.calc_pos(self.maze.bot, self.maze.FRONT, -1)
                 if next_pos and self.maze.available_pos(next_pos):
                     success = self.maze.move_to(next_pos)
                     reply.append([success, next_pos])

@@ -59,7 +59,9 @@ class Maze(object):
     def available_pos(self, pos):
         return self.map.available_pos(pos) and not pos in self.beacons and pos != self.bot.pos
 
-    def calc_pos(self, pos, dir, dist):
+    def calc_pos(self, bot, viewdir, dist):
+        pos = bot.pos
+        dir = dir_add(bot.dir,viewdir)
         x = pos[0]
         y = pos[1]
         if dir == 0:
@@ -92,7 +94,7 @@ class Maze(object):
 
     def pickUp(self):
         if self.check(Maze.FRONT, Maze.BEACON):
-            front = self.calc_pos(self.bot.pos, self.FRONT, 1)
+            front = self.calc_pos(self.bot, self.FRONT, 1)
             self.beacons.remove(front)
             self.bot.beacons.add(front)
             return True
@@ -101,7 +103,7 @@ class Maze(object):
 
     def eatUp(self):
         if self.check(Maze.FRONT, Maze.BEACON):
-            front = self.calc_pos(self.bot.pos, self.FRONT, 1)
+            front = self.calc_pos(self.bot, self.FRONT, 1)
             self.beacons.remove(front)
             return True
         else:
@@ -109,7 +111,7 @@ class Maze(object):
 
     def putDown(self):
         if self.check(Maze.FRONT, Maze.CLEAR) and len(self.bot.beacons) > 0:
-            front = self.calc_pos(self.bot.pos, self.FRONT, 1)
+            front = self.calc_pos(self.bot, self.FRONT, 1)
             self.bot.beacons.remove(front)
             self.beacons.add(front)
             return True
@@ -145,7 +147,7 @@ class Maze(object):
             self.paints_white.add(self.bot.pos)
 
     def check(self, dir, cond):
-        pos = self.calc_pos(self.bot.pos, dir, 1)
+        pos = self.calc_pos(self.bot, dir, 1)
         if cond == self.CLEAR:
             return self.map.available_pos(pos) and not pos in self.beacons
         elif cond == self.OBSTACLE:
@@ -177,6 +179,12 @@ def dir_right(dir):
     if not dir in DIRS:
         raise ValueError(f"invalid direction {dir}")
     return (dir + 270) % 360
+
+
+def dir_add(dir1, dir2):
+    if not dir1 in DIRS or not dir2 in DIRS:
+        raise ValueError(f"invalid direction {dir1}/{dir2}")
+    return (dir1 + dir2) % 360
 
 
 class Bot(object):
