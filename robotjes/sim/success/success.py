@@ -6,7 +6,7 @@ class Success:
     def __init__(self, validationCheckMap, hintRulesMap):
         self.validationCheckMap = validationCheckMap
         self.hintRulesMap = hintRulesMap
-        self.validationCNF = ValidationCheckCNF(self.validationCheckMap)
+        self.validationCNF = ValidationCheckCNF.fromMap(self.validationCheckMap)
 
     @staticmethod
     def from_json(json):
