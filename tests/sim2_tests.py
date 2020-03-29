@@ -30,11 +30,11 @@ class Sim2TestCase(unittest.TestCase):
         script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim201.py')
         # bot starts at (11,11)
         [engine] = self.init(map_file)
-        self.assertEqual((7, 11), engine.maze.bot.pos)
-        self.assertEqual(90, engine.maze.bot.dir)
+        self.assertEqual((7, 11), engine.world.bot.pos)
+        self.assertEqual(90, engine.world.bot.dir)
         [engine] = self.exec(script_file)
-        self.assertEqual(0, engine.maze.bot.dir)
-        self.assertEqual((14, 11), engine.maze.bot.pos)
+        self.assertEqual(0, engine.world.bot.dir)
+        self.assertEqual((14, 11), engine.world.bot.pos)
 
     def test_sim202(self):
         map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim2.map')

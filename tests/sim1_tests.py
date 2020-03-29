@@ -30,34 +30,34 @@ class Sim1TestCase(unittest.TestCase):
     def test_sim101(self):
         # bot starts at (11,11)
         [engine] = self.init('sim1.map', 'sim101.py')
-        self.assertEqual((11, 11), engine.maze.bot.pos)
-        self.assertEqual(90, engine.maze.bot.dir)
+        self.assertEqual((11, 11), engine.world.bot.pos)
+        self.assertEqual(90, engine.world.bot.dir)
         [engine] = self.exec()
-        self.assertEqual((10, 11), engine.maze.bot.pos)
-        self.assertEqual(180, engine.maze.bot.dir)
+        self.assertEqual((10, 11), engine.world.bot.pos)
+        self.assertEqual(180, engine.world.bot.dir)
 
     def test_sim102(self):
         # bot starts at (11,11)
         [engine] = self.init('sim1.map', 'sim102.py')
         [engine] = self.exec()
-        self.assertEqual((11, 11), engine.maze.bot.pos)
-        self.assertEqual(90, engine.maze.bot.dir)
+        self.assertEqual((11, 11), engine.world.bot.pos)
+        self.assertEqual(90, engine.world.bot.dir)
 
     def test_sim103(self):
         # bot starts at (11,11)
         [engine] = self.init('sim1.map', 'sim103.py')
-        self.assertEqual(0, len(engine.maze.bot.beacons))
+        self.assertEqual(0, len(engine.world.bot.beacons))
         [engine] = self.exec()
-        self.assertEqual((11, 13), engine.maze.bot.pos)
-        self.assertEqual(0, engine.maze.bot.dir)
-        self.assertEqual(1, len(engine.maze.bot.beacons))
+        self.assertEqual((11, 13), engine.world.bot.pos)
+        self.assertEqual(0, engine.world.bot.dir)
+        self.assertEqual(1, len(engine.world.bot.beacons))
 
     def test_sim104(self):
         # bot starts at (11,11)
         [engine] = self.init('sim1.map', 'sim104.py')
-        self.assertEqual(0, len(engine.maze.paints_white))
+        self.assertEqual(0, len(engine.world.paints_white))
         [engine] = self.exec()
-        self.assertEqual(2, len(engine.maze.paints_white))
+        self.assertEqual(2, len(engine.world.paints_white))
 
 
 if __name__ == '__main__':

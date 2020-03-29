@@ -7,7 +7,7 @@ import pika, json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
 from robotjes.remote import Handler
-from robotjes.sim import Engine, Map
+from robotjes.sim import Engine, Map, Success
 from robotjes.remote import Requestor
 from robotjes.bot import Robo, RoboShell
 
@@ -31,11 +31,12 @@ channel = connection.channel()
 channel.queue_declare(queue=args.rmqqueue)
 
 
-def run_simulation(mapstr, success, scriptstr):
+def run_simulation(mapstr, successjson, scriptstr):
     """ actually do the work """
     map = Map.fromstring(mapstr)
     mazeMap = map.toMazeMap()
     script = scriptstr.split('\n')
+    success = Success.from_json(successjson)
     engine = Engine(map)
     handler = Handler(args.simhost, args.simport, args.authkey)
     handler.run_client(script)
@@ -47,7 +48,7 @@ def run_simulation(mapstr, success, scriptstr):
     content["success"] = recording.isSuccess()
     content["messages"] = recording.messages()
     content["profile"] = {
-        "profile": engine.maze.profile
+        "profile": engine.world.profile
     }
     content["map"] = mazeMap
     content["recording"] = { "keyFrames": recording.toMap() }

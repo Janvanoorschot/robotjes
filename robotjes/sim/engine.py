@@ -1,4 +1,4 @@
-from .maze import Maze
+from .world import World
 from .map import Map
 from .recording import Recording
 
@@ -13,7 +13,7 @@ class Engine(object):
 
     def __init__(self, map):
         self.map = map
-        self.maze = Maze(self.map)
+        self.world = World(self.map)
         self.recording = Recording()
 
     def get_recording(self):
@@ -39,9 +39,9 @@ class Engine(object):
             expected = 1 if len(args) < 1 else args[0]
             actual = 0
             for i in range(expected):
-                next_pos = self.maze.calc_pos(self.maze.bot, self.maze.FRONT, +1)
-                if next_pos and self.maze.available_pos(next_pos):
-                    success = self.maze.move_to(next_pos)
+                next_pos = self.world.calc_pos(self.world.bot, self.world.FRONT, +1)
+                if next_pos and self.world.available_pos(next_pos):
+                    success = self.world.move_to(next_pos)
                     reply.append([success, next_pos])
                     actual = actual + 1
                 else:
@@ -52,9 +52,9 @@ class Engine(object):
             expected = 1 if len(args) < 1 else args[0]
             actual = 0
             for i in range(expected):
-                next_pos = self.maze.calc_pos(self.maze.bot, self.maze.FRONT, -1)
-                if next_pos and self.maze.available_pos(next_pos):
-                    success = self.maze.move_to(next_pos)
+                next_pos = self.world.calc_pos(self.world.bot, self.world.FRONT, -1)
+                if next_pos and self.world.available_pos(next_pos):
+                    success = self.world.move_to(next_pos)
                     reply.append([success, next_pos])
                     actual = actual + 1
                 else:
@@ -64,101 +64,101 @@ class Engine(object):
         elif command == "right":
             expected = 1 if len(args) < 1 else args[0]
             for i in range(expected):
-                dir = self.maze.right()
+                dir = self.world.right()
                 reply.append([True, dir])
             self.recording.right(expected)
         elif command == "left":
             expected = 1 if len(args) < 1 else args[0]
             for i in range(expected):
-                dir = self.maze.left()
+                dir = self.world.left()
                 reply.append([True, dir])
             self.recording.left(expected)
         elif command == "pickUp":
-            success = self.maze.pickUp()
+            success = self.world.pickUp()
             reply.append([success])
             self.recording.pickUp(success)
         elif command == "putDown":
-            success = self.maze.putDown()
+            success = self.world.putDown()
             reply.append([success])
             self.recording.putDown(success)
         elif command == "eatUp":
-            success = self.maze.eatUp()
+            success = self.world.eatUp()
             reply.append([success])
             self.recording.eatUp(success)
         elif command == "paintWhite":
-            start = self.maze.paintWhite()
+            start = self.world.paintWhite()
             reply.append([start])
             self.recording.paintWhite(start)
         elif command == "paintBlack":
-            start = self.maze.paintBlack()
+            start = self.world.paintBlack()
             reply.append([start])
             self.recording.paintBlack(start)
         elif command == "stopPainting":
-            start = self.maze.stopPainting()
+            start = self.world.stopPainting()
             reply.append([start])
             self.recording.stopPainting(start)
         elif command == "leftIsClear":
-            success = self.maze.check(Maze.LEFT, Maze.CLEAR)
+            success = self.world.check(World.LEFT, World.CLEAR)
             self.recording.see("left", "clear")
             reply.append([success])
         elif command == "leftIsObstacle":
-            success = self.maze.check(Maze.LEFT, Maze.OBSTACLE)
+            success = self.world.check(World.LEFT, World.OBSTACLE)
             self.recording.see("left", "obstacle")
             reply.append([success])
         elif command == "leftisBeacon":
-            success = self.maze.check(Maze.LEFT, Maze.BEACON)
+            success = self.world.check(World.LEFT, World.BEACON)
             self.recording.see("left", "beacon")
             reply.append([success])
         elif command == "leftIsWhite":
-            success = self.maze.check(Maze.LEFT, Maze.WHITE)
+            success = self.world.check(World.LEFT, World.WHITE)
             self.recording.see("left", "white")
             reply.append([success])
         elif command == "leftIsBlack":
-            success = self.maze.check(Maze.LEFT, Maze.BLACK)
+            success = self.world.check(World.LEFT, World.BLACK)
             self.recording.see("left", "black")
             reply.append([success])
         elif command == "frontIsClear":
-            success = self.maze.check(Maze.FRONT, Maze.CLEAR)
+            success = self.world.check(World.FRONT, World.CLEAR)
             self.recording.see("front", "clear")
             reply.append([success])
         elif command == "frontIsObstacle":
-            success = self.maze.check(Maze.FRONT, Maze.OBSTACLE)
+            success = self.world.check(World.FRONT, World.OBSTACLE)
             self.recording.see("front", "obstacle")
             reply.append([success])
         elif command == "frontisBeacon":
-            success = self.maze.check(Maze.FRONT, Maze.BEACON)
+            success = self.world.check(World.FRONT, World.BEACON)
             self.recording.see("front", "beacon")
             reply.append([success])
         elif command == "frontIsWhite":
-            success = self.maze.check(Maze.FRONT, Maze.WHITE)
+            success = self.world.check(World.FRONT, World.WHITE)
             self.recording.see("front", "white")
             reply.append([success])
         elif command == "frontIsBlack":
-            success = self.maze.check(Maze.FRONT, Maze.BLACK)
+            success = self.world.check(World.FRONT, World.BLACK)
             self.recording.see("front", "black")
             reply.append([success])
         elif command == "rightIsClear":
-            success = self.maze.check(Maze.RIGHT, Maze.CLEAR)
+            success = self.world.check(World.RIGHT, World.CLEAR)
             self.recording.see("right", "clear")
             reply.append([success])
         elif command == "rightIsObstacle":
-            success = self.maze.check(Maze.RIGHT, Maze.OBSTACLE)
+            success = self.world.check(World.RIGHT, World.OBSTACLE)
             self.recording.see("right", "obstacle")
             reply.append([success])
         elif command == "rightisBeacon":
-            success = self.maze.check(Maze.RIGHT, Maze.BEACON)
+            success = self.world.check(World.RIGHT, World.BEACON)
             self.recording.see("right", "beacon")
             reply.append([success])
         elif command == "rightIsWhite":
-            success = self.maze.check(Maze.RIGHT, Maze.WHITE)
+            success = self.world.check(World.RIGHT, World.WHITE)
             self.recording.see("right", "white")
             reply.append([success])
         elif command == "rightIsBlack":
-            success = self.maze.check(Maze.RIGHT, Maze.BLACK)
+            success = self.world.check(World.RIGHT, World.BLACK)
             self.recording.see("right", "black")
             reply.append([success])
         elif command == "flipCoin":
-            result = self.maze.flipCoin()
+            result = self.world.flipCoin()
             self.recording.flipCoin()
             reply.append([result])
         elif command == "message":

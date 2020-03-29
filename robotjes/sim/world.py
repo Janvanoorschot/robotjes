@@ -1,7 +1,7 @@
 import random
 from .map import Map
 
-class Maze(object):
+class World(object):
 
     # directions
     LEFT = 90
@@ -93,7 +93,7 @@ class Maze(object):
         return self.bot.right()
 
     def pickUp(self):
-        if self.check(Maze.FRONT, Maze.BEACON):
+        if self.check(World.FRONT, World.BEACON):
             front = self.calc_pos(self.bot, self.FRONT, 1)
             self.beacons.remove(front)
             self.bot.beacons.add(front)
@@ -102,7 +102,7 @@ class Maze(object):
             return False
 
     def eatUp(self):
-        if self.check(Maze.FRONT, Maze.BEACON):
+        if self.check(World.FRONT, World.BEACON):
             front = self.calc_pos(self.bot, self.FRONT, 1)
             self.beacons.remove(front)
             return True
@@ -110,7 +110,7 @@ class Maze(object):
             return False
 
     def putDown(self):
-        if self.check(Maze.FRONT, Maze.CLEAR) and len(self.bot.beacons) > 0:
+        if self.check(World.FRONT, World.CLEAR) and len(self.bot.beacons) > 0:
             front = self.calc_pos(self.bot, self.FRONT, 1)
             self.bot.beacons.remove(front)
             self.beacons.add(front)
