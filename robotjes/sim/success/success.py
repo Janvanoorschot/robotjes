@@ -1,5 +1,3 @@
-from .validation_check_cnf import ValidationCheckCNF
-
 
 class Success:
 
