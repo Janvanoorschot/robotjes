@@ -3,4 +3,5 @@ mkdocs
 mkdocs-bootstrap
 pika
 pika-dev
+pyparsing
 

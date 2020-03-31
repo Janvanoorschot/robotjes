@@ -1,0 +1,26 @@
+{
+  "hintRulesMap":[
+    {
+      "premise": "not pickUp",
+      "value": "hint.auto.noPickUpUsed",
+      "type": "program"
+    },
+    {
+      "premise": "not putDown",
+      "value": "hint.auto.noPutDownUsed",
+      "type": "program"
+    },
+    {
+      "premise": "not beacon(2,13)",
+      "value": "hint.auto.beaconInWrongSpot",
+      "type": "world"
+    }
+  ],
+  "validationCheckMap": {
+    "postRunWorld": "beacon(2,13)",
+    "postRunProgram": "PickUp and PutDown"
+  }
+
+}
+
+

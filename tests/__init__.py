@@ -3,3 +3,4 @@ from .maze_tests import MazeTestCase
 from .sim1_tests import Sim1TestCase
 from .sim2_tests import Sim2TestCase
 from .sim3_tests import Sim3TestCase
+from .pyparse_tests import PyParseTestCase
