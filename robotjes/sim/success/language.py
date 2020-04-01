@@ -43,7 +43,7 @@ class Condition(object):
         self.args = [x.number for x in tokens[1:]]
 
     def eval(self,  world, semantics):
-        return semantics.eval(self.identifier, self.args, world)
+        return semantics.eval(self.identifier.name, self.args, world)
 
 class Number(object):
     def __init__(self, nums):
