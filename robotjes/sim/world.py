@@ -16,6 +16,7 @@ class World(object):
     WHITE = "white"
     BLACK = "black"
     NOPAINT = "nopaint"
+    ROBOT = "robot"
 
     def __init__(self, map):
         self.map = map
@@ -148,12 +149,17 @@ class World(object):
 
     def check(self, dir, cond):
         pos = self.calc_pos(self.bot, dir, 1)
+        return self.check_pos(pos, cond)
+
+    def check_pos(self, pos, cond):
         if cond == self.CLEAR:
             return self.map.available_pos(pos) and not pos in self.beacons
         elif cond == self.OBSTACLE:
             return not self.map.available_pos(pos) or pos in self.beacons
         elif cond == self.BEACON:
             return pos in self.beacons
+        elif cond == self.ROBOT:
+            return pos == self.bot.pos
         elif cond == self.WHITE:
             return pos in self.paints_white
         elif cond == self.BLACK:
@@ -162,6 +168,7 @@ class World(object):
             return pos not in self.paints_white and pos not in self.paints_black
         else:
             return False
+
 
     def flipCoin(self):
         return bool(random.getrandbits(1))

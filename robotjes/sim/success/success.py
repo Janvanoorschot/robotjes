@@ -30,7 +30,7 @@ class Success:
             if key == 'postRunUsage' or key == 'postRunWorld':
                 parseResult = ROBO_LANGUAGE.parseString(value)
                 expr = parseResult[0]
-                result = expr.eval(self.engine, ROBO_SEMANTICS)
+                result = expr.eval(self.engine.world, ROBO_SEMANTICS)
                 if not result:
                     self.success = False
                     break
@@ -40,7 +40,7 @@ class Success:
                 premise = item["premise"]
                 parseResult = ROBO_LANGUAGE.parseString(premise)
                 expr = parseResult[0]
-                result = expr.eval(self.engine, ROBO_SEMANTICS)
+                result = expr.eval(self.engine.world, ROBO_SEMANTICS)
                 if result:
                     self.hint = item
                     self.hint["x"] = -1
@@ -52,10 +52,3 @@ class Success:
 
     def getHint(self):
         return self.hint
-        # return {
-        #     "premise": "not beacon(2,13)",
-        #     "value": "hint.auto.beaconInWrongSpot",
-        #     "type": "world",
-        #     "x": -1,
-        #     "y": -1
-        # }
