@@ -32,33 +32,34 @@ channel.queue_declare(queue=args.rmqqueue)
 
 
 def run_simulation(mapstr, successjson, scriptstr):
-    """ actually do the work """
+    """ run a simulation """
+
+    # prepare supporting obects
     map = Map.fromstring(mapstr)
-    mazeMap = map.toMazeMap()
     script = scriptstr.split('\n')
-    success = Success.from_json(successjson)
     engine = Engine(map)
+    success = Success.from_json(successjson, engine)
     handler = Handler(args.simhost, args.simport, args.authkey)
+
+    # run client and server (client is async)
+    success.afterRun()
     handler.run_client(script)
     handler.run(engine)
+    success.afterRun()
+
+    # prepare the reply
     recording = engine.recording
     reply = []
     reply.append("robo.server.ExecResult")
     content = {}
-    content["success"] = recording.isSuccess()
+    content["success"] = success.isSuccess()
+    content["hint"] = success.getHints()
     content["messages"] = recording.messages()
     content["profile"] = {
         "profile": engine.world.profile
     }
-    content["map"] = mazeMap
+    content["map"] = map.toMazeMap()
     content["recording"] = { "keyFrames": recording.toMap() }
-    content["hint"] = {
-        "premise": "not beacon(2,13)",
-        "value": "hint.auto.beaconInWrongSpot",
-        "type": "world",
-        "x": -1,
-        "y": -1
-    }
     reply.append(content)
     return reply
 

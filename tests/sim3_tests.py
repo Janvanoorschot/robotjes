@@ -46,19 +46,19 @@ class Sim3TestCase(unittest.TestCase):
             self.connection.process_data_events()
         return self.response
 
-    def go(self, map_file, solution_file, script_file):
+    def go(self, map_file, success_file, script_file):
         map_path = os.path.join(DIR, os.pardir, 'tests/datafiles', map_file)
-        solution_path = os.path.join(DIR, os.pardir, 'tests/datafiles', solution_file)
+        success_path = os.path.join(DIR, os.pardir, 'tests/datafiles', success_file)
         script_path = os.path.join(DIR, os.pardir, 'tests/datafiles', script_file)
         with open(map_path, 'r') as f:
             map = f.read().split("\n")
-        with open(solution_path, 'r') as f:
-            solution = f.read().split("\n")
+        with open(success_path, 'r') as f:
+            success = f.read().split("\n")
         with open(script_path, 'r') as f:
             script = f.read().split("\n")
         request = {
             "map": map,
-            "solution": solution,
+            "success": success,
             "script": script
         }
         response = self.call(request)

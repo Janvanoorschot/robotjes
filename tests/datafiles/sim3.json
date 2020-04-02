@@ -1,6 +1,12 @@
-global robo
-
-robo.right()
-while not robo.frontIsWhite():
-    robo.forward()
-
+{
+    "validationCheck":
+    {
+        "postRunWorld": "robot(37,16) and not beacon(11,16) and not beacon(15,16) and not beacon(19,16) and not beacon(23,16) and not beacon(27,16) and not robotHasBeacon"
+    },
+    "hintRules" :
+    [
+        {"premise": "robotHasBeacon", "value" : "hint.auto.barcodeNotRecognised", "type" : "world"},
+        {"premise": "beacon(11,16) or beacon(15,16) or beacon(19,16) or beacon(23,16) or beacon(27,16)", "value" : "hint.auto.productInWrongSpot", "type" : "world"},
+        {"premise": "not robot(37,16)", "value" : "hint.auto.youDidNotEndUpAtEndLocation", "type" : "world"}
+    ]
+}
