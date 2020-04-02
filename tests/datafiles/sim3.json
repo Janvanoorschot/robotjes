@@ -1,12 +1,15 @@
 {
     "validationCheck":
     {
-        "postRunWorld": "robot(37,16) and not beacon(11,16) and not beacon(15,16) and not beacon(19,16) and not beacon(23,16) and not beacon(27,16) and not robotHasBeacon"
+        "postRunUsage": "minWhitePaintUsed(8)",
+        "postRunWorld": "not white(11,11) and white(11,7) and white(11,8) and white(11,9) and white(11,10) and not white(11,2) and white(11,3) and white(11,4) and white(11,5) and white(11,6)",
+        "postRunProgram": "Procedure and PaintWhite"
     },
     "hintRules" :
     [
-        {"premise": "robotHasBeacon", "value" : "hint.auto.barcodeNotRecognised", "type" : "world"},
-        {"premise": "beacon(11,16) or beacon(15,16) or beacon(19,16) or beacon(23,16) or beacon(27,16)", "value" : "hint.auto.productInWrongSpot", "type" : "world"},
-        {"premise": "not robot(37,16)", "value" : "hint.auto.youDidNotEndUpAtEndLocation", "type" : "world"}
+        {"premise": "not Procedure", "value" : "hint.auto.noProcedureUsed", "type" : "program"},
+        {"premise": "not PaintWhite or not minWhitePaintUsed(8)", "value" : "hint.auto.noPaintWhiteUsed", "type" : "program"},
+        {"premise": "not white(11,7) or not white(11,8) or not white(11,9) or not white(11,10) or not white(11,3) or not white(11,4) or not white(11,5) or not white(11,6)", "value" : "hint.auto.lineNotRight", "type" : "world"},
+        {"premise": "white(11,11) or white(11,2)", "value" : "hint.auto.lineTooLong", "type" : "world"}
     ]
 }

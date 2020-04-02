@@ -53,7 +53,7 @@ def run_simulation(mapstr, successjson, scriptstr):
     reply.append("robo.server.ExecResult")
     content = {}
     content["success"] = success.isSuccess()
-    content["hint"] = success.getHints()
+    content["hint"] = success.getHint()
     content["messages"] = recording.messages()
     content["profile"] = {
         "profile": engine.world.profile

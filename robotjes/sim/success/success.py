@@ -7,6 +7,8 @@ class Success:
         self.engine = engine
         self.validationCheckMap = validationCheckMap
         self.hintRulesMap = hintRulesMap
+        self.success = True
+        self.hint = None
 
     @staticmethod
     def from_json(json, engine):
@@ -19,23 +21,41 @@ class Success:
         return Success(engine, validationCheck, hintRules)
 
     def beforeRun(self):
+        # for the time being, we do not support 'before run' analysis
         pass
 
     def afterRun(self):
-        # parseResult = lang.parseString(line)
-        # expr = parseResult[0]
-        # result = expr.eval(world, sem)
-        pass
-
+        # first calculate success by looking at 'postRunUsage', 'postRunWorld', 'postRunProgram' (why so many Arvid?)
+        for key,value in self.validationCheckMap.items():
+            if key == 'postRunUsage' or key == 'postRunWorld':
+                parseResult = ROBO_LANGUAGE.parseString(value)
+                expr = parseResult[0]
+                result = expr.eval(self.engine, ROBO_SEMANTICS)
+                if not result:
+                    self.success = False
+                    break
+        # next calculate if a (and which) hint can be given in case of failure
+        if not self.success:
+            for item in self.hintRulesMap:
+                premise = item["premise"]
+                parseResult = ROBO_LANGUAGE.parseString(premise)
+                expr = parseResult[0]
+                result = expr.eval(self.engine, ROBO_SEMANTICS)
+                if result:
+                    self.hint = item
+                    self.hint["x"] = -1
+                    self.hint["y"] = -1
+                    break
 
     def isSuccess(self):
-        return True
+        return self.success
 
-    def getHints(self):
-        return {
-            "premise": "not beacon(2,13)",
-            "value": "hint.auto.beaconInWrongSpot",
-            "type": "world",
-            "x": -1,
-            "y": -1
-        }
+    def getHint(self):
+        return self.hint
+        # return {
+        #     "premise": "not beacon(2,13)",
+        #     "value": "hint.auto.beaconInWrongSpot",
+        #     "type": "world",
+        #     "x": -1,
+        #     "y": -1
+        # }
