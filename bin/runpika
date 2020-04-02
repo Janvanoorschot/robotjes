@@ -42,7 +42,7 @@ def run_simulation(mapstr, successjson, scriptstr):
     handler = Handler(args.simhost, args.simport, args.authkey)
 
     # run client and server (client is async)
-    success.afterRun()
+    success.beforeRun()
     handler.run_client(script)
     handler.run(engine)
     success.afterRun()

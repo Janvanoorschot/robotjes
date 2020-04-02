@@ -12,7 +12,7 @@ class Semantics:
             "nopaint": self.check,
             "robot": self.check,
             "maxEats": self.true,
-            "robotHasBeacon": self.true,
+            "robotHasBeacon": self.robotHasBeacon,
             "minWhitePaintUsed": self.true,
         }
 
@@ -30,6 +30,9 @@ class Semantics:
             return False
         pos = (args[0], args[1])
         return world.check_pos(pos, identifier)
+
+    def robotHasBeacon(self, identifier, args, world):
+        return len(world.bot.beacons) > 0
 
     def true(self, identifier, args, world):
         print(f"known {identifier}")
