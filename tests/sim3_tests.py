@@ -51,11 +51,11 @@ class Sim3TestCase(unittest.TestCase):
         success_path = os.path.join(DIR, os.pardir, 'tests/datafiles', success_file)
         script_path = os.path.join(DIR, os.pardir, 'tests/datafiles', script_file)
         with open(map_path, 'r') as f:
-            map = f.read().split("\n")
+            map = f.read()
         with open(success_path, 'r') as f:
-            success = f.read().split("\n")
+            success = json.loads(f.read())
         with open(script_path, 'r') as f:
-            script = f.read().split("\n")
+            script = f.read()
         request = {
             "map": map,
             "success": success,
