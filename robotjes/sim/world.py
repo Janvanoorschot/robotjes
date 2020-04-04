@@ -113,7 +113,7 @@ class World(object):
     def putDown(self):
         if self.check(World.FRONT, World.CLEAR) and len(self.bot.beacons) > 0:
             front = self.calc_pos(self.bot, self.FRONT, 1)
-            self.bot.beacons.remove(front)
+            self.bot.beacons.pop()
             self.beacons.add(front)
             return True
         else:
