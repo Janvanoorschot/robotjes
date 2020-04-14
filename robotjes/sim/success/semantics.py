@@ -11,10 +11,10 @@ class Semantics:
             "black": self.check,
             "nopaint": self.check,
             "robot": self.check,
-            "maxEats": self.true,
+            "maxEats": self.maxEats,
             "robotHasBeacon": self.robotHasBeacon,
-            "minWhitePaintUsed": self.true,
-            "minBlackPaintUsed": self.true,
+            "minWhitePaintUsed": self.minWhitePaintUsed,
+            "minBlackPaintUsed": self.minBlackPaintUsed,
         }
 
     def eval(self, identifier, args, world):
@@ -32,8 +32,23 @@ class Semantics:
         pos = (args[0], args[1])
         return world.check_pos(pos, identifier)
 
+    def maxEats(self, identifier, args, world):
+        if len(args) != 1:
+            return False
+        return world.profile["eats"] < args[0]
+
     def robotHasBeacon(self, identifier, args, world):
         return len(world.bot.beacons) > 0
+
+    def minWhitePaintUsed(self, identifier, args, world):
+        if len(args) != 1:
+            return False
+        return world.profile["whitePaintUsed"] >= args[0]
+
+    def minBlackPaintUsed(self, identifier, args, world):
+        if len(args) != 1:
+            return False
+        return world.profile["blackPaintUsed"] >= args[0]
 
     def true(self, identifier, args, world):
         print(f"unimplemented identifier: {identifier}")
