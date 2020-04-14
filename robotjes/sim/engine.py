@@ -19,6 +19,9 @@ class Engine(object):
     def get_recording(self):
         return self.recording
 
+    def get_profile(self):
+        return self.world.profile
+
     def clean_cmd(self, cmd):
         if not cmd or not type(cmd)==list or len(cmd)< 2:
             return ["illegal"]
@@ -96,7 +99,7 @@ class Engine(object):
         elif command == "stopPainting":
             start = self.world.stopPainting()
             reply.append([start])
-            self.recording.stopPainting(start)
+            self.recording.stopPainting()
         elif command == "leftIsClear":
             success = self.world.check(World.LEFT, World.CLEAR)
             self.recording.see("left", "clear")

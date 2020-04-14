@@ -48,15 +48,15 @@ def run_simulation(mapstr, successjson, scriptstr):
     success.afterRun()
 
     # prepare the reply
-    recording = engine.recording
+    recording = engine.get_recording()
     reply = []
     reply.append("robo.server.ExecResult")
     content = {}
-    content["success"] = success.isSuccess()
+    content["success"] = recording.isSuccess() and success.isSuccess()
     content["hint"] = success.getHint()
     content["messages"] = recording.messages()
     content["profile"] = {
-        "profile": engine.world.profile
+        "profile": engine.get_profile()
     }
     content["map"] = map.toMazeMap()
     content["recording"] = { "keyFrames": recording.toMap() }

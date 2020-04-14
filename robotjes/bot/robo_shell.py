@@ -31,7 +31,7 @@ class RoboShell(object):
         with open(script_file, 'r') as file:
             data = file.read()
             globalsParameter = {'__builtins__' : None, 'robo': robo}
-            localsParameter = {'print': print, 'range': range}
+            localsParameter = {'print': print, 'range': range, 'quit': quit}
             try:
                 with time_limit(TIMEOUT):
                     exec(data, globalsParameter, localsParameter)

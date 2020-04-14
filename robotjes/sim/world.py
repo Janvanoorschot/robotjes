@@ -23,12 +23,13 @@ class World(object):
         self.paints_black = set(self.map.paints_blacks())
         self.paints_white = set(self.map.paints_whites())
         self.beacons = set(self.map.start_beacons())
-
         start_positions = self.map.start_positions()
         self.bot = Bot(start_positions[0], 90)
-
         self.profile = {
             "paintWhites": 0,
+            "paintBlacks": 0,
+            "whitePaintUsed": 0,
+            "blackPaintUsed": 0,
             "robotHasBumped": 0,
             "scriptTotalCharacters": 0,
             "scriptCalls": 0,
@@ -36,7 +37,6 @@ class World(object):
             "total": 0,
             "see": 0,
             "robotHasBeacon": 0,
-            "paintBlacks": 0,
             "scriptCharacters": 0,
             "flipCoins": 0,
             "exploredTileCount": 0,
@@ -49,13 +49,15 @@ class World(object):
             "eats": 0,
             "moves": 0,
             "explored": 0,
-            "blackPaintUsed": 0,
             "robotActions": 0,
             "robotX": 0,
             "robotY": 0,
             "successfulPuts": 0,
-            "whitePaintUsed": 0
         }
+
+    def inc(self, name):
+        if(name in self.profile):
+            self.profile[name] = self.profile[name] + 1
 
     def available_pos(self, pos):
         return self.map.available_pos(pos) and not pos in self.beacons and pos != self.bot.pos

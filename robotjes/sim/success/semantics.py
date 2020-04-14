@@ -14,6 +14,7 @@ class Semantics:
             "maxEats": self.true,
             "robotHasBeacon": self.robotHasBeacon,
             "minWhitePaintUsed": self.true,
+            "minBlackPaintUsed": self.true,
         }
 
     def eval(self, identifier, args, world):
@@ -35,10 +36,7 @@ class Semantics:
         return len(world.bot.beacons) > 0
 
     def true(self, identifier, args, world):
-        print(f"known {identifier}")
+        print(f"unimplemented identifier: {identifier}")
         return True
-
-
-
 
 ROBO_SEMANTICS = Semantics()

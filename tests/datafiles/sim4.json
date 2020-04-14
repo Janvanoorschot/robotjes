@@ -1,0 +1,10 @@
+{
+    "validationCheck":
+    {
+        "postRunWorld": "beacon(10,13)"
+    },
+    "hintRules" :
+    [
+        {"premise": "not beacon(10,13)", "value" : "hint.auto.beaconsInWrongSpot", "type" : "world"}
+    ]
+}
