@@ -55,9 +55,9 @@ class World(object):
             "successfulPuts": 0,
         }
 
-    def inc(self, name):
+    def inc(self, name, count=1):
         if(name in self.profile):
-            self.profile[name] = self.profile[name] + 1
+            self.profile[name] = self.profile[name] + count
 
     def available_pos(self, pos):
         return self.map.available_pos(pos) and not pos in self.beacons and pos != self.bot.pos

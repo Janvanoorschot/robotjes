@@ -38,6 +38,7 @@ class Engine(object):
     def execute(self, cmd):
         [command, *args] = self.clean_cmd(cmd)
         reply = []
+        self.world.inc("scriptCalls")
         if command == "forward":
             expected = 1 if len(args) < 1 else args[0]
             actual = 0
