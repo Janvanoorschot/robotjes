@@ -32,27 +32,27 @@ class World(object):
             "blackPaintUsed": 0,
             "robotHasBumped": 0,
             "scriptTotalCharacters": 0,
+            "scriptCharacters": 0,
             "scriptCalls": 0,
             "scriptBasicCommands": 0,
-            "total": 0,
             "see": 0,
-            "robotHasBeacon": 0,
-            "scriptCharacters": 0,
             "flipCoins": 0,
+            "robotHasBeacon": 0,
             "exploredTileCount": 0,
             "scriptRecursive": 0,
             "successfulGets": 0,
             "robotOrientation": 0,
             "gets": 0,
-            "successfulEats": 0,
             "puts": 0,
             "eats": 0,
+            "successfulEats": 0,
             "moves": 0,
             "explored": 0,
             "robotActions": 0,
             "robotX": 0,
             "robotY": 0,
             "successfulPuts": 0,
+            "total": 0,
         }
 
     def inc(self, name, count=1):
@@ -96,6 +96,7 @@ class World(object):
         return self.bot.right()
 
     def pickUp(self):
+        self.inc("gets")
         if self.check(World.FRONT, World.BEACON):
             front = self.calc_pos(self.bot, self.FRONT, 1)
             self.beacons.remove(front)
@@ -105,18 +106,22 @@ class World(object):
             return False
 
     def eatUp(self):
+        self.inc("eats")
         if self.check(World.FRONT, World.BEACON):
             front = self.calc_pos(self.bot, self.FRONT, 1)
             self.beacons.remove(front)
+            self.inc("successfulEats")
             return True
         else:
             return False
 
     def putDown(self):
+        self.inc("puts")
         if self.check(World.FRONT, World.CLEAR) and len(self.bot.beacons) > 0:
             front = self.calc_pos(self.bot, self.FRONT, 1)
             self.bot.beacons.pop()
             self.beacons.add(front)
+            self.inc("successfulPuts     ")
             return True
         else:
             return False
@@ -143,11 +148,19 @@ class World(object):
 
     def paint(self):
         if self.bot.paint == self.BLACK:
-            self.paints_white.discard(self.bot.pos)
+            if self.bot.pos in self.paints_white:
+                self.inc("paintWhites", -1)
+                self.paints_white.discard(self.bot.pos)
             self.paints_black.add(self.bot.pos)
+            self.inc("blackPaintUsed")
+            self.inc("paintBlacks")
         elif self.bot.paint == self.WHITE:
-            self.paints_black.discard(self.bot.pos)
+            if self.bot.pos in self.paints_black:
+                self.inc("paintBlacks", -1)
+                self.paints_black.discard(self.bot.pos)
             self.paints_white.add(self.bot.pos)
+            self.inc("whitePaintUsed")
+            self.inc("paintWhites")
 
     def check(self, dir, cond):
         pos = self.calc_pos(self.bot, dir, 1)

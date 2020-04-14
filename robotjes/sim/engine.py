@@ -39,6 +39,7 @@ class Engine(object):
         [command, *args] = self.clean_cmd(cmd)
         reply = []
         self.world.inc("scriptCalls")
+        self.world.inc("scriptBasicCommands")
         if command == "forward":
             expected = 1 if len(args) < 1 else args[0]
             actual = 0
@@ -51,6 +52,7 @@ class Engine(object):
                 else:
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
+                    self.world.inc("robotHasBumped")
             self.recording.forward(actual, expected)
         elif command == "backward":
             expected = 1 if len(args) < 1 else args[0]
@@ -64,6 +66,7 @@ class Engine(object):
                 else:
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
+                    self.world.inc("robotHasBumped")
             self.recording.backward(actual, expected)
         elif command == "right":
             expected = 1 if len(args) < 1 else args[0]
@@ -105,66 +108,82 @@ class Engine(object):
             success = self.world.check(World.LEFT, World.CLEAR)
             self.recording.see("left", "clear")
             reply.append([success])
+            self.world.inc("see")
         elif command == "leftIsObstacle":
             success = self.world.check(World.LEFT, World.OBSTACLE)
             self.recording.see("left", "obstacle")
             reply.append([success])
+            self.world.inc("see")
         elif command == "leftisBeacon":
             success = self.world.check(World.LEFT, World.BEACON)
             self.recording.see("left", "beacon")
             reply.append([success])
+            self.world.inc("see")
         elif command == "leftIsWhite":
             success = self.world.check(World.LEFT, World.WHITE)
             self.recording.see("left", "white")
             reply.append([success])
+            self.world.inc("see")
         elif command == "leftIsBlack":
             success = self.world.check(World.LEFT, World.BLACK)
             self.recording.see("left", "black")
             reply.append([success])
+            self.world.inc("see")
         elif command == "frontIsClear":
             success = self.world.check(World.FRONT, World.CLEAR)
             self.recording.see("front", "clear")
             reply.append([success])
+            self.world.inc("see")
         elif command == "frontIsObstacle":
             success = self.world.check(World.FRONT, World.OBSTACLE)
             self.recording.see("front", "obstacle")
             reply.append([success])
+            self.world.inc("see")
         elif command == "frontisBeacon":
             success = self.world.check(World.FRONT, World.BEACON)
             self.recording.see("front", "beacon")
             reply.append([success])
+            self.world.inc("see")
         elif command == "frontIsWhite":
             success = self.world.check(World.FRONT, World.WHITE)
             self.recording.see("front", "white")
             reply.append([success])
+            self.world.inc("see")
         elif command == "frontIsBlack":
             success = self.world.check(World.FRONT, World.BLACK)
             self.recording.see("front", "black")
             reply.append([success])
+            self.world.inc("see")
         elif command == "rightIsClear":
             success = self.world.check(World.RIGHT, World.CLEAR)
             self.recording.see("right", "clear")
             reply.append([success])
+            self.world.inc("see")
         elif command == "rightIsObstacle":
             success = self.world.check(World.RIGHT, World.OBSTACLE)
             self.recording.see("right", "obstacle")
             reply.append([success])
+            self.world.inc("see")
         elif command == "rightisBeacon":
             success = self.world.check(World.RIGHT, World.BEACON)
             self.recording.see("right", "beacon")
             reply.append([success])
+            self.world.inc("see")
         elif command == "rightIsWhite":
             success = self.world.check(World.RIGHT, World.WHITE)
             self.recording.see("right", "white")
             reply.append([success])
+            self.world.inc("see")
         elif command == "rightIsBlack":
             success = self.world.check(World.RIGHT, World.BLACK)
             self.recording.see("right", "black")
             reply.append([success])
+            self.world.inc("see")
         elif command == "flipCoin":
             result = self.world.flipCoin()
             self.recording.flipCoin()
             reply.append([result])
+            self.world.inc("flipCoins")
         elif command == "message":
             message = "unknown" if len(args) < 1 else args[0]
             self.recording.message(message)

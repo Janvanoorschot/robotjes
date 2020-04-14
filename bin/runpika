@@ -43,10 +43,15 @@ def run_simulation(mapstr, successjson, scriptstr):
 
     # run client and server (client is async)
     engine.world.inc("scriptTotalCharacters", len(scriptstr))
+    engine.world.inc("scriptCharacters", len(scriptstr))
     success.beforeRun()
     handler.run_client(script)
     handler.run(engine)
     success.afterRun()
+    engine.world.inc("robotHasBeacon", len(engine.world.bot.beacons)>0)
+    engine.world.inc("robotOrientation", engine.world.bot.dir)
+    engine.world.inc("robotX", engine.world.bot.pos[0])
+    engine.world.inc("robotY", engine.world.bot.pos[1])
 
     # prepare the reply
     recording = engine.get_recording()
