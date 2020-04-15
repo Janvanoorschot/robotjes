@@ -10,6 +10,8 @@ and includes an independent simulation environment of the Robomind world
 
 The code for the Robomind Academy infrastructure is contained in several repositories:
 
-* [*Robotjes* (public)](https://github.com/Janvanoorschot/robotjes)
-
-[See Robomind Academy Simulation environment](https://janvanoorschot.github.io/robotjes/)
+* [*Robomind Desktop* (private)](https://bitbucket.org/arvid/robominddesktop) : [site](https://www.robomind.net/en/)
+* [*Robomind Academy* (private)](https://github.com/Janvanoorschot/robomindacademy): [site](https://www.robomindacademy.com)
+* [*Robomind Courses* (private)](https://github.com/Janvanoorschot/robocontent)
+* [*Robotjes* (public)](https://github.com/Janvanoorschot/robotjes): [site](https://janvanoorschot.github.io/robotjes/)
+* [*Robomind Python Course* (public)](https://github.com/Janvanoorschot/robopython): [wiki]()
