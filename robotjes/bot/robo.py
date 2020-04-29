@@ -14,19 +14,19 @@ class Robo(object):
         return result[1][0][0][0]
 
     def forward(self, steps=1):
-        result = self.requestor.execute([self.id, 'forward', steps])
+        result = self.requestor.execute([self.id, 'forward', int(steps)])
         return self.handle_result(result)
 
     def backward(self, steps=1):
-        result = self.requestor.execute([self.id, 'backward', steps])
+        result = self.requestor.execute([self.id, 'backward', int(steps)])
         return self.handle_result(result)
 
     def left(self, steps=1):
-        result = self.requestor.execute([self.id, 'left', steps])
+        result = self.requestor.execute([self.id, 'left', int(steps)])
         return self.handle_result(result)
 
     def right(self, steps=1):
-        result = self.requestor.execute([self.id, 'right', steps])
+        result = self.requestor.execute([self.id, 'right', int(steps)])
         return self.handle_result(result)
 
     def pickUp(self):

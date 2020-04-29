@@ -41,7 +41,7 @@ class Engine(object):
         self.world.inc("scriptCalls")
         self.world.inc("scriptBasicCommands")
         if command == "forward":
-            expected = 1 if len(args) < 1 else args[0]
+            expected = 1 if len(args) < 1 else int(args[0])
             actual = 0
             for i in range(expected):
                 next_pos = self.world.calc_pos(self.world.bot, self.world.FRONT, +1)
@@ -55,7 +55,7 @@ class Engine(object):
                     self.world.inc("robotHasBumped")
             self.recording.forward(actual, expected)
         elif command == "backward":
-            expected = 1 if len(args) < 1 else args[0]
+            expected = 1 if len(args) < 1 else int(args[0])
             actual = 0
             for i in range(expected):
                 next_pos = self.world.calc_pos(self.world.bot, self.world.FRONT, -1)
@@ -69,13 +69,13 @@ class Engine(object):
                     self.world.inc("robotHasBumped")
             self.recording.backward(actual, expected)
         elif command == "right":
-            expected = 1 if len(args) < 1 else args[0]
+            expected = 1 if len(args) < 1 else int(args[0])
             for i in range(expected):
                 dir = self.world.right()
                 reply.append([True, dir])
             self.recording.right(expected)
         elif command == "left":
-            expected = 1 if len(args) < 1 else args[0]
+            expected = 1 if len(args) < 1 else int(args[0])
             for i in range(expected):
                 dir = self.world.left()
                 reply.append([True, dir])

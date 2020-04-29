@@ -9,7 +9,10 @@ class Requestor(object):
 
     def execute(self, cmd):
         self.conn.send(cmd)
-        reply = self.conn.recv()
+        try:
+            reply = self.conn.recv()
+        except:
+            reply = None
         return reply
 
     def close(self):
