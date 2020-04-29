@@ -25,7 +25,7 @@ class Sim4TestCase(unittest.TestCase):
         self.channel.basic_consume(queue=self.callback_queue,on_message_callback=self.on_response, auto_ack=True)
 
     def tearDown(self):
-        pass
+        self.connection.close()
 
     def on_response(self, ch, method, props, body):
         if self.corr_id == props.correlation_id:
