@@ -10,20 +10,26 @@ Server-side we will use FastAPI with Uvicorn to receive all kind of commands:
 The server-side communicates via RabbitMQ with the bubble-runner, which in
 turn talks to a simulation.
 
-## Libraries
+## Components
+
+### Libraries
 * server: Uvicorn: http server
 * server: FastAPI: REST library
 * server: AIO-pika: interface to RabbitMQ
-* client: GTK UI/Windows/Graphics library
-* client: WebKit browser in GTK/Python
+* client: PyGObject UI/Windows/Graphics library
+* client: WebKit component for browser in GTK/Python
 
-## Components
-* client: viewer
-* client: solution runner
-* client: bubble manager
-* server: REST implementation server
-* server: bubble runner
-* server: robo simulation
+### Client Components
+* viewer
+* solution runner
+* bubble manager
+
+### Server Components
+* REST implementation server
+* bubble runner containing simulation and player nodes
+
+## Roadmap
+
 
 
 
