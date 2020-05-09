@@ -1,0 +1,10 @@
+###
+# Refactor the database
+GET http://localhost:8000/
+Content-Type: application/json
+Cookie: XDEBUG_SESSION=PHPSTORM
+Authorization: Basic admin@mail.com OihODwarRS
+
+{
+}
+###

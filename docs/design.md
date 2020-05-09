@@ -20,15 +20,20 @@ turn talks to a simulation.
 * client: WebKit component for browser in GTK/Python
 
 ### Client Components
-* viewer
-* solution runner
-* bubble manager
+* C1: viewer
+* C2: solution runner
+* S2: bubble manager
 
 ### Server Components
-* REST implementation server
-* bubble runner containing simulation and player nodes
+* S1[roborest]: REST implementation server
+* S2[bubbles]: bubble server (RabbitMQ)
+* S3[runner]: bubble runner containing simulation and player nodes (RabbitMQ)
 
 ## Roadmap
+1. S1: FastAPI based REST server embedded in Uvicorn
+2. C3: PyGObject based talker to REST server (dummy content)
+
+
 
 
 
