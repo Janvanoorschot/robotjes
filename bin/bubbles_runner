@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import sys, os
+import argparse
+import pika, json
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+
+parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
+parser.add_argument('--pikaurl', type=str, default='amqp://guest:guest@localhost:5672/%2F', help='rabbitmq url')
+parser.add_argument('--rmqqueue', type=str, default='bubble_queue', help='rabbitmq queue to use for rpc calls')
+args = parser.parse_args()
+
+def on_request(ch, method, props, body):
+    """ do the request/run/reply cycle"""
+    try:
+        request = json.loads(body)
+        reply = {'success': True}
+    except json.decoder.JSONDecodeError as jsonerror:
+        reply = {'error': str(jsonerror)}
+    except Exception as e:
+        reply = {'error': str(e)}
+
+    # send back reply over 'reply_to' queue
+    j = json.dumps(reply)
+    ch.basic_publish(exchange='',
+                     routing_key=props.reply_to,
+                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
+                     body=j)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
+# prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
+parameters = pika.URLParameters(args.pikaurl)
+connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
+channel.queue_declare(queue=args.rmqqueue)
+
+# start listening for work
+channel.basic_qos(prefetch_count=1)
+channel.basic_consume(queue=args.rmqqueue, on_message_callback=on_request)
+channel.start_consuming()

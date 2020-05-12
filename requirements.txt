@@ -8,3 +8,8 @@ pyparsing
 fastapi[all]
 uvicorn
 
+pycairo
+PyGObject
+
+aio_pika
+

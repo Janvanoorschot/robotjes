@@ -8,28 +8,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardi
 
 from robotjes.remote import Handler
 from robotjes.sim import Engine, Map, Success
-from robotjes.remote import Requestor
-from robotjes.bot import Robo, RoboShell
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
 parser.add_argument('--pikaurl', type=str, default='amqp://guest:guest@localhost:5672/%2F', help='rabbitmq url')
-parser.add_argument('--rmqhost', type=str, default='localhost', help='rabbitmq host')
-parser.add_argument('--rmqport', type=int, default=5672, help='rabbitmq port')
-parser.add_argument('--rmqqueue', type=str, default='rpc_queue', help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--rmqqueue', type=str, default='simulation_queue', help='rabbitmq queue to use for rpc calls')
 parser.add_argument('--simhost', type=str, default='localhost', help='host used to connect simulation server and client')
 parser.add_argument('--simport', type=int, default=9000, help='port on simulation server')
 parser.add_argument('--authkey', type=str, default='myownsecret', help='shared secret')
 args = parser.parse_args()
-
-# prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
-parameters = pika.URLParameters(args.pikaurl)
-# parameters = pika.ConnectionParameters(host=args.rmqhost, port=args.rmqport)
-
-connection = pika.BlockingConnection(parameters)
-
-channel = connection.channel()
-channel.queue_declare(queue=args.rmqqueue)
-
 
 def run_simulation(mapstr, successjson, scriptstr):
     """ run a simulation """
@@ -95,6 +81,11 @@ def on_request(ch, method, props, body):
                      body=j)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
+# prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
+parameters = pika.URLParameters(args.pikaurl)
+connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
+channel.queue_declare(queue=args.rmqqueue)
 
 # start listening for work
 channel.basic_qos(prefetch_count=1)

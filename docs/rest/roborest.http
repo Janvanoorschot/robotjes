@@ -1,10 +1,51 @@
 ###
-# Refactor the database
-GET http://localhost:8000/
+# create a bubble
+POST http://localhost:8000/bubbles
 Content-Type: application/json
-Cookie: XDEBUG_SESSION=PHPSTORM
-Authorization: Basic admin@mail.com OihODwarRS
+
+{
+  "size": 1
+}
+
+###
+# get all bubbles
+GET http://localhost:8000/bubbles
+Content-Type: application/json
 
 {
 }
 ###
+# get one bubble
+GET http://localhost:8000/bubbles/1111_2222_3333_4444
+Content-Type: application/json
+
+{
+}
+
+###
+# connect to a bubble
+POST http://localhost:8000/bubbles/1111_2222_3333_4444/connections
+Content-Type: application/json
+
+{
+    "size": 1
+}
+
+###
+# get all connections to a bubble
+GET http://localhost:8000/bubbles/1111_2222_3333_4444/connections
+Content-Type: application/json
+
+{
+}
+
+###
+# Get information about a connection to a bubble
+GET http://localhost:8000/bubbles/1111_2222_3333_4444/connections/5555_6666_7777_888
+Content-Type: application/json
+
+{
+}
+
+
+

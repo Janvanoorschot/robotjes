@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD python ./bin/runpika --pikaurl=amqp://guest:guest@rabbitmq:5672/%2F
+CMD python ./bin/simulation_runner --pikaurl=amqp://guest:guest@rabbitmq:5672/%2F
