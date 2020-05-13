@@ -1,4 +1,5 @@
 import asyncio
+from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 from roborest import app
 from . import bubble_rpc_client
@@ -16,6 +17,11 @@ class ConnectionSpec(BaseModel):
 @app.on_event("startup")
 async def startup_event():
     await bubble_rpc_client.connect(asyncio.get_running_loop())
+
+@app.get("/")
+async def redirect():
+    response = RedirectResponse(url='/index.html')
+    return response
 
 
 @app.post("/bubbles")
