@@ -1,15 +1,24 @@
-pylint
-mkdocs
-mkdocs-bootstrap
-pika
-pika-dev
-pyparsing
-
+# server: FastAPI async REST platformplus webserver
 fastapi[all]
 uvicorn
 
+# server: sync pika
+pika
+pika-dev
+
+# server: aysnc library to connect to RabbitMQ
+aio_pika
+
+# client: GTK client side UI
 pycairo
 PyGObject
 
-aio_pika
+# client: HTTP/REST
+requests
+
+# util
+pylint
+mkdocs
+mkdocs-bootstrap
+pyparsing
 

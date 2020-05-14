@@ -16,8 +16,9 @@ turn talks to a simulation.
 * server: Uvicorn: http server
 * server: FastAPI: REST library
 * server: AIO-pika: interface to RabbitMQ
-* client: PyGObject UI/Windows/Graphics library
+* client: PyGObject/GTK UI/Windows/Graphics library
 * client: WebKit component for browser in GTK/Python
+* client: Requests for REST calls (in seperate thread with callbacks, no asyncio in UI)
 
 ### Client Components
 * C1: viewer
