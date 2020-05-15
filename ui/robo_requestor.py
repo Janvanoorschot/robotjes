@@ -14,7 +14,7 @@ class RoboRequestor:
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
     def load_url(self, url):
-        r = requests.get(url)
+        r = requests.post(url, json = {'size': 13})
         return r.json()
 
     def done_url(self, cb, ftr):
