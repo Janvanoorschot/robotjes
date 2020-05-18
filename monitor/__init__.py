@@ -1,1 +1,1 @@
-from .monitor_util import monitor
+from .monitor_util import get_monitor

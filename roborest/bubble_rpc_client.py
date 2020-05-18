@@ -1,7 +1,6 @@
 import uuid
 import json
 from aio_pika import connect, IncomingMessage, Message
-from monitor import monitor
 
 class BubbleRPCClient:
 
@@ -25,7 +24,6 @@ class BubbleRPCClient:
         future = self.futures.pop(message.correlation_id)
         future.set_result(message.body)
 
-    @monitor
     async def call(self, cmd):
         correlation_id = str(uuid.uuid4())
         future = self.loop.create_future()

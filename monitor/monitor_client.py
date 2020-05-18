@@ -1,6 +1,7 @@
-import uuid
 import json
 from aio_pika import connect, ExchangeType, Message
+
+
 class MonitorClient:
 
     def __init(self, url, exchange_name):
