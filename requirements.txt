@@ -1,5 +1,6 @@
 # server: FastAPI async REST platformplus webserver
 fastapi[all]
+fastapi_utils
 uvicorn
 
 # server: sync pika

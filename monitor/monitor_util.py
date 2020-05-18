@@ -1,8 +1,7 @@
-import logging
 import time
 import contextlib
 import inspect
-logger = logging.getLogger(__name__)
+import monitor
 
 
 class MonitorContextMonitor(contextlib.AbstractAsyncContextManager):
@@ -16,7 +15,7 @@ class MonitorContextMonitor(contextlib.AbstractAsyncContextManager):
         endtime = time.time()
         if endtime > self.starttime and (endtime - self.starttime) < 1000:
             duration = endtime - self.starttime
-            logger.info(f"aexit {self.funname}/{duration}")
+            monitor.mon.measurement(self.funname, duration)
 
 
 def get_monitor():
