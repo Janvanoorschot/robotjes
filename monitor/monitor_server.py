@@ -16,6 +16,7 @@ class MonitorServer:
             rt = ResponseTime(
                 host=host,
                 timestamp=datetime.datetime.fromtimestamp(timestamp),
+                funname=funname,
                 count=count,
                 cummulated=cummulated
             )

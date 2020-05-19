@@ -6,6 +6,7 @@ class ResponseTime(Base):
     id = Column(Integer, primary_key=True)
     host = Column(String)
     timestamp = Column(DateTime)
+    funname = Column(String)
     count = Column(Integer)
     cummulated = Column(Float)
 
