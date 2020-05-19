@@ -30,6 +30,6 @@ import roborest.bubble_rest
 from fastapi.staticfiles import StaticFiles
 roborest.app.mount("/", StaticFiles(directory="www"), name="www")
 
-# start the webserver
+# start the webserver (note the logging configuration)
 import uvicorn
-uvicorn.run(roborest.app, host=args.host, port=args.port)
+uvicorn.run(roborest.app, host=args.host, port=args.port, log_config="bin/log.conf")
