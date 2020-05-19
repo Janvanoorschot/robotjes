@@ -10,6 +10,10 @@ pika-dev
 # server: aysnc library to connect to RabbitMQ
 aio_pika
 
+# server: database
+sqlalchemy
+psycopg2-binary
+
 # client: GTK client side UI
 pycairo
 PyGObject

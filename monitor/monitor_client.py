@@ -1,4 +1,6 @@
 import json
+import socket
+import datetime
 from aio_pika import connect, ExchangeType, Message
 import logging
 logger = logging.getLogger(__name__)
@@ -13,6 +15,7 @@ class MonitorClient:
         self.connection = None
         self.channel = None
         self.exchange = None
+        self.hostname = socket.gethostname()
         self.measurements = {}
 
     async def connect(self, loop):
@@ -31,11 +34,20 @@ class MonitorClient:
         self.measurements[funname]['cummulated'] = self.measurements[funname]['cummulated'] + duration
 
     async def timer(self):
-        await self.send(self.measurements)
+        msg = self.build_message()
+        await self.send(msg)
+
+    def build_message(self):
+        msg = {}
+        msg['timestamp'] = datetime.datetime.timestamp(datetime.datetime.now())
+        msg['host'] = self.hostname
+        msg['responsetimes'] = self.measurements
         self.measurements = {}
+        return msg
 
     async def send(self, msg):
-        body = json.dumps(msg)
+        # body = json.dumps(msg, indent=4, sort_keys=True, default=str)
+        body = json.dumps(msg, default=str)
         message = Message(
             body.encode(),
             content_type="application/json"
