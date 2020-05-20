@@ -1,11 +1,13 @@
+import asyncio
 import json
 import socket
 import datetime
+from aio_pika import connect, ExchangeType, Message
 import logging
 logger = logging.getLogger(__name__)
 
 
-class MonitorClient:
+class AsyncMonitorClient:
 
     def __init__(self, url, exchange_name):
         self.url = url
@@ -17,11 +19,11 @@ class MonitorClient:
         self.hostname = socket.gethostname()
         self.measurements = {}
 
-    def connect(self, loop):
+    async def connect(self, loop):
         self.loop = loop
-        self.connection = self.connect(self.url, loop=self.loop)
-        self.channel = self.connection.channel()
-        self.exchange = self.channel.declare_exchange(self.exchange_name, None)
+        self.connection = await connect(self.url, loop=self.loop)
+        self.channel = await self.connection.channel()
+        self.exchange = await self.channel.declare_exchange(self.exchange_name, ExchangeType.FANOUT)
 
     def measurement(self, funname, duration):
         if funname not in self.measurements:
@@ -32,9 +34,9 @@ class MonitorClient:
         self.measurements[funname]['count'] = self.measurements[funname]['count'] + 1
         self.measurements[funname]['cummulated'] = self.measurements[funname]['cummulated'] + duration
 
-    def timer(self):
+    async def timer(self):
         msg = self.build_message()
-        self.send(msg)
+        await self.send(msg)
 
     def build_message(self):
         msg = {}
@@ -46,22 +48,26 @@ class MonitorClient:
         return msg
 
     def send_log(self, msg):
-        pass
+        if self.loop:
+            asyncio.create_task(self.do_send_log(msg))
 
-    def do_send_log(self, msg):
+    async def do_send_log(self, msg):
         try:
             await self.send(msg)
         except Exception as e:
             print(f"error!!!!!!!!!!!! {str(e)}")
 
-    def send(self, msg):
+    async def send(self, msg):
         try:
             body = json.dumps(msg, default=str)
         except json.decoder.JSONDecodeError as jsonerror:
             body="{}"
         except Exception as e:
             body="{}"
-        message = None
+        message = Message(
+            body.encode(),
+            content_type="application/json"
+        )
         await self.exchange.publish(
             message,
             routing_key=''

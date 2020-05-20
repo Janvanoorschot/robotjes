@@ -18,7 +18,7 @@ MONITOR_EXCHANGE = "monitor_exchange"
 # initialise the monitor module
 import asyncio
 import monitor
-monitor.mon = monitor.monitor_client.MonitorClient(PIKA_URL, MONITOR_EXCHANGE)
+monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(PIKA_URL, MONITOR_EXCHANGE)
 
 # initialise the roborest module
 import fastapi
