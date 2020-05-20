@@ -1,3 +1,4 @@
+import asyncio
 import json
 import socket
 import datetime
@@ -39,15 +40,30 @@ class MonitorClient:
 
     def build_message(self):
         msg = {}
+        msg['type'] = 'responsetime'
         msg['timestamp'] = datetime.datetime.timestamp(datetime.datetime.now())
         msg['host'] = self.hostname
         msg['responsetimes'] = self.measurements
         self.measurements = {}
         return msg
 
+    def send_log(self, msg):
+        if self.loop:
+            asyncio.create_task(self.do_send_log(msg))
+
+    async def do_send_log(self, msg):
+        try:
+            await self.send(msg)
+        except Exception as e:
+            print(f"error!!!!!!!!!!!! {str(e)}")
+
     async def send(self, msg):
-        # body = json.dumps(msg, indent=4, sort_keys=True, default=str)
-        body = json.dumps(msg, default=str)
+        try:
+            body = json.dumps(msg, default=str)
+        except json.decoder.JSONDecodeError as jsonerror:
+            body="{}"
+        except Exception as e:
+            body="{}"
         message = Message(
             body.encode(),
             content_type="application/json"

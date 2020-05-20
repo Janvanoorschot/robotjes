@@ -30,7 +30,7 @@ args = parser.parse_args()
 # connect to the database
 # connection string: postgresql+psycopg2://user:password@host:port/dbname[?key=value&key=value...]
 dbconstr = f"postgresql+psycopg2://{args.dbuser}:{args.dbpwd}@{args.dbhost}:{args.dbport}/{args.dbname}"
-engine = create_engine(dbconstr, echo=True)
+engine = create_engine(dbconstr, echo=False)
 from monitor.model import Base
 
 # recreate the database tables ... not for production
@@ -48,9 +48,15 @@ def on_request(ch, method, props, body):
         request = json.loads(body)
         monitor_server.handle(request)
     except json.decoder.JSONDecodeError as jsonerror:
-        pass
+        msg = {}
+        msg['type'] = 'jsonerror'
+        msg['message'] = str(jsonerror)
+        monitor_server.handle(msg)
     except Exception as e:
-        pass
+        msg = {}
+        msg['type'] = 'exception'
+        msg['message'] = str(e)
+        monitor_server.handle(msg)
 
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
 parameters = pika.URLParameters(args.pikaurl)
