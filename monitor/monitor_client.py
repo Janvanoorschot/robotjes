@@ -8,20 +8,23 @@ logger = logging.getLogger(__name__)
 
 class MonitorClient:
 
-    def __init__(self, url, exchange_name):
-        self.url = url
+    def __init__(self, connection, exchange_name):
+        self.connection = connection
         self.exchange_name = exchange_name
-        self.loop = None
-        self.connection = None
         self.channel = None
         self.exchange = None
+        self.curtimer = None
         self.hostname = socket.gethostname()
         self.measurements = {}
 
     def connect(self):
-        self.connection = pika.BlockingConnection(pika.URLParameters(self.url))
         self.channel = self.connection.channel()
         self.exchange = self.channel.exchange_declare(self.exchange_name, 'fanout')
+        self.curtimer = self.connection.add_timeout(1.0, self.sync_timer)
+
+    def sync_timer(self):
+        self.curtimer = self.connection.add_timeout(1.0, self.sync_timer)
+        self.timer()
 
     def measurement(self, funname, duration):
         if funname not in self.measurements:
@@ -33,8 +36,9 @@ class MonitorClient:
         self.measurements[funname]['cummulated'] = self.measurements[funname]['cummulated'] + duration
 
     def timer(self):
-        msg = self.build_message()
-        self.send(msg)
+        if len(self.measurements) > 0:
+            msg = self.build_message()
+            self.send(msg)
 
     def build_message(self):
         msg = {}
