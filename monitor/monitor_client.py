@@ -1,6 +1,7 @@
 import json
 import socket
 import datetime
+import pika
 import logging
 logger = logging.getLogger(__name__)
 
@@ -17,11 +18,10 @@ class MonitorClient:
         self.hostname = socket.gethostname()
         self.measurements = {}
 
-    def connect(self, loop):
-        self.loop = loop
-        self.connection = self.connect(self.url, loop=self.loop)
+    def connect(self):
+        self.connection = pika.BlockingConnection(pika.URLParameters(self.url))
         self.channel = self.connection.channel()
-        self.exchange = self.channel.declare_exchange(self.exchange_name, None)
+        self.exchange = self.channel.exchange_declare(self.exchange_name, 'fanout')
 
     def measurement(self, funname, duration):
         if funname not in self.measurements:
@@ -46,13 +46,7 @@ class MonitorClient:
         return msg
 
     def send_log(self, msg):
-        pass
-
-    def do_send_log(self, msg):
-        try:
-            await self.send(msg)
-        except Exception as e:
-            print(f"error!!!!!!!!!!!! {str(e)}")
+        self.send(msg)
 
     def send(self, msg):
         try:
@@ -61,9 +55,5 @@ class MonitorClient:
             body="{}"
         except Exception as e:
             body="{}"
-        message = None
-        await self.exchange.publish(
-            message,
-            routing_key=''
-        )
+        self.channel.basic_publish(exchange=self.exchange_name, routing_key='', body=body)
 

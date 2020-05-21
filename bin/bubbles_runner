@@ -3,12 +3,20 @@
 import sys, os
 import argparse
 import pika, json
+import logging
+import logging.config
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
+PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
+BUBBLE_QUEUE = "bubble_queue"
+MONITOR_EXCHANGE = "monitor_exchange"
+LOG_CONFIG_FILE = "bin/log.conf"
+
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
-parser.add_argument('--pikaurl', type=str, default='amqp://guest:guest@localhost:5672/%2F', help='rabbitmq url')
-parser.add_argument('--rmqqueue', type=str, default='bubble_queue', help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--pikaurl', type=str, default=PIKA_URL, help='rabbitmq url')
+parser.add_argument('--rmqqueue', type=str, default=BUBBLE_QUEUE, help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--logconf', type=str, default=LOG_CONFIG_FILE, help='port')
 args = parser.parse_args()
 
 def on_request(ch, method, props, body):
@@ -28,6 +36,16 @@ def on_request(ch, method, props, body):
                      properties=pika.BasicProperties(correlation_id = props.correlation_id),
                      body=j)
     ch.basic_ack(delivery_tag=method.delivery_tag)
+
+# prepare monitoring environment (including synchronous loghandler)
+import monitor
+monitor.mon = monitor.monitor_client.MonitorClient(args.pikaurl, MONITOR_EXCHANGE)
+monitor.mon.connect()
+
+# prepare logging
+logging.config.fileConfig(args.logconf)
+logger = logging.getLogger(__name__)
+logger.info("starting")
 
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
 parameters = pika.URLParameters(args.pikaurl)
