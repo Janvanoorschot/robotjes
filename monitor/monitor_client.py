@@ -57,6 +57,8 @@ class MonitorClient:
 
     def send(self, msg):
         try:
+            if msg['process'] == 0:
+                pass
             body = json.dumps(msg, default=str)
         except json.decoder.JSONDecodeError as jsonerror:
             body="{}"

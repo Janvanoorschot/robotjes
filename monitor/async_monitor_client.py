@@ -1,3 +1,5 @@
+import os
+import threading
 import asyncio
 import json
 import socket
@@ -43,6 +45,8 @@ class AsyncMonitorClient:
         msg['type'] = 'responsetime'
         msg['timestamp'] = datetime.datetime.timestamp(datetime.datetime.now())
         msg['host'] = self.hostname
+        msg['process'] = os.getpid()
+        msg['thread'] = threading.get_ident()
         msg['responsetimes'] = self.measurements
         self.measurements = {}
         return msg
