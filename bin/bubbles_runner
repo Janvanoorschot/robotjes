@@ -3,8 +3,8 @@
 import sys, os
 import argparse
 import pika, json
-import logging
 import logging.config
+from monitor import wrap_monitor
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
@@ -29,6 +29,9 @@ def on_request(ch, method, props, body):
     except Exception as e:
         reply = {'error': str(e)}
 
+    # for now, a dummy function
+    dummy_function()
+
     # send back reply over 'reply_to' queue
     j = json.dumps(reply)
     ch.basic_publish(exchange='',
@@ -36,6 +39,10 @@ def on_request(ch, method, props, body):
                      properties=pika.BasicProperties(correlation_id = props.correlation_id),
                      body=j)
     ch.basic_ack(delivery_tag=method.delivery_tag)
+
+@wrap_monitor('dummy_function')
+def dummy_function():
+    return 0
 
 # prepare pika
 parameters = pika.URLParameters(args.pikaurl)

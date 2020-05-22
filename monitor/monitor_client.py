@@ -1,7 +1,8 @@
+import os
+import threading
 import json
 import socket
 import datetime
-import pika
 import logging
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,8 @@ class MonitorClient:
         msg['type'] = 'responsetime'
         msg['timestamp'] = datetime.datetime.timestamp(datetime.datetime.now())
         msg['host'] = self.hostname
+        msg['process'] = os.getpid()
+        msg['thread'] = threading.get_ident()
         msg['responsetimes'] = self.measurements
         self.measurements = {}
         return msg

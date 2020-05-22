@@ -2,6 +2,7 @@ import time
 import contextlib
 import inspect
 import monitor
+from functools import wraps
 
 
 class MonitorContextMonitor(contextlib.AbstractAsyncContextManager):
@@ -19,5 +20,20 @@ class MonitorContextMonitor(contextlib.AbstractAsyncContextManager):
 
 
 def get_monitor():
+    """ Monitoring feature to be used inside a function using 'with'."""
     return MonitorContextMonitor(inspect.stack()[1].function)
+
+
+def wrap_monitor(funname):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            starttime = time.time()
+            result = f(*args, **kwargs)
+            endtime = time.time()
+            duration = endtime - starttime
+            monitor.mon.measurement(funname, duration)
+            return result
+        return wrapper
+    return decorator
 

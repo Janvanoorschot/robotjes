@@ -1,13 +1,14 @@
 from . import Base
-from sqlalchemy import Column, Integer, String, DateTime, Float
+from sqlalchemy import Column, Integer, String, DateTime, BigInteger
 
 class LogMessage(Base):
     __tablename__ = 'logmessage'
     id = Column(Integer, primary_key=True)
-    host = Column(String)
     timestamp = Column(DateTime)
-    message = Column(String)
+    host = Column(String)
+    process = Column(BigInteger)
+    thread = Column(BigInteger)
     filename = Column(String)
     lineno = Column(Integer)
     levelname = Column(String)
-
+    message = Column(String)

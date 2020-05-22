@@ -12,6 +12,8 @@ class MonitorLogger(Handler):
         msg = {}
         msg['type'] = 'log'
         msg['host'] = self.hostname
+        msg['process'] = record.process
+        msg['thread'] = record.thread
         msg['message'] = record.msg % record.args
         msg['filename'] = record.filename
         msg['lineno'] = record.lineno

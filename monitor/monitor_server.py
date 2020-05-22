@@ -18,6 +18,8 @@ class MonitorServer:
 
     def handle_responsetime(self, msg):
         host = msg.get('host', 'unknown')
+        process = msg.get('process', 0)
+        thread = msg.get('thread', 0)
         timestamp = msg.get('timestamp', time.time())
         responsetimes = msg.get('responsetimes', {})
         for funname, dict in responsetimes.items():
@@ -25,6 +27,8 @@ class MonitorServer:
             cummulated = dict.get("cummulated", 0)
             rt = ResponseTime(
                 host=host,
+                process=process,
+                thread=thread,
                 timestamp=datetime.datetime.fromtimestamp(timestamp),
                 funname=funname,
                 count=count,
@@ -35,6 +39,8 @@ class MonitorServer:
 
     def handle_log(self, msg):
         host = msg.get('host', 'unknown')
+        process = msg.get('process', 0)
+        thread = msg.get('thread', 0)
         timestamp = time.time()
         message = msg.get('message', 'unknown')
         filename = msg.get('filename', 'unknown')
@@ -42,6 +48,8 @@ class MonitorServer:
         levelname = msg.get('levelname', 'unknown')
         lm = LogMessage(
             host=host,
+            process=process,
+            thread=thread,
             timestamp=datetime.datetime.fromtimestamp(timestamp),
             message=message,
             filename=filename,
