@@ -18,15 +18,21 @@ class Handler(object):
         while not con.closed:
             try:
                 cmd = con.recv()
-            except EOFError:
+            except:
                 break
             result = engine.execute(cmd)
             if result:
-                con.send(result)
+                try:
+                    con.send(result)
+                except Exception:
+                    break
             else:
                 break
-        con.close()
-        listener.close()
+        try:
+            con.close()
+            listener.close()
+        except Exception:
+            pass
 
     def run_client(self, script):
         """ run the client in the background (write/read)"""
@@ -36,6 +42,9 @@ class Handler(object):
                 fp.write(line)
                 fp.write("\n")
         command =  f"{self.runscript} {self.host} {self.port} {self.authkey} {path} &"
-        call(command, shell=True)
+        try:
+            call(command, shell=True)
+        except Exception:
+            pass
 
 

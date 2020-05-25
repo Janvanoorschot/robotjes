@@ -8,12 +8,15 @@ class Requestor(object):
         self.conn = Client(address)
 
     def execute(self, cmd):
-        self.conn.send(cmd)
         try:
+            self.conn.send(cmd)
             reply = self.conn.recv()
         except:
             reply = None
         return reply
 
     def close(self):
-        self.conn.close()
+        try:
+            self.conn.close()
+        except:
+            pass

@@ -55,6 +55,20 @@ def run_simulation(mapstr, successjson, scriptstr):
     reply.append(content)
     return reply
 
+def failure_reply(mapstr, msg):
+    reply = []
+    reply.append("robo.server.ExecResult")
+    content = {}
+    content["success"] = False
+    content["hint"] = None
+    content["messages"] = []
+    content["profile"] = {
+        "profile": {}
+    }
+    content["map"] =  Map.fromstring(mapstr).toMazeMap()
+    content["recording"] = { "keyFrames": []}
+    reply.append(content)
+    return reply
 
 def on_request(ch, method, props, body):
     """ do the request/run/reply cycle"""
@@ -69,9 +83,9 @@ def on_request(ch, method, props, body):
         else:
             reply = {'error': "missing components in request"}
     except json.decoder.JSONDecodeError as jsonerror:
-        reply = {'error': str(jsonerror)}
+        reply = failure_reply(map, str(jsonerror))
     except Exception as e:
-        reply = {'error': str(e)}
+        reply = failure_reply(map, str(e))
 
     # send back reply over 'reply_to' queue
     j = json.dumps(reply)
