@@ -21,8 +21,9 @@ class BubbleRPCClient:
         await self.callback_queue.consume(self.on_response)
 
     def on_response(self, message: IncomingMessage):
-        future = self.futures.pop(message.correlation_id)
-        future.set_result(message.body)
+        if message.correlation_id in self.futures:
+            future = self.futures.pop(message.correlation_id)
+            future.set_result(message.body)
 
     async def call(self, cmd):
         correlation_id = str(uuid.uuid4())

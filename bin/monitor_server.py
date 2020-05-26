@@ -20,11 +20,14 @@ DBASE_NAME = "monitor"
 # get commandline arguments
 parser = argparse.ArgumentParser(description='Start the Monitor Server.')
 parser.add_argument('--pikaurl', type=str, default=PIKA_URL, help='pika url')
+parser.add_argument('--monitorexchange', type=str, default=MONITOR_EXCHANGE, help='monitor exchange')
+
 parser.add_argument('--dbuser', type=str, default=DBASE_USER, help='database user')
 parser.add_argument('--dbpwd', type=str, default=DBASE_PWD, help='database password')
 parser.add_argument('--dbhost', type=str, default=DBASE_HOST, help='database host')
 parser.add_argument('--dbport', type=str, default=DBASE_PORT, help='database port')
 parser.add_argument('--dbname', type=str, default=DBASE_NAME, help='database name')
+
 args = parser.parse_args()
 
 # connect to the database
@@ -62,10 +65,10 @@ def on_request(ch, method, props, body):
 parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
-channel.exchange_declare(exchange=MONITOR_EXCHANGE, exchange_type='fanout')
+channel.exchange_declare(exchange=args.monitorexchange, exchange_type='fanout')
 result = channel.queue_declare(queue='', exclusive=True)
 queue_name = result.method.queue
-channel.queue_bind(exchange=MONITOR_EXCHANGE, queue=queue_name)
+channel.queue_bind(exchange=args.monitorexchange, queue=queue_name)
 
 # start listening for work
 channel.basic_consume(queue=queue_name, on_message_callback=on_request, auto_ack=True)

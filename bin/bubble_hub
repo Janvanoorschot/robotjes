@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+
+import sys, os
+import argparse
+import pika, json
+import logging
+import logging.config
+from monitor import wrap_monitor
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+
+PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
+BUBBLEHUB_QUEUE = "bubble_queue"
+MONITOR_EXCHANGE = "monitor_exchange"
+LOG_CONFIG_FILE = "bin/log.conf"
+
+parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
+parser.add_argument('--pikaurl', type=str, default=PIKA_URL, help='rabbitmq url')
+parser.add_argument('--bubblehubqueue', type=str, default=BUBBLEHUB_QUEUE, help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--logconf', type=str, default=LOG_CONFIG_FILE, help='port')
+args = parser.parse_args()
+
+# prepare pika
+parameters = pika.URLParameters(args.pikaurl)
+connection = pika.BlockingConnection(parameters)
+
+# prepare monitoring environment (including synchronous loghandler)
+import monitor
+monitor.mon = monitor.monitor_client.MonitorClient(connection, MONITOR_EXCHANGE)
+monitor.mon.connect()
+
+# prepare logging
+logging.config.fileConfig(args.logconf)
+logger = logging.getLogger()
+logger2 = logging.getLogger(__name__)
+logger.warning("starting logger")
+logger2.warning("starting logger2")
+
+def on_request(ch, method, props, body):
+    logger2.warning("on_request")
+    """ do the request/run/reply cycle"""
+    try:
+        request = json.loads(body)
+        reply = {'success': True}
+    except json.decoder.JSONDecodeError as jsonerror:
+        reply = {'error': str(jsonerror)}
+    except Exception as e:
+        reply = {'error': str(e)}
+
+    # for now, a dummy function
+    dummy_function()
+
+    # send back reply over 'reply_to' queue
+    j = json.dumps(reply)
+    ch.basic_publish(exchange='',
+                     routing_key=props.reply_to,
+                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
+                     body=j)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
+@wrap_monitor('dummy_function')
+def dummy_function():
+    return 0
+
+# start listening for RPC calls
+channel = connection.channel()
+channel.queue_declare(queue=args.bubblehubqueue)
+channel.basic_qos(prefetch_count=1)
+channel.basic_consume(queue=args.bubblehubqueue, on_message_callback=on_request)
+channel.start_consuming()
