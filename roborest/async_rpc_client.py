@@ -4,19 +4,17 @@ from aio_pika import connect, IncomingMessage, Message
 
 class AsyncRPCClient:
 
-    def __init__(self, url, queue_name):
+    def __init__(self, queue_name):
         self.loop = None
-        self.url = url
         self.queue_name = queue_name
         self.connection = None
         self.channel = None
         self.callback_queue = None
         self.futures = {}
 
-    async def connect(self, loop):
+    async def connect(self, loop, channel):
         self.loop = loop
-        self.connection = await connect(self.url, loop=self.loop)
-        self.channel = await self.connection.channel()
+        self.channel = channel
         self.callback_queue = await self.channel.declare_queue(exclusive=True)
         await self.callback_queue.consume(self.on_response)
 

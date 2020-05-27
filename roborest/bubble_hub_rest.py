@@ -1,9 +1,7 @@
-import asyncio
-from fastapi_utils.tasks import repeat_every
 from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 from roborest import app
-from monitor import get_monitor, mon
+from monitor import get_monitor
 from . import async_rpc_client
 
 
@@ -18,16 +16,6 @@ class BubbleStatus(BaseModel):
 
 class ConnectionSpec(BaseModel):
     size: int
-
-@app.on_event("startup")
-@repeat_every(seconds=2)
-async def timer_task():
-        await mon.timer()
-
-@app.on_event("startup")
-async def startup_event():
-    await mon.connect(asyncio.get_running_loop())
-    await async_rpc_client.connect(asyncio.get_running_loop())
 
 @app.get("/")
 async def redirect():

@@ -11,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 class AsyncMonitorClient:
 
-    def __init__(self, url, exchange_name):
-        self.url = url
+    def __init__(self, exchange_name):
         self.exchange_name = exchange_name
         self.loop = None
         self.connection = None
@@ -21,10 +20,9 @@ class AsyncMonitorClient:
         self.hostname = socket.gethostname()
         self.measurements = {}
 
-    async def connect(self, loop):
+    async def connect(self, loop, channel):
         self.loop = loop
-        self.connection = await connect(self.url, loop=self.loop)
-        self.channel = await self.connection.channel()
+        self.channel = channel
         self.exchange = await self.channel.declare_exchange(self.exchange_name, ExchangeType.FANOUT)
 
     def measurement(self, funname, duration):
