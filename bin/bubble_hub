@@ -10,23 +10,28 @@ from monitor import wrap_monitor
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
 PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
-BUBBLEHUB_QUEUE = "bubble_queue"
+BUBBLEHUB_QUEUE = "bubblehub_queue"
+BUBBLES_QUEUE = "bubbles_queue"
 MONITOR_EXCHANGE = "monitor_exchange"
 LOG_CONFIG_FILE = "bin/log.conf"
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
 parser.add_argument('--pikaurl', type=str, default=PIKA_URL, help='rabbitmq url')
 parser.add_argument('--bubblehubqueue', type=str, default=BUBBLEHUB_QUEUE, help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--bubblesqueue', type=str, default=BUBBLES_QUEUE, help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--monitorexchange', type=str, default=MONITOR_EXCHANGE, help='monitor exchange')
 parser.add_argument('--logconf', type=str, default=LOG_CONFIG_FILE, help='port')
 args = parser.parse_args()
 
 # prepare pika
 parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
+
 
 # prepare monitoring environment (including synchronous loghandler)
 import monitor
-monitor.mon = monitor.monitor_client.MonitorClient(connection, MONITOR_EXCHANGE)
+monitor.mon = monitor.monitor_client.MonitorClient(connection, args.monitorexchange)
 monitor.mon.connect()
 
 # prepare logging
@@ -63,7 +68,6 @@ def dummy_function():
     return 0
 
 # start listening for RPC calls
-channel = connection.channel()
 channel.queue_declare(queue=args.bubblehubqueue)
 channel.basic_qos(prefetch_count=1)
 channel.basic_consume(queue=args.bubblehubqueue, on_message_callback=on_request)

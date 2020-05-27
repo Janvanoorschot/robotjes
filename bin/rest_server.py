@@ -6,7 +6,7 @@ import pika, json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
 PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
-BUBBLEHUB_QUEUE = "bubble_queue"
+BUBBLEHUB_QUEUE = "bubblehub_queue"
 MONITOR_EXCHANGE = "monitor_exchange"
 LOG_CONFIG_FILE = "bin/log.conf"
 
@@ -27,10 +27,10 @@ monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(args.pikaurl, args
 # initialise the roborest module
 import fastapi
 import roborest
-from roborest.bubble_rpc_client import BubbleRPCClient
-roborest.bubble_rpc_client = BubbleRPCClient(args.pikaurl, args.bubblehubqueue)
+from roborest.async_rpc_client import AsyncRPCClient
+roborest.async_rpc_client = AsyncRPCClient(args.pikaurl, args.bubblehubqueue)
 roborest.app = fastapi.FastAPI()
-import roborest.bubble_rest
+import roborest.bubble_hub_rest
 from fastapi.staticfiles import StaticFiles
 roborest.app.mount("/", StaticFiles(directory="www"), name="www")
 

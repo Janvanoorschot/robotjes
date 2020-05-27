@@ -4,7 +4,7 @@ from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 from roborest import app
 from monitor import get_monitor, mon
-from . import bubble_rpc_client
+from . import async_rpc_client
 
 
 class BubbleSpec(BaseModel):
@@ -27,7 +27,7 @@ async def timer_task():
 @app.on_event("startup")
 async def startup_event():
     await mon.connect(asyncio.get_running_loop())
-    await bubble_rpc_client.connect(asyncio.get_running_loop())
+    await async_rpc_client.connect(asyncio.get_running_loop())
 
 @app.get("/")
 async def redirect():
@@ -42,7 +42,7 @@ async def create_bubble(specs: BubbleSpec):
         cmd = {
             "value": "create_bubble"
         }
-        result = await bubble_rpc_client.call(cmd)
+        result = await async_rpc_client.call(cmd)
         return result
 
 
@@ -53,7 +53,7 @@ async def list_all_bubbles():
         cmd = {
             "value": "list_all_bubbles"
         }
-        result = await bubble_rpc_client.call(cmd)
+        result = await async_rpc_client.call(cmd)
         return result
 
 
@@ -64,7 +64,7 @@ async def list_one_bubble(bubble_id: str):
         cmd = {
             "value": "list_one_bubble"
         }
-        result = await bubble_rpc_client.call(cmd)
+        result = await async_rpc_client.call(cmd)
         return result
 
 
@@ -75,7 +75,7 @@ async def change_bubble(state: BubbleStatus):
         cmd = {
             "value": "change_bubble"
         }
-        result = await bubble_rpc_client.call(cmd)
+        result = await async_rpc_client.call(cmd)
         return result
 
 
@@ -86,7 +86,7 @@ async def create_connection(bubble_id: str, specs: ConnectionSpec):
         cmd = {
             "value": "create_connection"
         }
-        result = await bubble_rpc_client.call(cmd)
+        result = await async_rpc_client.call(cmd)
         return result
 
 
@@ -97,6 +97,6 @@ async def list_one_connection(bubble_id: str, specs: ConnectionSpec):
         cmd = {
             "value": "list_one_connection"
         }
-        result = await bubble_rpc_client.call(cmd)
+        result = await async_rpc_client.call(cmd)
         return result
 

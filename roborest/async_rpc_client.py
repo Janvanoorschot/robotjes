@@ -2,7 +2,7 @@ import uuid
 import json
 from aio_pika import connect, IncomingMessage, Message
 
-class BubbleRPCClient:
+class AsyncRPCClient:
 
     def __init__(self, url, queue_name):
         self.loop = None
