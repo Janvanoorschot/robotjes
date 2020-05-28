@@ -17,5 +17,5 @@ class BubbleHub:
             # prepare result
             callback(result)
         # request support from (one of the) bubble
-        self.rpc_client.call({}, cb)
+        self.rpc_client.call({'cmd': 'start_game'}, cb)
 

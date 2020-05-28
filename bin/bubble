@@ -24,6 +24,7 @@ args = parser.parse_args()
 parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
+consumer_tag = None
 
 # prepare monitoring environment (including synchronous loghandler)
 import monitor
@@ -44,7 +45,14 @@ def on_hub_request(ch, method, props, body):
     """ do the request/run/reply cycle"""
     try:
         request = json.loads(body)
-        reply = {'success': True}
+        cmd = request.get('cmd', 'unknown')
+        if cmd == 'start_game':
+            # stop listening to our queue
+            channel.basic_cancel(consumer_tag=consumer_tag)
+            reply = {'success': True}
+            print("handled start_game")
+        else:
+            reply = {'success': False, 'error': f"unknown command: {cmd}"}
     except json.decoder.JSONDecodeError as jsonerror:
         reply = {'success': False, 'error': str(jsonerror)}
     except Exception as e:
@@ -61,5 +69,5 @@ def on_hub_request(ch, method, props, body):
 # start listening for hub's RPC calls
 channel.queue_declare(queue=args.bubblesqueue)
 channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue=args.bubblesqueue, on_message_callback=on_hub_request)
+consumer_tag = channel.basic_consume(queue=args.bubblesqueue, on_message_callback=on_hub_request)
 channel.start_consuming()
