@@ -18,7 +18,9 @@ class RoboMainWindow(Gtk.Window):
         self.box.pack_start(self.textfield, True, True, 0)
 
     def on_button_clicked(self, widget):
+        self.textfield.set_text("")
         self.requestor.list_bubbles(self.my_cb)
+
 
     def my_cb(self, j):
         self.textfield.set_text(json.dumps(j))
