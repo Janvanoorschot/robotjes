@@ -5,14 +5,12 @@ import pika
 
 class RPCClient:
 
-    def __init__(self, queue_name):
+    def __init__(self, channel, queue_name):
+        self.channel = channel
         self.queue_name = queue_name
         self.callback_queue = None
         self.correlation_id = None
         self.callback = None
-
-    def connect(self, channel):
-        self.channel = channel
         result = self.channel.queue_declare(queue='', exclusive=True)
         self.callback_queue = result.method.queue
         self.channel.basic_consume(
@@ -23,10 +21,10 @@ class RPCClient:
     def on_response(self, ch, method, props, body):
         if self.correlation_id == props.correlation_id:
             try:
-                reply = json.loads(body)
+                result = json.loads(body)
+                self.callback(result)
             except json.JSONDecodeError as jde:
-                pass
-            self.callback(reply)
+                self.callback({})
 
     def call(self, message, cb):
         self.callback = cb

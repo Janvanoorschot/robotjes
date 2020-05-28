@@ -3,9 +3,8 @@
 import sys, os
 import argparse
 import pika, json
-import logging
 import logging.config
-from monitor import wrap_monitor
+from bubblehub.model import BubbleSpec, ConnectionSpec, BubbleStatus
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
@@ -28,7 +27,6 @@ parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
 
-
 # prepare monitoring environment (including synchronous loghandler)
 import monitor
 monitor.mon = monitor.monitor_client.MonitorClient(connection, args.monitorexchange)
@@ -36,36 +34,45 @@ monitor.mon.connect()
 
 # prepare logging
 logging.config.fileConfig(args.logconf)
-logger = logging.getLogger()
-logger2 = logging.getLogger(__name__)
-logger.warning("starting logger")
-logger2.warning("starting logger2")
+logger = logging.getLogger(__name__)
+
+# create the BubbleHub class that will handle the requests
+from bubblehub import BubbleHub
+bubble_hub = BubbleHub(channel, BUBBLES_QUEUE)
 
 def on_request(ch, method, props, body):
-    logger2.warning("on_request")
+    logger.warning("on_request")
     """ do the request/run/reply cycle"""
     try:
         request = json.loads(body)
-        reply = {'success': True}
+        cmd = request.get('cmd', 'unknown')
+        if cmd == 'create_bubble':
+            specs = request.get('specs', None)
+            def done(result):
+                reply = {'success': True, 'result': result}
+                j = json.dumps(reply)
+                ch.basic_publish(exchange='',
+                                 routing_key=props.reply_to,
+                                 properties=pika.BasicProperties(correlation_id = props.correlation_id),
+                                 body=j)
+                ch.basic_ack(delivery_tag=method.delivery_tag)
+            bubble_hub.create_bubble(BubbleSpec.parse_obj(specs), done)
+            reply = None
+        else:
+            reply = {'success': False, 'error': f"unknown command: {cmd}"}
     except json.decoder.JSONDecodeError as jsonerror:
-        reply = {'error': str(jsonerror)}
+        reply = {'success': False, 'error': str(jsonerror)}
     except Exception as e:
-        reply = {'error': str(e)}
-
-    # for now, a dummy function
-    dummy_function()
-
-    # send back reply over 'reply_to' queue
-    j = json.dumps(reply)
-    ch.basic_publish(exchange='',
-                     routing_key=props.reply_to,
-                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                     body=j)
-    ch.basic_ack(delivery_tag=method.delivery_tag)
-
-@wrap_monitor('dummy_function')
-def dummy_function():
-    return 0
+        reply = {'success': False, 'error': str(e)}
+    # send back an error-reply over 'reply_to' queue
+    if reply:
+        logger.warning(f"error in bubble_hub: {reply['error']}")
+        j = json.dumps(reply)
+        ch.basic_publish(exchange='',
+                         routing_key=props.reply_to,
+                         properties=pika.BasicProperties(correlation_id = props.correlation_id),
+                         body=j)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
 # start listening for RPC calls
 channel.queue_declare(queue=args.bubblehubqueue)

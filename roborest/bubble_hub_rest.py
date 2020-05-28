@@ -2,20 +2,9 @@ from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 from roborest import app
 from monitor import get_monitor
+from bubblehub.model import BubbleStatus, ConnectionSpec, BubbleSpec
 from . import async_rpc_client
 
-
-class BubbleSpec(BaseModel):
-    size: int
-    size: int
-
-
-class BubbleStatus(BaseModel):
-    state: str
-
-
-class ConnectionSpec(BaseModel):
-    size: int
 
 @app.get("/")
 async def redirect():
@@ -27,10 +16,11 @@ async def redirect():
 async def create_bubble(specs: BubbleSpec):
     """ Create a bubble"""
     async with get_monitor():
-        cmd = {
-            "value": "create_bubble"
+        request = {
+            "cmd": "create_bubble",
+            "specs": specs.dict()
         }
-        result = await async_rpc_client.call(cmd)
+        result = await async_rpc_client.call(request)
         return result
 
 
