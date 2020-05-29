@@ -10,35 +10,15 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardi
 
 PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
 BUBBLEHUB_QUEUE = "bubblehub_queue"
+BUBBLES_EXCHANGE = "bubbles_exchange"
 BUBBLES_QUEUE = "bubbles_queue"
 MONITOR_EXCHANGE = "monitor_exchange"
 LOG_CONFIG_FILE = "bin/log.conf"
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
 parser.add_argument('--pikaurl', type=str, default=PIKA_URL, help='rabbitmq url')
-parser.add_argument('--bubblehubqueue', type=str, default=BUBBLEHUB_QUEUE, help='rabbitmq queue to use for rpc calls')
-parser.add_argument('--bubblesqueue', type=str, default=BUBBLES_QUEUE, help='rabbitmq queue to use for rpc calls')
-parser.add_argument('--monitorexchange', type=str, default=MONITOR_EXCHANGE, help='monitor exchange')
 parser.add_argument('--logconf', type=str, default=LOG_CONFIG_FILE, help='port')
 args = parser.parse_args()
-
-# prepare pika
-parameters = pika.URLParameters(args.pikaurl)
-connection = pika.BlockingConnection(parameters)
-channel = connection.channel()
-
-# prepare monitoring environment (including synchronous loghandler)
-import monitor
-monitor.mon = monitor.monitor_client.MonitorClient(connection, args.monitorexchange)
-monitor.mon.connect()
-
-# prepare logging
-logging.config.fileConfig(args.logconf)
-logger = logging.getLogger(__name__)
-
-# create the BubbleHub class that will handle the requests
-from bubblehub import BubbleHub
-bubble_hub = BubbleHub(channel, BUBBLES_QUEUE)
 
 def on_request(ch, method, props, body):
     logger.warning("on_request")
@@ -48,16 +28,8 @@ def on_request(ch, method, props, body):
         cmd = request.get('cmd', 'unknown')
         if cmd == 'create_bubble':
             specs = request.get('specs', None)
-            def done(result):
-                reply = {'success': True, 'result': result}
-                j = json.dumps(reply)
-                ch.basic_publish(exchange='',
-                                 routing_key=props.reply_to,
-                                 properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                                 body=j)
-                ch.basic_ack(delivery_tag=method.delivery_tag)
-            bubble_hub.create_bubble(BubbleSpec.parse_obj(specs), done)
-            reply = None
+            bubble_hub.create_bubble(BubbleSpec.parse_obj(specs))
+            reply = {'success': True}
         else:
             reply = {'success': False, 'error': f"unknown command: {cmd}"}
     except json.decoder.JSONDecodeError as jsonerror:
@@ -65,17 +37,40 @@ def on_request(ch, method, props, body):
     except Exception as e:
         reply = {'success': False, 'error': str(e)}
     # send back an error-reply over 'reply_to' queue
-    if reply:
-        logger.warning(f"error in bubble_hub: {reply['error']}")
-        j = json.dumps(reply)
-        ch.basic_publish(exchange='',
-                         routing_key=props.reply_to,
-                         properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                         body=j)
-        ch.basic_ack(delivery_tag=method.delivery_tag)
+    j = json.dumps(reply)
+    ch.basic_publish(exchange='',
+                     routing_key=props.reply_to,
+                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
+                     body=j)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
+# prepare pika
+parameters = pika.URLParameters(args.pikaurl)
+connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
+
+channel.queue_declare(queue=BUBBLEHUB_QUEUE)
+channel.basic_qos(prefetch_count=1)
+channel.basic_consume(queue=BUBBLEHUB_QUEUE, on_message_callback=on_request)
+
+# prepare monitoring environment (including synchronous loghandler)
+import monitor
+monitor.mon = monitor.monitor_client.MonitorClient(connection, MONITOR_EXCHANGE)
+monitor.mon.connect()
+
+# prepare logging
+logging.config.fileConfig(args.logconf)
+logger = logging.getLogger(__name__)
+
+# create the BubbleHub class that will handle the requests
+from bubblehub import BubbleHub
+channel.exchange_declare(exchange=BUBBLES_EXCHANGE, exchange_type="direct", passive=False, durable=True, auto_delete=False)
+channel.queue_declare(queue=BUBBLES_QUEUE)
+# channel.queue_declare(queue=BUBBLES_QUEUE, auto_delete=True)
+channel.queue_bind(queue=BUBBLES_QUEUE, exchange=BUBBLES_EXCHANGE, routing_key="standard_key")
+channel.basic_qos(prefetch_count=1)
+bubble_hub = BubbleHub(channel, BUBBLES_EXCHANGE, BUBBLES_QUEUE)
+
 
 # start listening for RPC calls
-channel.queue_declare(queue=args.bubblehubqueue)
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue=args.bubblehubqueue, on_message_callback=on_request)
 channel.start_consuming()

@@ -1,38 +1,33 @@
 #!/usr/bin/env python3
 
 import sys, os
+import threading
+import functools
 import argparse
 import pika, json
 import logging.config
-from bubblehub.model import BubbleSpec, ConnectionSpec, BubbleStatus
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
 PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
+BUBBLES_EXCHANGE = "bubbles_exchange"
 BUBBLES_QUEUE = "bubbles_queue"
-GAMES_QUEUE = "games_queue"
 MONITOR_EXCHANGE = "monitor_exchange"
 LOG_CONFIG_FILE = "bin/log.conf"
 
+# get commandline parameters
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
 parser.add_argument('--pikaurl', type=str, default=PIKA_URL, help='rabbitmq url')
-parser.add_argument('--bubblesqueue', type=str, default=BUBBLES_QUEUE, help='rabbitmq queue to use for rpc calls')
-parser.add_argument('--gamesqueue', type=str, default=GAMES_QUEUE, help='rabbitmq queue to use for rpc calls')
-parser.add_argument('--monitorexchange', type=str, default=MONITOR_EXCHANGE, help='monitor exchange')
 parser.add_argument('--logconf', type=str, default=LOG_CONFIG_FILE, help='port')
 args = parser.parse_args()
 
 # prepare pika
 parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
-channel = connection.channel()
-channel.basic_qos(prefetch_count=1)
-bubbles_consumer_tag = None
-games_consumer_tag = None
 
 # prepare monitoring environment (including synchronous loghandler)
 import monitor
-monitor.mon = monitor.monitor_client.MonitorClient(connection, args.monitorexchange)
+monitor.mon = monitor.monitor_client.MonitorClient(connection, MONITOR_EXCHANGE)
 monitor.mon.connect()
 
 # prepare logging
@@ -40,42 +35,68 @@ logging.config.fileConfig(args.logconf)
 logger = logging.getLogger(__name__)
 logger.warning("starting logger")
 
-# create the BubbleHub class that will handle the requests
+# create the Bubble intance. It's main operation will run on a seperate thread.
 from bubblehub import Bubble
 bubble = Bubble()
 
-def on_hub_request(ch, method, props, body):
-    logger.warning("on_request")
-    """ do the request/run/reply cycle"""
+
+def ack_message(channel, delivery_tag):
+    if channel.is_open:
+        channel.basic_ack(delivery_tag)
+    else:
+        pass
+
+
+def do_work(connection, channel, delivery_tag, body):
+    thread_id = threading.get_ident()
+    bubble.start_game()
+    cb = functools.partial(ack_message, channel, delivery_tag)
+    connection.add_callback_threadsafe(cb)
+
+
+def on_message(channel, method_frame, header_frame, body, args):
+    (connection, threads) = args
+    delivery_tag = method_frame.delivery_tag
+    reply = None
     try:
-        request = json.loads(body)
-        cmd = request.get('cmd', 'unknown')
-        if cmd == 'start_game':
-            # stop listening to our queue
-            channel.basic_cancel(consumer_tag=bubbles_consumer_tag)
-            reply = {'success': True}
-            print("handled start_game")
-        else:
-            reply = {'success': False, 'error': f"unknown command: {cmd}"}
+        specs = json.loads(body)
+        t = threading.Thread(target=do_work, args=(connection, channel, delivery_tag, body))
+        t.start()
+        threads.append(t)
     except json.decoder.JSONDecodeError as jsonerror:
         reply = {'success': False, 'error': str(jsonerror)}
     except Exception as e:
         reply = {'success': False, 'error': str(e)}
 
     # send back reply over 'reply_to' queue
-    j = json.dumps(reply)
-    ch.basic_publish(exchange='',
-                     routing_key=props.reply_to,
-                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                     body=j)
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+    if reply:
+        j = json.dumps(reply)
+        channel.basic_publish(exchange=BUBBLES_EXCHANGE,
+                         routing_key=header_frame.reply_to,
+                         properties=pika.BasicProperties(correlation_id = header_frame.correlation_id),
+                         body=j)
+        channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
-def on_games_request(ch, method, props, body):
-    logger.warning("on_games_request")
 
 # start listening for hub's RPC calls
-channel.queue_declare(queue=args.bubblesqueue)
-bubbles_consumer_tag = channel.basic_consume(queue=args.bubblesqueue, on_message_callback=on_hub_request)
-channel.queue_declare(queue=args.gamesqueue)
-games_consumer_tag = channel.basic_consume(queue=args.gamesqueue, on_message_callback=on_games_request)
-channel.start_consuming()
+channel = connection.channel()
+channel.exchange_declare(exchange=BUBBLES_EXCHANGE, exchange_type="direct", passive=False, durable=True, auto_delete=False)
+# channel.queue_declare(queue=BUBBLES_QUEUE, auto_delete=True)
+channel.queue_declare(queue=BUBBLES_QUEUE)
+channel.queue_bind(queue=BUBBLES_QUEUE, exchange=BUBBLES_EXCHANGE, routing_key="standard_key")
+channel.basic_qos(prefetch_count=1)
+
+threads = []
+on_message_callback = functools.partial(on_message, args=(connection, threads))
+channel.basic_consume(BUBBLES_QUEUE,  on_message_callback)
+
+try:
+    channel.start_consuming()
+except KeyboardInterrupt:
+    channel.stop_consuming()
+
+# Wait for all threads before closing the connection
+for thread in threads:
+    thread.join()
+
+connection.close()
