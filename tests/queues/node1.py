@@ -15,6 +15,32 @@ corr_id = None
 response = None
 
 
+# prepare pika
+parameters = pika.URLParameters(PIKA_URL)
+connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
+channel.basic_qos(prefetch_count=1)
+channel.queue_declare(queue=QUEUE1)
+# prepare rpc receive queue (exclusive)
+result = channel.queue_declare(queue='', exclusive=True)
+callback_queue = result.method.queue
+
+
+def rpc_request_send():
+    # do the RPC call
+    corr_id = str(uuid.uuid4())
+    body="node1_rpc"
+    channel.basic_publish(
+        exchange='',
+        routing_key=QUEUE1,
+        properties=pika.BasicProperties(
+            reply_to=callback_queue,
+            correlation_id=corr_id,
+        ),
+        body=body)
+    connection.call_later(1, rpc_request_send)
+
+
 def on_rpc_request_send(ch, queue,  body):
     ch.basic_publish(exchange='',
                      routing_key=queue,
@@ -26,37 +52,12 @@ def on_rpc_reply_receive(ch, method, props, body):
         response = body
         print(f"node1_response: {body}")
 
-# prepare pika
-parameters = pika.URLParameters(PIKA_URL)
-connection = pika.BlockingConnection(parameters)
-channel = connection.channel()
-channel.basic_qos(prefetch_count=1)
-channel.queue_declare(queue=QUEUE1)
-
-# prepare rpc receive
-result = channel.queue_declare(queue='', exclusive=True)
-callback_queue = result.method.queue
-channel.basic_consume(queue=callback_queue,on_message_callback=on_rpc_reply_receive,auto_ack=True)
-
-
-# do the RPC call
-corr_id = str(uuid.uuid4())
-body="node1_rpc"
-channel.basic_publish(
-    exchange='',
-    routing_key=QUEUE1,
-    properties=pika.BasicProperties(
-        reply_to=callback_queue,
-        correlation_id=corr_id,
-    ),
-    body=body)
-
-
-
-
 # start listening for RPC calls
 try:
+    # timer = connection.call_later(1.0, rpc_request_send)
+    timer = pika.BlockingConnection.call_later(1.0, rpc_request_send)
+    channel.basic_consume(queue=callback_queue,on_message_callback=on_rpc_reply_receive,auto_ack=True)
     while response is None:
         connection.process_data_events()
-except:
+except Exception as e:
     channel.stop_consuming()
