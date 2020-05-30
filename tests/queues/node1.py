@@ -56,19 +56,19 @@ def on_rpc_reply_receive(ch, method, props, body):
         global response
         response = body
         print(f"acked: {body}")
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
 def on_response_receive(ch, method, props, body):
+    ch.basic_ack(delivery_tag=method.delivery_tag)
     print(f"queue3: {body}")
 
-channel.basic_consume(queue=callback_queue,on_message_callback=on_rpc_reply_receive,auto_ack=True)
-channel.basic_consume(queue=QUEUE3, on_message_callback=on_response_receive, auto_ack=True)
+channel.basic_consume(queue=callback_queue,on_message_callback=on_rpc_reply_receive)
+channel.basic_consume(queue=QUEUE3, on_message_callback=on_response_receive)
 timer = connection.add_timeout(1.0, rpc_request_send)
 
 # start listening for RPC calls
 try:
-    # timer = connection.call_later(1.0, rpc_request_send)
     channel.start_consuming()
-except Exception as e:
-    print(f"exception: {str(e)}")
+except KeyboardInterrupt as e:
     channel.stop_consuming()

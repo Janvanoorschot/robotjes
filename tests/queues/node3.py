@@ -22,14 +22,15 @@ def on_response_receive(ch, method, props, body):
     ch.basic_publish(exchange='',
                      routing_key=QUEUE3,
                      body=body)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
 channel.queue_declare(queue=QUEUE2)
 channel.queue_declare(queue=QUEUE3)
-channel.basic_consume(queue=QUEUE2, on_message_callback=on_response_receive, auto_ack=True)
+channel.basic_consume(queue=QUEUE2, on_message_callback=on_response_receive)
 
 # start listening for RPC calls
 try:
     channel.start_consuming()
-except:
+except KeyboardInterrupt as e:
     channel.stop_consuming()

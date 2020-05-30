@@ -38,5 +38,5 @@ channel.basic_consume(queue=QUEUE1, on_message_callback=on_rpc_request_receive)
 # start listening for RPC calls
 try:
     channel.start_consuming()
-except:
+except KeyboardInterrupt as e:
     channel.stop_consuming()
