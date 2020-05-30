@@ -11,25 +11,22 @@ QUEUE1 = 'queue1'
 QUEUE2 = 'queue2'
 QUEUE3 = 'queue3'
 
-
-def queue1_rpc_request(ch, method, props, body):
-    answer = f"answer: {body}"
-    ch.basic_publish(exchange='',
-                     routing_key=props.reply_to,
-                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                     body=answer)
-    ch.basic_ack(delivery_tag=method.delivery_tag)
-
 # prepare pika
 parameters = pika.URLParameters(PIKA_URL)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
 channel.basic_qos(prefetch_count=1)
 
-channel.queue_declare(queue=QUEUE1)
-channel.basic_consume(queue=QUEUE1, on_message_callback=queue1_rpc_request)
+
+def on_response_receive(ch, method, props, body):
+    ch.basic_publish(exchange='',
+                     routing_key=QUEUE3,
+                     body=body)
 
 
+channel.queue_declare(queue=QUEUE2)
+channel.queue_declare(queue=QUEUE3)
+channel.basic_consume(queue=QUEUE2, on_message_callback=on_response_receive, auto_ack=True)
 
 # start listening for RPC calls
 try:
