@@ -61,14 +61,14 @@ def on_rpc_reply_receive(ch, method, props, body):
 def on_response_receive(ch, method, props, body):
     print(f"queue3: {body}")
 
+channel.basic_consume(queue=callback_queue,on_message_callback=on_rpc_reply_receive,auto_ack=True)
+channel.basic_consume(queue=QUEUE3, on_message_callback=on_response_receive, auto_ack=True)
+timer = connection.add_timeout(1.0, rpc_request_send)
+
 # start listening for RPC calls
 try:
     # timer = connection.call_later(1.0, rpc_request_send)
-    timer = connection.add_timeout(1.0, rpc_request_send)
-    channel.basic_consume(queue=callback_queue,on_message_callback=on_rpc_reply_receive,auto_ack=True)
-    channel.basic_consume(queue=QUEUE3, on_message_callback=on_response_receive, auto_ack=True)
-    while True:
-        connection.process_data_events()
+    channel.start_consuming()
 except Exception as e:
     print(f"exception: {str(e)}")
     channel.stop_consuming()
