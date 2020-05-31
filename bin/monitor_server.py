@@ -66,7 +66,7 @@ parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
 channel.exchange_declare(exchange=args.monitorexchange, exchange_type='fanout')
-result = channel.queue_declare(queue='', exclusive=True)
+result = channel.queue_declare(queue='', exclusive=True, )
 queue_name = result.method.queue
 channel.queue_bind(exchange=args.monitorexchange, queue=queue_name)
 

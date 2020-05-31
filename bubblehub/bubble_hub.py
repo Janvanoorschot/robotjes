@@ -13,7 +13,7 @@ class BubbleHub:
     # @wrap_monitor('create_bubble')
     def create_bubble(self, specs: BubbleSpec):
         body = json.dumps(specs.dict())
-        self.channel.basic_publish( exchange=self.exchange,
+        self.channel.basic_publish(exchange=self.exchange,
                              routing_key=self.queue,
                              body=body)
 

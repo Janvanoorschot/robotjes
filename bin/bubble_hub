@@ -64,7 +64,7 @@ logger = logging.getLogger(__name__)
 
 # create the BubbleHub class that will handle the requests
 from bubblehub import BubbleHub
-channel.exchange_declare(exchange=BUBBLES_EXCHANGE, exchange_type="direct", passive=False, durable=True, auto_delete=False)
+channel.exchange_declare(exchange=BUBBLES_EXCHANGE, exchange_type="direct")
 channel.queue_declare(queue=BUBBLES_QUEUE)
 # channel.queue_declare(queue=BUBBLES_QUEUE, auto_delete=True)
 channel.queue_bind(queue=BUBBLES_QUEUE, exchange=BUBBLES_EXCHANGE, routing_key="standard_key")
