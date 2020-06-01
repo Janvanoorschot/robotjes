@@ -18,6 +18,7 @@ class Bubble:
 
     def start_game(self, game_id):
         self.game_id = game_id
+        print(f"before queue_bind: {self.queue_in_name}/{self.game_id}")
         self.channel.queue_bind(
             exchange=config.GAME_IN_EXCHANGE,
             queue=self.queue_in_name,

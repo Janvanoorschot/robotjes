@@ -38,7 +38,7 @@ logger.warning("starting logger")
 
 # create the Bubble intance. It's main operation will run on a seperate thread.
 from bubblehub import Bubble
-bubble_id = uuid.uuid4()
+bubble_id = str(uuid.uuid4())
 bubble = Bubble(bubble_id, channel)
 
 
@@ -51,7 +51,7 @@ def ack_message(channel, delivery_tag, game_id):
 
 def do_work(connection, channel, delivery_tag, body):
     thread_id = threading.get_ident()
-    game_id = uuid.uuid4()
+    game_id = str(uuid.uuid4())
     bubble.start_game(game_id)
     cb = functools.partial(ack_message, channel, delivery_tag, game_id)
     connection.add_callback_threadsafe(cb)
