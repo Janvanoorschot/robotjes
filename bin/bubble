@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, os
+import sys, os, uuid
 import threading
 import functools
 import argparse
@@ -24,6 +24,7 @@ args = parser.parse_args()
 # prepare pika
 parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
 
 # prepare monitoring environment (including synchronous loghandler)
 import monitor
@@ -37,10 +38,11 @@ logger.warning("starting logger")
 
 # create the Bubble intance. It's main operation will run on a seperate thread.
 from bubblehub import Bubble
-bubble = Bubble()
+bubble_id = uuid.uuid4()
+bubble = Bubble(bubble_id, channel)
 
 
-def ack_message(channel, delivery_tag):
+def ack_message(channel, delivery_tag, game_id):
     if channel.is_open:
         channel.basic_ack(delivery_tag)
     else:
@@ -49,8 +51,9 @@ def ack_message(channel, delivery_tag):
 
 def do_work(connection, channel, delivery_tag, body):
     thread_id = threading.get_ident()
-    bubble.start_game()
-    cb = functools.partial(ack_message, channel, delivery_tag)
+    game_id = uuid.uuid4()
+    bubble.start_game(game_id)
+    cb = functools.partial(ack_message, channel, delivery_tag, game_id)
     connection.add_callback_threadsafe(cb)
 
 
@@ -79,7 +82,6 @@ def on_message(channel, method_frame, header_frame, body, args):
 
 
 # start listening for hub's RPC calls
-channel = connection.channel()
 channel.exchange_declare(exchange=BUBBLES_EXCHANGE, exchange_type="direct")
 # channel.queue_declare(queue=BUBBLES_QUEUE, auto_delete=True)
 channel.queue_declare(queue=BUBBLES_QUEUE)
