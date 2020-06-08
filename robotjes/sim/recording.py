@@ -9,7 +9,8 @@ class Recording(object):
 
     def finalize(self, keyframe):
         keyframe['sprite'] = 'r'
-        keyframe['src'] = len(self.keyframes)
+        # keyframe['src'] = len(self.keyframes)
+        keyframe['src'] = 1
         keyframe['score'] = len(self.keyframes)
         if self.active and len(self.keyframes) < self.maxsize:
             self.keyframes.append(keyframe)
