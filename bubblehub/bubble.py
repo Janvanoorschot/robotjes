@@ -16,8 +16,9 @@ class Bubble:
         # create the outgoing exchange
         self.channel.exchange_declare(exchange=config.GAME_OUT_EXCHANGE, exchange_type="topic")
 
-    def start_game(self, game_id):
+    def start_game(self, game_id, spec):
         self.game_id = game_id
+        self.spec = spec
         print(f"before queue_bind: {self.queue_in_name}/{self.game_id}")
         self.channel.queue_bind(
             exchange=config.GAME_IN_EXCHANGE,
@@ -33,6 +34,9 @@ class Bubble:
         self.channel.basic_publish(exchange=config.GAME_OUT_EXCHANGE,
                                    routing_key=config.GAME_STATUS_QUEUE,
                                    body=j)
+
+    def timer(self, now):
+        pass
 
     def stop_game(self):
         self.channel.queue_unbind(
