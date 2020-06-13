@@ -8,25 +8,18 @@ from sqlalchemy import create_engine
 from monitor import MonitorServer
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
-
-PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
-MONITOR_EXCHANGE = "monitor_exchange"
-DBASE_USER = "rmprod"
-DBASE_PWD = "rmprodsecret"
-DBASE_HOST = "localhost"
-DBASE_PORT = 5432
-DBASE_NAME = "monitor"
+import config
 
 # get commandline arguments
 parser = argparse.ArgumentParser(description='Start the Monitor Server.')
-parser.add_argument('--pikaurl', type=str, default=PIKA_URL, help='pika url')
-parser.add_argument('--monitorexchange', type=str, default=MONITOR_EXCHANGE, help='monitor exchange')
+parser.add_argument('--pikaurl', type=str, default=config.PIKA_URL, help='pika url')
+parser.add_argument('--monitorexchange', type=str, default=config.MONITOR_EXCHANGE, help='monitor exchange')
 
-parser.add_argument('--dbuser', type=str, default=DBASE_USER, help='database user')
-parser.add_argument('--dbpwd', type=str, default=DBASE_PWD, help='database password')
-parser.add_argument('--dbhost', type=str, default=DBASE_HOST, help='database host')
-parser.add_argument('--dbport', type=str, default=DBASE_PORT, help='database port')
-parser.add_argument('--dbname', type=str, default=DBASE_NAME, help='database name')
+parser.add_argument('--dbuser', type=str, default=config.DBASE_USER, help='database user')
+parser.add_argument('--dbpwd', type=str, default=config.DBASE_PWD, help='database password')
+parser.add_argument('--dbhost', type=str, default=config.DBASE_HOST, help='database host')
+parser.add_argument('--dbport', type=str, default=config.DBASE_PORT, help='database port')
+parser.add_argument('--dbname', type=str, default=config.DBASE_NAME, help='database name')
 
 args = parser.parse_args()
 

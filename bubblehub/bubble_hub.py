@@ -1,7 +1,5 @@
 import json
-from bubblehub.model import BubbleSpec, ConnectionSpec, BubbleStatus
-from monitor import wrap_monitor
-from .rcp_client import RPCClient
+from bubblehub.model import BubbleSpec
 
 class BubbleHub:
 
@@ -10,7 +8,6 @@ class BubbleHub:
         self.exchange = exchange
         self.queue = queue
 
-    # @wrap_monitor('create_bubble')
     def create_bubble(self, specs: BubbleSpec):
         body = json.dumps(specs.dict())
         self.channel.basic_publish(exchange=self.exchange,
