@@ -56,15 +56,15 @@ monitor.mon.connect()
 logging.config.fileConfig(args.logconf)
 logger = logging.getLogger(__name__)
 
-# create the BubbleHub class that will handle the requests
-from bubblehub import BubbleHub
+# create the Pika interface to be use to talk to the Rest interface
 channel.exchange_declare(exchange=config.BUBBLES_EXCHANGE, exchange_type="direct")
 channel.queue_declare(queue=config.BUBBLES_QUEUE)
-# channel.queue_declare(queue=BUBBLES_QUEUE, auto_delete=True)
 channel.queue_bind(queue=config.BUBBLES_QUEUE, exchange=config.BUBBLES_EXCHANGE, routing_key="standard_key")
 channel.basic_qos(prefetch_count=1)
-bubble_hub = BubbleHub(channel, config.BUBBLES_EXCHANGE, config.BUBBLES_QUEUE)
 
+# create the BubbleHub class that will handle the requests
+from bubblehub import BubbleHub
+bubble_hub = BubbleHub(channel)
 
 # start listening for RPC calls
 channel.start_consuming()
