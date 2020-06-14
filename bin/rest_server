@@ -12,7 +12,8 @@ parser.add_argument('--host', type=str, default='0.0.0.0', help='host')
 parser.add_argument('--port', type=int, default=8000, help='port')
 parser.add_argument('--logconf', type=str, default=config.LOG_CONFIG_FILE, help='port')
 parser.add_argument('--pikaurl', type=str, default=config.PIKA_URL, help='rabbitmq url')
-parser.add_argument('--bubblehubqueue', type=str, default=config.BUBBLEHUB_QUEUE, help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--bubblehubsexchange', type=str, default=config.BUBBLEHUBS_EXCHANGE, help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--bubblehubsqueue', type=str, default=config.BUBBLEHUBS_QUEUE, help='rabbitmq queue to use for rpc calls')
 parser.add_argument('--monitorexchange', type=str, default=config.MONITOR_EXCHANGE, help='monitor exchange')
 args = parser.parse_args()
 
@@ -27,7 +28,7 @@ monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchan
 # initialise the roborest module
 import fastapi
 from roborest.async_rpc_client import AsyncRPCClient
-roborest.async_rpc_client = AsyncRPCClient(args.bubblehubqueue)
+roborest.async_rpc_client = AsyncRPCClient(args.bubblehubsexchange, args.bubblehubsqueue)
 roborest.app = fastapi.FastAPI()
 # import the files with REST calls
 import roborest.sys_rest

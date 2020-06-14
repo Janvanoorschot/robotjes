@@ -8,12 +8,6 @@ import config
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
-PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
-BUBBLES_EXCHANGE = "bubbles_exchange"
-BUBBLES_QUEUE = "bubbles_queue"
-MONITOR_EXCHANGE = "monitor_exchange"
-LOG_CONFIG_FILE = "bin/log.conf"
-
 # get commandline parameters
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
 parser.add_argument('--pikaurl', type=str, default=config.PIKA_URL, help='rabbitmq url')
@@ -24,6 +18,8 @@ args = parser.parse_args()
 parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
+channel.basic_qos(prefetch_count=1)
+
 
 # prepare monitoring environment (including synchronous loghandler)
 import monitor
@@ -35,39 +31,11 @@ logging.config.fileConfig(args.logconf)
 logger = logging.getLogger(__name__)
 logger.warning("starting logger")
 
-# create the Bubble intance. It's main operation will run on a seperate thread.
+# create the Bubble instance.
 from bubblehub import Bubble
 bubble_id = str(uuid.uuid4())
-bubble = Bubble(bubble_id, channel)
-
-
-def ack_message(channel, delivery_tag, game_id):
-    if channel.is_open:
-        # channel.basic_ack(delivery_tag)
-        pass
-    else:
-        pass
-
-def on_message(channel, method_frame, header_frame, body):
-    delivery_tag = method_frame.delivery_tag
-    reply = None
-    try:
-        specs = json.loads(body)
-        game_id = str(uuid.uuid4())
-        bubble.start_game(game_id, specs)
-    except json.decoder.JSONDecodeError as jsonerror:
-        logger.warning(f"json error: {str(jsonerror)}")
-        channel.basic_ack(delivery_tag=method_frame.delivery_tag)
-    except Exception as e:
-        logger.warning(f"message error: {str(e)}")
-        channel.basic_ack(delivery_tag=method_frame.delivery_tag)
-
-# start listening for hub's RPC calls
-channel.exchange_declare(exchange=config.BUBBLES_EXCHANGE, exchange_type="direct")
-channel.queue_declare(queue=config.BUBBLES_QUEUE)
-channel.queue_bind(queue=config.BUBBLES_QUEUE, exchange=config.BUBBLES_EXCHANGE)
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(config.BUBBLES_QUEUE,  on_message)
+bubble = Bubble(bubble_id)
+bubble.connect(channel)
 
 
 def timer():

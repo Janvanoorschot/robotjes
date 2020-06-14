@@ -5,7 +5,6 @@ import argparse
 import pika, json
 import logging.config
 import config
-from bubblehub.model import BubbleSpec, ConnectionSpec, BubbleStatus
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
@@ -14,38 +13,12 @@ parser.add_argument('--pikaurl', type=str, default=config.PIKA_URL, help='rabbit
 parser.add_argument('--logconf', type=str, default=config.LOG_CONFIG_FILE, help='port')
 args = parser.parse_args()
 
-def on_request(ch, method, props, body):
-    logger.warning("on_request")
-    """ do the request/run/reply cycle"""
-    try:
-        request = json.loads(body)
-        cmd = request.get('cmd', 'unknown')
-        if cmd == 'create_bubble':
-            specs = request.get('specs', None)
-            bubble_hub.create_bubble(BubbleSpec.parse_obj(specs))
-            reply = {'success': True}
-        else:
-            reply = {'success': False, 'error': f"unknown command: {cmd}"}
-    except json.decoder.JSONDecodeError as jsonerror:
-        reply = {'success': False, 'error': str(jsonerror)}
-    except Exception as e:
-        reply = {'success': False, 'error': str(e)}
-    # send back an error-reply over 'reply_to' queue
-    j = json.dumps(reply)
-    ch.basic_publish(exchange='',
-                     routing_key=props.reply_to,
-                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                     body=j)
-    ch.basic_ack(delivery_tag=method.delivery_tag)
-
 # prepare pika
 parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
-
-channel.queue_declare(queue=config.BUBBLEHUB_QUEUE)
 channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue=config.BUBBLEHUB_QUEUE, on_message_callback=on_request)
+
 
 # prepare monitoring environment (including synchronous loghandler)
 import monitor
@@ -56,15 +29,10 @@ monitor.mon.connect()
 logging.config.fileConfig(args.logconf)
 logger = logging.getLogger(__name__)
 
-# create the Pika interface to be use to talk to the Rest interface
-channel.exchange_declare(exchange=config.BUBBLES_EXCHANGE, exchange_type="direct")
-channel.queue_declare(queue=config.BUBBLES_QUEUE)
-channel.queue_bind(queue=config.BUBBLES_QUEUE, exchange=config.BUBBLES_EXCHANGE, routing_key="standard_key")
-channel.basic_qos(prefetch_count=1)
-
 # create the BubbleHub class that will handle the requests
 from bubblehub import BubbleHub
-bubble_hub = BubbleHub(channel)
+bubble_hub = BubbleHub()
+bubble_hub.connect(channel)
 
 # start listening for RPC calls
 channel.start_consuming()

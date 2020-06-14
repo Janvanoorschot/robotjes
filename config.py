@@ -2,11 +2,11 @@ PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
 LOG_CONFIG_FILE = "bin/log.conf"
 
 MONITOR_EXCHANGE = "monitor_exchange"
+BUBBLEHUBS_EXCHANGE = 'bubblehubs_exchange'
 BUBBLES_EXCHANGE = "bubbles_exchange"
-GAME_IN_EXCHANGE = 'game_in'
-GAME_OUT_EXCHANGE = 'game_out'
+GAMES_EXCHANGE = 'games_exchange'
 
-BUBBLEHUB_QUEUE = "bubblehub_queue"
+BUBBLEHUBS_QUEUE = "bubblehub_queue"
 BUBBLES_QUEUE = "bubbles_queue"
 GAME_STATUS_QUEUE = 'status'
 

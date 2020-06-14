@@ -1,11 +1,12 @@
 import uuid
 import json
-from aio_pika import connect, IncomingMessage, Message
+from aio_pika import IncomingMessage, Message, ExchangeType
 
 class AsyncRPCClient:
 
-    def __init__(self, queue_name):
+    def __init__(self,exchange_name, queue_name):
         self.loop = None
+        self.exchange_name = exchange_name
         self.queue_name = queue_name
         self.connection = None
         self.channel = None
@@ -15,7 +16,9 @@ class AsyncRPCClient:
     async def connect(self, loop, channel):
         self.loop = loop
         self.channel = channel
+        self.bubblehubs_exchange = await self.channel.declare_exchange(self.exchange_name, ExchangeType.DIRECT)
         self.callback_queue = await self.channel.declare_queue(exclusive=True)
+        await self.callback_queue.bind(self.bubblehubs_exchange)
         await self.callback_queue.consume(self.on_response)
 
     def on_response(self, message: IncomingMessage):
@@ -36,7 +39,7 @@ class AsyncRPCClient:
             correlation_id=correlation_id,
             reply_to=self.callback_queue.name
         )
-        await self.channel.default_exchange.publish(
+        await self.bubblehubs_exchange.publish(
             message,
             routing_key=self.queue_name
         )
