@@ -21,6 +21,7 @@ class Bubble:
         self.gamestatus_queue_name = config.GAME_STATUS_QUEUE
         self.game_duration = 10
         self.game_state = GameState.IDLE
+        self.routing_key = ''
 
     def connect(self, channel):
         self.channel = channel
@@ -31,8 +32,6 @@ class Bubble:
         self.channel.basic_consume(queue=self.bubbles_queue_name, on_message_callback=self.on_hub_message)
         # create exchange/queue to and from the games (run by bubbles) (both consumer and producer role)
         self.channel.exchange_declare(exchange=self.games_exchange_name, exchange_type="topic")
-        self.channel.queue_declare(queue=self.bubbles_queue_name)
-        self.channel.queue_bind(queue=self.bubbles_queue_name, exchange=self.games_exchange_name)
 
     def on_hub_message(self, channel, method_frame, header_frame, body):
         logger.warning("on_hub_message")
@@ -54,26 +53,29 @@ class Bubble:
         self.spec = spec
         self.timer_tick = 0
         self.game_state = GameState.CREATED
-        # print(f"before queue_bind: {self.queue_in_name}/{self.game_id}")
-        # self.channel.queue_bind(
-        #     exchange=config.GAME_IN_EXCHANGE,
-        #     queue=self.queue_in_name,
-        #     routing_key=self.game_id
-        # )
-        # reply = {
-        #     'cmd': "starting",
-        #     'bubble': self.bubble_id,
-        #     'game': self.game_id
-        # }
-        # j = json.dumps(reply)
-        # self.channel.basic_publish(exchange=self.games_exchange_name,
-        #                            routing_key=self.gamestatus_queue_name,
-        #                            body=j)
+        self.routing_key = f"{self.game_id}.status"
+        reply = {
+            'cmd': "starting",
+            'bubble': self.bubble_id,
+            'game': self.game_id
+        }
+        j = json.dumps(reply)
+        self.channel.basic_publish(
+            exchange=self.games_exchange_name, routing_key=self.routing_key, body=j)
 
     def stop_game(self):
         logger.warning("stop_game")
         self.channel.basic_ack(delivery_tag=self.delivery_tag)
         self.game_state = GameState.IDLE
+        # inform the hub
+        reply = {
+            'cmd': "stopping",
+            'bubble': self.bubble_id,
+            'game': self.game_id
+        }
+        j = json.dumps(reply)
+        self.channel.basic_publish(
+            exchange=self.games_exchange_name, routing_key=self.routing_key, body=j)
 
     def timer(self, now):
         if self.game_state != GameState.IDLE:

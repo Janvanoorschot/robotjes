@@ -14,7 +14,7 @@ class BubbleHub:
         self.games_exchange_name = config.GAMES_EXCHANGE
         self.bubbles_queue_name = config.BUBBLES_QUEUE
         self.bubblehubs_queue_name = config.BUBBLEHUBS_QUEUE
-        self.gamestatus_queue_name = config.GAME_STATUS_QUEUE
+        self.games_queue_name = None
 
     def connect(self, channel):
         self.channel = channel
@@ -29,9 +29,18 @@ class BubbleHub:
         self.channel.queue_bind(queue=self.bubbles_queue_name, exchange=self.bubbles_exchange_name)
         # create exchange/queue to and from the games (run by bubbles) (we are in the consumer role)
         self.channel.exchange_declare(exchange=self.games_exchange_name, exchange_type="topic")
-        self.channel.queue_declare(queue=self.gamestatus_queue_name)
-        self.channel.queue_bind(queue=self.gamestatus_queue_name, exchange=self.games_exchange_name)
-        self.channel.basic_consume(queue=self.gamestatus_queue_name, on_message_callback=self.on_game_status)
+        result = self.channel.queue_declare('', exclusive=True)
+        self.games_queue_name = result.method.queue
+        self.status_routing_key = "*.status"
+        channel.queue_bind(
+            exchange=self.games_exchange_name,
+            queue=self.games_queue_name,
+            routing_key=self.status_routing_key)
+        self.channel.basic_consume(
+            queue=self.games_queue_name,
+            on_message_callback=self.on_game_status,
+            auto_ack=True
+        )
 
     def on_rest_request(self, ch, method, props, body):
         logger.warning("on_rest_request")
@@ -58,8 +67,7 @@ class BubbleHub:
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def on_game_status(self, ch, method, props, body):
-        logger.warning("on_game_status")
-        pass
+        logger.warning(f"on_game_status {body}")
 
     def create_bubble(self, specs: BubbleSpec):
         logger.warning("create_bubble")
