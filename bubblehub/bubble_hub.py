@@ -28,10 +28,10 @@ class BubbleHub:
         self.channel.queue_declare(queue=self.bubbles_queue_name)
         self.channel.queue_bind(queue=self.bubbles_queue_name, exchange=self.bubbles_exchange_name)
         # create exchange/queue to and from the games (run by bubbles) (we are in the consumer role)
-        self.channel.exchange_declare(exchange=self.games_exchange_name, exchange_type="direct")
-        self.channel.queue_declare(queue=self.bubbles_queue_name)
-        self.channel.queue_bind(queue=self.bubbles_queue_name, exchange=self.games_exchange_name)
-        self.channel.basic_consume(queue=self.bubbles_queue_name, on_message_callback=self.on_game_status)
+        self.channel.exchange_declare(exchange=self.games_exchange_name, exchange_type="topic")
+        self.channel.queue_declare(queue=self.gamestatus_queue_name)
+        self.channel.queue_bind(queue=self.gamestatus_queue_name, exchange=self.games_exchange_name)
+        self.channel.basic_consume(queue=self.gamestatus_queue_name, on_message_callback=self.on_game_status)
 
     def on_rest_request(self, ch, method, props, body):
         logger.warning("on_rest_request")
@@ -62,6 +62,7 @@ class BubbleHub:
         pass
 
     def create_bubble(self, specs: BubbleSpec):
+        logger.warning("create_bubble")
         body = json.dumps(specs.dict())
         self.channel.basic_publish(exchange=self.bubbles_exchange_name,
                              routing_key=self.bubbles_queue_name,
