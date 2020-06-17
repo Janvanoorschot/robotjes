@@ -40,6 +40,9 @@ class RoboAdmin():
         else:
             pass
 
+    def timer(self, t):
+        pass
+
     def create_game(self):
         self.view.set_text("")
         self.model.create_game(self.create_game_cb)
