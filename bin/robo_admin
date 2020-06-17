@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+from ui import RoboAdminWindow, RoboAdmin, RoboRequestor
+
+model = RoboRequestor('http://localhost:8000/')
+view = RoboAdminWindow()
+controller = RoboAdmin(model, view)
+view.add_listener(controller)
+
+view.connect("destroy", Gtk.main_quit)
+view.show_all()
+Gtk.main()

@@ -42,7 +42,7 @@ def run_simulation(mapstr, successjson, scriptstr):
     # prepare the reply
     recording = engine.get_recording()
     reply = []
-    reply.append("robo.server.ExecResult")
+    reply.append("robo_admin.server.ExecResult")
     content = {}
     content["success"] = recording.isSuccess() and success.isSuccess()
     content["hint"] = success.getHint()
@@ -57,7 +57,7 @@ def run_simulation(mapstr, successjson, scriptstr):
 
 def failure_reply(mapstr, msg):
     reply = []
-    reply.append("robo.server.ExecResult")
+    reply.append("robo_admin.server.ExecResult")
     content = {}
     content["success"] = False
     content["hint"] = None

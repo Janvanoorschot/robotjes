@@ -38,7 +38,7 @@ class RoboShell(object):
     def run(self, robo, script_file):
         with open(script_file, 'r') as file:
             data = file.read()
-            globalsParameter = {'__builtins__' : None, 'robo': robo}
+            globalsParameter = {'__builtins__' : None, 'robo_admin': robo}
             localsParameter = {'print': print, 'range': range, 'quit': quit}
             if run_with_limited_time(exec, (data, globalsParameter, localsParameter), {}, TIMEOUT):
                 pass
