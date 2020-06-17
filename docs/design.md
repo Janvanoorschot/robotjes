@@ -37,5 +37,32 @@ turn talks to a simulation.
 
 
 
+ToDo Robotjes: Game UI Development
+• create the Model/View/Controller objects and connect them
+• 
+
+Model/View/Controller mechanism. 
+• Controller -> RoboAdmin
+• View -> RoboAdminWindow
+• Model -> RoboRequestor
+
+ToDo:
+
+• extend robo_requestor so we can do get and post. Make it generic GTK/request
+
+
+
+• create/update Server UI that does the following
+∘ on a keypress
+‣ create a new game (receive the game-id)
+‣ every so often, get a list of games (or automatically)
+‣ when game is created
+• every often get and display the game state
+• when game is closed halt
+
+• create a new Client UI that does the following
+∘ every so often, get a list of games and try to register
+‣ when registered
+• walk through game phases
 
 
