@@ -20,7 +20,7 @@ def timer():
     controller.timer(datetime.datetime.now())
     GLib.timeout_add(100, timer)
 
-GLib.timeout_add(100, timer)
+GLib.timeout_add(1000, timer)
 
 view.connect("destroy", Gtk.main_quit)
 view.show_all()

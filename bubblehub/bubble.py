@@ -2,13 +2,18 @@ import json
 import config
 import uuid
 import logging
+from bubblehub.model import GameStatus, PlayerStatus
 logger = logging.getLogger(__name__)
 
 from enum import Enum
 class GameState(Enum):
-    IDLE = 1
-    CREATED = 2
-    STARTED = 3
+    IDLE = 'idle'
+    CREATED = 'created'
+    STARTED = 'started'
+class GameInput(Enum):
+    CREATING = 'creating'
+    STARTING = 'starting'
+    STOPPING = 'stopping'
 
 
 class Bubble:
@@ -37,9 +42,10 @@ class Bubble:
         logger.warning("on_hub_message")
         self.delivery_tag = method_frame.delivery_tag
         try:
-            specs = json.loads(body)
-            game_id = str(uuid.uuid4())
-            self.start_game(game_id, specs)
+            request = json.loads(body)
+            game_id = request["game_id"]
+            specs = request["specs"]
+            self.create_game(game_id, specs)
         except json.decoder.JSONDecodeError as jsonerror:
             logger.warning(f"json error: {str(jsonerror)}")
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
@@ -47,7 +53,7 @@ class Bubble:
             logger.warning(f"message error: {str(e)}")
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
-    def start_game(self, game_id, spec):
+    def create_game(self, game_id, spec):
         logger.warning("start_game")
         self.game_id = game_id
         self.spec = spec
@@ -55,9 +61,11 @@ class Bubble:
         self.game_state = GameState.CREATED
         self.routing_key = f"{self.game_id}.status"
         reply = {
-            'cmd': "starting",
+            'input': GameInput.CREATING.name,
+            'state': self.game_state.name,
             'bubble': self.bubble_id,
-            'game': self.game_id
+            'game': self.game_id,
+            'status': self.status().dict()
         }
         j = json.dumps(reply)
         self.channel.basic_publish(
@@ -69,13 +77,19 @@ class Bubble:
         self.game_state = GameState.IDLE
         # inform the hub
         reply = {
-            'cmd': "stopping",
+            'input': GameInput.STOPPING.name,
+            'state': self.game_state.name,
             'bubble': self.bubble_id,
-            'game': self.game_id
+            'game': self.game_id,
+            'status': self.status().dict()
         }
         j = json.dumps(reply)
         self.channel.basic_publish(
             exchange=self.games_exchange_name, routing_key=self.routing_key, body=j)
+
+    def status(self):
+        status = GameStatus(id=self.game_id, players=[])
+        return status
 
     def timer(self, now):
         if self.game_state != GameState.IDLE:

@@ -41,6 +41,7 @@ class RoboAdmin():
             pass
 
     def timer(self, t):
+        # self.model.list_games(self.list_games_db)
         pass
 
     def create_game(self):
@@ -48,5 +49,8 @@ class RoboAdmin():
         self.model.create_game(self.create_game_cb)
 
     def create_game_cb(self, j):
+        self.view.set_text(json.dumps(j))
+
+    def list_games_db(self, j):
         self.view.set_text(json.dumps(j))
 

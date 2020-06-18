@@ -53,7 +53,7 @@ def ack_message(channel, delivery_tag, game_id):
 def do_work(connection, channel, delivery_tag, body):
     thread_id = threading.get_ident()
     game_id = str(uuid.uuid4())
-    bubble.start_game(game_id)
+    bubble.create_game(game_id)
     cb = functools.partial(ack_message, channel, delivery_tag, game_id)
     connection.add_callback_threadsafe(cb)
 

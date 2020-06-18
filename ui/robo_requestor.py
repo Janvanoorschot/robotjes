@@ -31,6 +31,8 @@ class RoboRequestor:
 
     def done_url(self, cb, ftr):
         j = ftr.result()
+        if not j:
+            j = {}
         cb(j)
 
 
