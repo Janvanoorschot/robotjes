@@ -1,2 +1,2 @@
-from .bubble import Bubble, GameInput, GameState
+from .bubble import Bubble, GameInput, GameStatus
 from .bubble_hub import BubbleHub

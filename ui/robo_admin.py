@@ -33,6 +33,7 @@ class RoboAdmin():
     def __init__(self, model, view):
         self.model = model
         self.view = view
+        self.game_id = None
 
     def event(self, etype, sender, *argv):
         if etype == "EVT_CREATE_GAME":
@@ -42,6 +43,8 @@ class RoboAdmin():
 
     def timer(self, t):
         # self.model.list_games(self.list_games_db)
+        if self.game_id:
+            self.model.status_game(self.game_id, self.status_game_db)
         pass
 
     def create_game(self):
@@ -49,8 +52,12 @@ class RoboAdmin():
         self.model.create_game(self.create_game_cb)
 
     def create_game_cb(self, j):
+        self.game_id = j["game_id"]
         self.view.set_text(json.dumps(j))
 
     def list_games_db(self, j):
+        self.view.set_text(json.dumps(j))
+
+    def status_game_db(self, j):
         self.view.set_text(json.dumps(j))
 

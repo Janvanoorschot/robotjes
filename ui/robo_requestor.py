@@ -17,6 +17,11 @@ class RoboRequestor:
         ftr = self.executor.submit(self.post_url, self.create_url('bubbles'))
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
+    def status_game(self, game_id, cb):
+        url = self.create_url(f"bubbles/{game_id}")
+        ftr = self.executor.submit(self.get_url, url)
+        ftr.add_done_callback(functools.partial(self.done_url, cb))
+
     # requests support calls
     def create_url(self, path):
         return f"{self.url}{path}"
@@ -26,7 +31,7 @@ class RoboRequestor:
         return r.json()
 
     def get_url(self, url):
-        r = requests.get(url, json = {'size': 13})
+        r = requests.get(url)
         return r.json()
 
     def done_url(self, cb, ftr):

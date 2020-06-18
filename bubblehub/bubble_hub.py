@@ -5,8 +5,8 @@ import logging
 logger = logging.getLogger(__name__)
 import config
 
-from . import GameState
 from bubblehub.model import BubbleSpec, ConnectionSpec, BubbleStatus
+from . import GameStatus
 
 class BubbleHub:
 
@@ -59,6 +59,10 @@ class BubbleHub:
             elif cmd == 'list_games':
                 list = self.list_games()
                 reply = {'success': True, 'list': list}
+            elif cmd == 'status_game':
+                game_id = request.get('game_id', None)
+                status = self.status_game(game_id)
+                reply = {'success': True, 'status': status}
             else:
                 reply = {'success': False, 'error': f"unknown command: {cmd}"}
         except json.decoder.JSONDecodeError as jsonerror:
@@ -78,11 +82,11 @@ class BubbleHub:
         status = json.loads(body)
         self.bubbles[status["bubble"]] = status["game"]
         self.games[status["game"]] = status["status"]
-        if status['state'] == GameState.CREATED.name:
+        if status['state'] == GameStatus.CREATED.name:
             pass
-        elif status['state'] == GameState.STARTED.name:
+        elif status['state'] == GameStatus.STARTED.name:
             pass
-        elif status['state'] == GameState.IDLE.name:
+        elif status['state'] == GameStatus.IDLE.name:
             pass
         else:
             pass
@@ -103,4 +107,17 @@ class BubbleHub:
     def list_games(self):
         logger.warning("list_games")
         return self.games
+
+    def status_game(self, game_id):
+        logger.warning("status_game")
+        if game_id in self.games:
+            status = {
+                "game_id": game_id,
+                "status": self.games[game_id]
+            }
+        else:
+            status = {
+                "game_id": game_id
+            }
+        return status
 

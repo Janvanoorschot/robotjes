@@ -25,11 +25,23 @@ async def create_game(specs: BubbleSpec):
 
 
 @app.get("/bubbles")
-async def list_all_bubbles():
-    """List current bubbles"""
+async def list_games():
+    """List current games"""
     async with get_monitor():
         request = {
             "cmd": "list_games"
+        }
+        result = await async_rpc_client.call(request)
+        return result
+
+
+@app.get("/bubbles/{game_id}")
+async def list_game(game_id: str):
+    """Information about a game"""
+    async with get_monitor():
+        request = {
+            "cmd": "status_game",
+            "game_id": game_id
         }
         result = await async_rpc_client.call(request)
         return result

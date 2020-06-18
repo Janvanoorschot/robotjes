@@ -14,12 +14,13 @@ class ConnectionSpec(BaseModel):
     size: int
 
 
-class PlayerStatus(BaseModel):
+class PlayerState(BaseModel):
     id: str
 
 
-class GameStatus(BaseModel):
+class GameState(BaseModel):
     id: str
-    players: List[PlayerStatus]
+    status: str
+    players: List[PlayerState]
 
 

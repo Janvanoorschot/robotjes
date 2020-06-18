@@ -2,11 +2,11 @@ import json
 import config
 import uuid
 import logging
-from bubblehub.model import GameStatus, PlayerStatus
+from bubblehub.model import GameState, PlayerState
 logger = logging.getLogger(__name__)
 
 from enum import Enum
-class GameState(Enum):
+class GameStatus(Enum):
     IDLE = 'idle'
     CREATED = 'created'
     STARTED = 'started'
@@ -25,7 +25,7 @@ class Bubble:
         self.bubbles_queue_name = config.BUBBLES_QUEUE
         self.gamestatus_queue_name = config.GAME_STATUS_QUEUE
         self.game_duration = 10
-        self.game_state = GameState.IDLE
+        self.game_state = GameStatus.IDLE
         self.routing_key = ''
 
     def connect(self, channel):
@@ -58,7 +58,7 @@ class Bubble:
         self.game_id = game_id
         self.spec = spec
         self.timer_tick = 0
-        self.game_state = GameState.CREATED
+        self.game_state = GameStatus.CREATED
         self.routing_key = f"{self.game_id}.status"
         reply = {
             'input': GameInput.CREATING.name,
@@ -74,7 +74,7 @@ class Bubble:
     def stop_game(self):
         logger.warning("stop_game")
         self.channel.basic_ack(delivery_tag=self.delivery_tag)
-        self.game_state = GameState.IDLE
+        self.game_state = GameStatus.IDLE
         # inform the hub
         reply = {
             'input': GameInput.STOPPING.name,
@@ -88,11 +88,14 @@ class Bubble:
             exchange=self.games_exchange_name, routing_key=self.routing_key, body=j)
 
     def status(self):
-        status = GameStatus(id=self.game_id, players=[])
+        status = GameState(
+            id=self.game_id,
+            status=self.game_state.name,
+            players=[])
         return status
 
     def timer(self, now):
-        if self.game_state != GameState.IDLE:
+        if self.game_state != GameStatus.IDLE:
             self.timer_tick = self.timer_tick + 1
             if self.timer_tick > self.game_duration:
                 self.stop_game()

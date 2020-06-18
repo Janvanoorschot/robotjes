@@ -1,1 +1,1 @@
-from .specs import BubbleStatus, BubbleSpec, ConnectionSpec, PlayerStatus, GameStatus
+from .specs import BubbleStatus, BubbleSpec, ConnectionSpec, PlayerState, GameState
