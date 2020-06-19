@@ -1,21 +1,28 @@
 import json
 from gi.repository import Gtk
 
-class RoboAdminWindow(Gtk.Window):
+class RoboTeacherWindow(Gtk.Window):
 
     def __init__(self):
         self.listeners = []
-        Gtk.Window.__init__(self, title="Robo")
+        Gtk.Window.__init__(self, title="Teacher")
 
-        self.box = Gtk.Box(spacing=6)
-        self.add(self.box)
+        leftbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        rightbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        button1 = Gtk.Button(label="Button1")
+        button2 = Gtk.Button(label="Button2")
+        button3 = Gtk.Button(label="Button3")
+        button4 = Gtk.Button(label="Button4")
+        leftbox.add(button1)
+        leftbox.add(button2)
+        rightbox.add(button3)
+        rightbox.add(button4)
 
-        self.button = Gtk.Button(label="REST")
-        self.button.connect("clicked", self.on_button_clicked)
-        self.box.pack_start(self.button, True, True, 0)
+        grid = Gtk.Grid()
+        self.add(grid)
+        grid.attach(leftbox, 0, 0, 1, 4)
+        grid.attach(rightbox, 1, 0, 4, 4)
 
-        self.textfield = Gtk.Label("empty")
-        self.box.pack_start(self.textfield, True, True, 0)
 
     def add_listener(self, listener):
         self.listeners.append(listener)
@@ -28,7 +35,7 @@ class RoboAdminWindow(Gtk.Window):
         self.textfield.set_text(text)
 
 
-class RoboAdmin():
+class RoboTeacher():
 
     def __init__(self, model, view):
         self.model = model
@@ -61,6 +68,7 @@ class RoboAdmin():
         status = j["status"]["status"]["status"]
         if status == "IDLE":
             self.game_id = None
+            self.view.set_text(json.dumps(j))
         else:
             self.view.set_text(json.dumps(j))
 

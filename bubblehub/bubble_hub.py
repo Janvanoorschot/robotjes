@@ -47,7 +47,6 @@ class BubbleHub:
         )
 
     def on_rest_request(self, ch, method, props, body):
-        logger.warning("on_rest_request")
         """ do the request/run/reply cycle"""
         try:
             request = json.loads(body)
@@ -109,7 +108,6 @@ class BubbleHub:
         return self.games
 
     def status_game(self, game_id):
-        logger.warning("status_game")
         if game_id in self.games:
             status = {
                 "game_id": game_id,
