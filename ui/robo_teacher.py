@@ -6,13 +6,14 @@ class RoboTeacherWindow(Gtk.Window):
     def __init__(self):
         self.listeners = []
         Gtk.Window.__init__(self, title="Teacher")
+        self.set_default_size(800,600)
 
         leftbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         rightbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        button1 = Gtk.Button(label="Button1")
-        button2 = Gtk.Button(label="Button2")
-        button3 = Gtk.Button(label="Button3")
-        button4 = Gtk.Button(label="Button4")
+        button1 = Gtk.Button(label="Button1", expand=True)
+        button2 = Gtk.Button(label="Button2", expand=True)
+        button3 = Gtk.Button(label="Button3", expand=True)
+        button4 = Gtk.Button(label="Button4", expand=True)
         leftbox.add(button1)
         leftbox.add(button2)
         rightbox.add(button3)

@@ -61,6 +61,7 @@ class RoboAdmin():
         status = j["status"]["status"]["status"]
         if status == "IDLE":
             self.game_id = None
+            self.view.set_text(json.dumps(j))
         else:
             self.view.set_text(json.dumps(j))
 
