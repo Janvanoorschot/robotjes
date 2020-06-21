@@ -8,21 +8,29 @@ class RoboTeacherWindow(Gtk.Window):
         Gtk.Window.__init__(self, title="Teacher")
         self.set_default_size(800,600)
 
-        leftbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        rightbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        button1 = Gtk.Button(label="Button1", expand=True)
-        button2 = Gtk.Button(label="Button2", expand=True)
+        leftbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, vexpand=True)
+        rightbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, expand=True)
+        bottombox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, hexpand=True)
+
+        button1 = Gtk.Button(label="Create", vexpand=True)
+        button2 = Gtk.Button(label="Button2", vexpand=True)
         button3 = Gtk.Button(label="Button3", expand=True)
         button4 = Gtk.Button(label="Button4", expand=True)
+        button5 = Gtk.Button(label="Button5", hexpand=True)
+        button6 = Gtk.Button(label="Button6", hexpand=True)
+
         leftbox.add(button1)
         leftbox.add(button2)
         rightbox.add(button3)
         rightbox.add(button4)
+        bottombox.add(button5)
+        bottombox.add(button6)
 
         grid = Gtk.Grid()
         self.add(grid)
         grid.attach(leftbox, 0, 0, 1, 4)
         grid.attach(rightbox, 1, 0, 4, 4)
+        grid.attach(bottombox, 0, 5, 5, 1)
 
 
     def add_listener(self, listener):
