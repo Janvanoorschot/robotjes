@@ -10,9 +10,15 @@ class RoboTeacherWindow(Gtk.Window):
 
         leftbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, vexpand=True)
         createbutton = Gtk.Button(label="Create")
-        stop_button = Gtk.Button(label="Stop")
         leftbox.add(createbutton )
+        stop_button = Gtk.Button(label="Stop")
         leftbox.add(stop_button)
+        leftbox.add(Gtk.Label("name"))
+        name_field = Gtk.Entry()
+        leftbox.add(name_field)
+        leftbox.add(Gtk.Label("password"))
+        password_field = Gtk.Entry()
+        leftbox.add(password_field)
 
         rightbox = Gtk.Grid()
         view_area = Gtk.GLArea(expand=True)
