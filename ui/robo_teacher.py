@@ -8,21 +8,23 @@ class RoboTeacherWindow(Gtk.Window):
         Gtk.Window.__init__(self, title="Teacher")
         self.set_default_size(800,600)
 
-        leftbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, vexpand=True)
-        rightbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, expand=True)
-        bottombox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, hexpand=True)
 
-        button1 = Gtk.Button(label="Create", vexpand=True)
-        button2 = Gtk.Button(label="Button2", vexpand=True)
-        button3 = Gtk.Button(label="Button3", expand=True)
+        view_area = Gtk.GLArea(expand=True)
         button4 = Gtk.Button(label="Button4", expand=True)
         button5 = Gtk.Button(label="Button5", hexpand=True)
         button6 = Gtk.Button(label="Button6", hexpand=True)
 
-        leftbox.add(button1)
-        leftbox.add(button2)
-        rightbox.add(button3)
+        leftbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, vexpand=True)
+        createbutton = Gtk.Button(label="Create")
+        stop_button = Gtk.Button(label="Stop")
+        leftbox.add(createbutton )
+        leftbox.add(stop_button)
+
+        rightbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, expand=True)
+        rightbox.add(view_area)
         rightbox.add(button4)
+
+        bottombox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, hexpand=True)
         bottombox.add(button5)
         bottombox.add(button6)
 
@@ -31,7 +33,6 @@ class RoboTeacherWindow(Gtk.Window):
         grid.attach(leftbox, 0, 0, 1, 4)
         grid.attach(rightbox, 1, 0, 4, 4)
         grid.attach(bottombox, 0, 5, 5, 1)
-
 
     def add_listener(self, listener):
         self.listeners.append(listener)
