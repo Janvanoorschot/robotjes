@@ -8,25 +8,23 @@ class RoboTeacherWindow(Gtk.Window):
         Gtk.Window.__init__(self, title="Teacher")
         self.set_default_size(800,600)
 
-
-        view_area = Gtk.GLArea(expand=True)
-        button4 = Gtk.Button(label="Button4", expand=True)
-        button5 = Gtk.Button(label="Button5", hexpand=True)
-        button6 = Gtk.Button(label="Button6", hexpand=True)
-
         leftbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, vexpand=True)
         createbutton = Gtk.Button(label="Create")
         stop_button = Gtk.Button(label="Stop")
         leftbox.add(createbutton )
         leftbox.add(stop_button)
 
-        rightbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, expand=True)
-        rightbox.add(view_area)
-        rightbox.add(button4)
+        rightbox = Gtk.Grid()
+        view_area = Gtk.GLArea(expand=True)
+        teams_area = Gtk.Grid(expand=True)
+        rightbox.attach(view_area, 0, 0, 4, 4)
+        rightbox.attach(teams_area, 0, 5, 4, 1)
 
         bottombox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, hexpand=True)
-        bottombox.add(button5)
-        bottombox.add(button6)
+        info_area = Gtk.Grid(hexpand=True)
+        bottombox.add(info_area)
+        status_box = Gtk.Entry(hexpand=True)
+        info_area.add(status_box)
 
         grid = Gtk.Grid()
         self.add(grid)
