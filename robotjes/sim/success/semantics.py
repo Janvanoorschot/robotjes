@@ -22,7 +22,7 @@ class Semantics:
             oper = self.opers[identifier]
             return oper(identifier, args, world)
         else:
-            print(f"unknown {identifier}")
+            print(f"unknown Semantics: {identifier}")
             return True
 
     def check(self, identifier, args, world):

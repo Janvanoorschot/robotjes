@@ -3,7 +3,7 @@ from .robo import Robo
 # inspiration from https://stackoverflow.com/questions/366682/how-to-limit-execution-time-of-a-function-call-in-python
 # The goal is to execute a piece of Python code including a timeout.
 
-TIMEOUT = 1
+TIMEOUT = 3
 
 from multiprocessing import Process
 from time import sleep
@@ -38,7 +38,7 @@ class RoboShell(object):
     def run(self, robo, script_file):
         with open(script_file, 'r') as file:
             data = file.read()
-            globalsParameter = {'__builtins__' : None, 'robo_admin': robo}
+            globalsParameter = {'__builtins__' : None, 'robo': robo}
             localsParameter = {'print': print, 'range': range, 'quit': quit}
             if run_with_limited_time(exec, (data, globalsParameter, localsParameter), {}, TIMEOUT):
                 pass

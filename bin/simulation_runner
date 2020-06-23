@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python 
 parser.add_argument('--pikaurl', type=str, default='amqp://guest:guest@localhost:5672/%2F', help='rabbitmq url')
 parser.add_argument('--rmqqueue', type=str, default='simulation_queue', help='rabbitmq queue to use for rpc calls')
 parser.add_argument('--simhost', type=str, default='localhost', help='host used to connect simulation server and client')
-parser.add_argument('--simport', type=int, default=9000, help='port on simulation server')
+parser.add_argument('--simport', type=int, default=9876, help='port on simulation server')
 parser.add_argument('--authkey', type=str, default='myownsecret', help='shared secret')
 args = parser.parse_args()
 
@@ -42,7 +42,7 @@ def run_simulation(mapstr, successjson, scriptstr):
     # prepare the reply
     recording = engine.get_recording()
     reply = []
-    reply.append("robo_admin.server.ExecResult")
+    reply.append("robo.server.ExecResult")
     content = {}
     content["success"] = recording.isSuccess() and success.isSuccess()
     content["hint"] = success.getHint()
@@ -57,7 +57,7 @@ def run_simulation(mapstr, successjson, scriptstr):
 
 def failure_reply(mapstr, msg):
     reply = []
-    reply.append("robo_admin.server.ExecResult")
+    reply.append("robo.server.ExecResult")
     content = {}
     content["success"] = False
     content["hint"] = None
