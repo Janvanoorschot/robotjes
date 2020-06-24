@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 import config
 
-from bubblehub.model import BubbleSpec, ConnectionSpec, BubbleStatus
+from bubblehub.model import GameSpec
 from . import GameStatus
 
 class BubbleHub:
@@ -18,6 +18,11 @@ class BubbleHub:
         self.bubblehubs_queue_name = config.BUBBLEHUBS_QUEUE
         self.games_queue_name = None
         self.games = {}
+        self.mazes = {
+            "maze_id1": {"name": "maze1"},
+            "maze_id2": {"name": "maze2"},
+            "maze_id3": {"name": "maze3"}
+        }
         self.bubbles = {}
 
     def connect(self, channel):
@@ -53,14 +58,21 @@ class BubbleHub:
             cmd = request.get('cmd', 'unknown')
             if cmd == 'create_game':
                 specs = request.get('specs', None)
-                game_id = self.create_game(BubbleSpec.parse_obj(specs))
+                game_id = self.create_game(GameSpec.parse_obj(specs))
                 reply = {'success': True, "game_id": game_id}
             elif cmd == 'list_games':
                 list = self.list_games()
                 reply = {'success': True, 'list': list}
-            elif cmd == 'status_game':
+            elif cmd == 'get_game':
                 game_id = request.get('game_id', None)
-                status = self.status_game(game_id)
+                status = self.get_game(game_id)
+                reply = {'success': True, 'status': status}
+            elif cmd == 'list_mazes':
+                list = self.list_mazes()
+                reply = {'success': True, 'list': list}
+            elif cmd == 'get_maze':
+                game_id = request.get('game_id', None)
+                status = self.get_game(game_id)
                 reply = {'success': True, 'status': status}
             else:
                 reply = {'success': False, 'error': f"unknown command: {cmd}"}
@@ -90,7 +102,7 @@ class BubbleHub:
         else:
             pass
 
-    def create_game(self, specs: BubbleSpec):
+    def create_game(self, specs: GameSpec):
         logger.warning("create_game")
         game_id = str(uuid.uuid4())
         request = {
@@ -107,7 +119,7 @@ class BubbleHub:
         logger.warning("list_games")
         return self.games
 
-    def status_game(self, game_id):
+    def get_game(self, game_id):
         if game_id in self.games:
             status = {
                 "game_id": game_id,
@@ -119,3 +131,18 @@ class BubbleHub:
             }
         return status
 
+    def list_mazes(self):
+        logger.warning("list_mazes")
+        return self.mazes
+
+    def get_maze(self, maze_id):
+        if maze_id in self.mazes:
+            status = {
+                "maze_id": maze_id,
+                "status": self.mazes[maze_id]
+            }
+        else:
+            status = {
+                "maze_id": maze_id
+            }
+        return status

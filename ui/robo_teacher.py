@@ -18,7 +18,7 @@ class RoboTeacher():
     def timer(self, t):
         # self.model.list_games(self.list_games_db)
         if self.game_id:
-            self.model.status_game(self.game_id, self.status_game_db)
+            self.model.get_game(self.game_id, self.status_game_db)
 
     def create_game(self):
         self.view.set_text("")
