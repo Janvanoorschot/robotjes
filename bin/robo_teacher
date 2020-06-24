@@ -12,7 +12,7 @@ from ui import RoboTeacherWindow, RoboTeacher, RoboRequestor
 
 
 model = RoboRequestor('http://localhost:8000/')
-view = RoboTeacherWindow()
+view = RoboTeacherWindow(model)
 controller = RoboTeacher(model, view)
 view.add_listener(controller)
 

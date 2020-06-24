@@ -2,21 +2,20 @@ from gi.repository import Gtk, Gdk
 
 class RoboTeacherWindow(Gtk.Window):
 
-    def __init__(self):
+    def __init__(self, model):
         self.listeners = []
         Gtk.Window.__init__(self, title="Teacher")
         self.set_default_size(800,600)
-        self.model = None
-        self.controller = None
+        self.model = model
+        self.listeners = []
 
         toppane = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
 
         leftbox = Gtk.Grid(expand=True, orientation=Gtk.Orientation.VERTICAL)
-        creategame_box = CreateGameComponent(self.model, self.controller)
+        creategame_box = CreateGameComponent(self.model, self)
         leftbox.add(creategame_box)
-        games_box = GamesComponent(self.model, self.controller)
+        games_box = GamesComponent(self.model, self)
         leftbox.add(games_box)
-
         rightbox = Gtk.Grid()
         view_area = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
         teams_area = Gtk.Grid(expand=True)
@@ -50,13 +49,15 @@ class RoboTeacherWindow(Gtk.Window):
 
 class CreateGameComponent(Gtk.Grid):
 
-    def __init__(self, model, controller):
+    def __init__(self, model, owner):
         super().__init__(expand=True, orientation=Gtk.Orientation.VERTICAL)
         self.model = model
-        self.controller = controller
+        self.owner = owner
         self.__construct()
 
     def __construct(self):
+        self.mazes_box = MazesComponent(self.model, self.owner)
+        self.add(self.mazes_box)
         self.add(Gtk.Label("name"))
         self.name_field = Gtk.Entry()
         self.add(self.name_field)
@@ -70,10 +71,10 @@ class CreateGameComponent(Gtk.Grid):
         stop_button.connect("clicked", self.on_stop_button_clicked)
         self.add(stop_button)
 
-    def on_create_button_clicked(self):
+    def on_create_button_clicked(self, button):
         pass
 
-    def on_stop_button_clicked(self):
+    def on_stop_button_clicked(self, button):
         pass
 
     def refresh(self):
@@ -85,27 +86,29 @@ class CreateGameComponent(Gtk.Grid):
 
 class GamesComponent(Gtk.Grid):
 
-    def __init__(self, model, controller):
+    def __init__(self, model, owner):
         super().__init__(expand=True, orientation=Gtk.Orientation.VERTICAL)
         self.model = model
-        self.controller = controller
+        self.owner = owner
         self.__construct()
-        self.__dummy_fill()
 
     def __construct(self):
         glabel = Gtk.EventBox()
-        glabel.add(Gtk.Label("games"))
+        glabel.add(Gtk.Label("Available Games"))
         color = Gdk.color_parse('grey')
         glabel.modify_bg(Gtk.StateType.NORMAL, color)
         self.attach(glabel, 0, 0, 1, 1)
-        self.games_field = Gtk.ListBox(expand=True)
-        self.attach_next_to(self.games_field, glabel, Gtk.PositionType.BOTTOM, 1, 1)
 
-    def __dummy_fill(self):
-        for i in range(10):
-            item = Gtk.ListBoxRow()
-            item.add(Gtk.Label(str(i)))
-            self.games_field.add(item)
+        # list of the games
+        self.games_model = get_games_model(self.model)
+        self.games_field = Gtk.TreeView(self.games_model, expand=True)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Name", renderer, text=0)
+        self.games_field.append_column(column)
+        self.scrollable_gameslist = Gtk.ScrolledWindow()
+        self.scrollable_gameslist.set_vexpand(True)
+        self.scrollable_gameslist.add(self.games_field)
+        self.attach_next_to(self.scrollable_gameslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
 
     def refresh(self):
         pass
@@ -113,3 +116,47 @@ class GamesComponent(Gtk.Grid):
     def timer(self):
         pass
 
+class MazesComponent(Gtk.Grid):
+
+    def __init__(self, model, owner):
+        super().__init__(expand=True, orientation=Gtk.Orientation.VERTICAL)
+        self.model = model
+        self.owner = owner
+        self.__construct()
+
+    def __construct(self):
+        glabel = Gtk.EventBox()
+        glabel.add(Gtk.Label("Available Mazes"))
+        color = Gdk.color_parse('grey')
+        glabel.modify_bg(Gtk.StateType.NORMAL, color)
+        self.attach(glabel, 0, 0, 1, 1)
+
+        self.mazes_model = get_mazes_model(self.model)
+        self.mazes_field = Gtk.TreeView(self.mazes_model, expand=True)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Name", renderer, text=0)
+        self.mazes_field.append_column(column)
+        self.scrollable_mazeslist = Gtk.ScrolledWindow()
+        self.scrollable_mazeslist.set_vexpand(True)
+        self.scrollable_mazeslist.add(self.mazes_field)
+        self.attach_next_to(self.scrollable_mazeslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
+
+    def refresh(self):
+        pass
+
+    def timer(self):
+        pass
+
+def get_games_model(model):
+    store = Gtk.ListStore(str, str, float)
+    store.append(["game1", "test1", 1.0])
+    store.append(["game2", "test2", 2.0])
+    store.append(["game3", "test3", 3.0])
+    return store
+
+def get_mazes_model(model):
+    store = Gtk.ListStore(str, str, float)
+    store.append(["maze1", "test1", 1.0])
+    store.append(["maze2", "test2", 2.0])
+    store.append(["maze3", "test3", 3.0])
+    return store
