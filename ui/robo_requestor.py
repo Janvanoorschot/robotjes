@@ -10,16 +10,20 @@ class RoboRequestor:
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
 
     def list_games(self, cb):
-        ftr = self.executor.submit(self.get_url, self.create_url('bubbles'))
+        ftr = self.executor.submit(self.get_url, self.create_url('games'))
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
     def create_game(self, cb):
-        ftr = self.executor.submit(self.post_url, self.create_url('bubbles'))
+        ftr = self.executor.submit(self.post_url, self.create_url('games'))
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
     def status_game(self, game_id, cb):
-        url = self.create_url(f"bubbles/{game_id}")
+        url = self.create_url(f"games/{game_id}")
         ftr = self.executor.submit(self.get_url, url)
+        ftr.add_done_callback(functools.partial(self.done_url, cb))
+
+    def list_mazes(self, cb):
+        ftr = self.executor.submit(self.get_url, self.create_url('mazes'))
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
     # requests support calls
