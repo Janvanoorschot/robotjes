@@ -16,9 +16,11 @@ view = RoboTeacherWindow(model)
 controller = RoboTeacher(model, view)
 view.add_listener(controller)
 
+
 def timer():
     controller.timer(datetime.datetime.now())
     GLib.timeout_add(1000, timer)
+
 
 GLib.timeout_add(1000, timer)
 
