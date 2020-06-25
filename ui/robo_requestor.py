@@ -27,8 +27,8 @@ class RoboRequestor:
         ftr = self.executor.submit(self.get_url, self.create_url('mazes'))
         ftr.add_done_callback(functools.partial(self.done_url, my_cb))
 
-    def create_game(self, cb):
-        ftr = self.executor.submit(self.post_url, self.create_url('games'))
+    def create_game(self, cb, spec):
+        ftr = self.executor.submit(self.post_url, self.create_url('games'), spec)
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
     def status_game(self, game_id, cb):
@@ -40,8 +40,8 @@ class RoboRequestor:
     def create_url(self, path):
         return f"{self.url}{path}"
 
-    def post_url(self, url):
-        r = requests.post(url, json = {'size': 13})
+    def post_url(self, url, data):
+        r = requests.post(url, json = data)
         return r.json()
 
     def get_url(self, url):

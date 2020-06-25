@@ -101,6 +101,7 @@ class GamesComponent(Gtk.Grid):
         self.games_field = None
         self.games_model = None
         self.games_selection = None
+        self.games_selected = None
         self.__construct()
 
     def __construct(self):
@@ -139,7 +140,7 @@ class GamesComponent(Gtk.Grid):
         (model, pathlist) = tree_selection.get_selected_rows()
         for path in pathlist :
             tree_iter = model.get_iter(path)
-            value = model.get_value(tree_iter,0)
+            self.games_selected = model.get_value(tree_iter,1)
 
 
 class MazesComponent(Gtk.Grid):
@@ -151,6 +152,7 @@ class MazesComponent(Gtk.Grid):
         self.mazes_field = None
         self.mazes_model = None
         self.mazes_selection = None
+        self.mazes_selected = None
         self.__construct()
 
     def __construct(self):
@@ -188,7 +190,10 @@ class MazesComponent(Gtk.Grid):
         (model, pathlist) = tree_selection.get_selected_rows()
         for path in pathlist :
             tree_iter = model.get_iter(path)
-            value = model.get_value(tree_iter,0)
+            self.mazes_selected = model.get_value(tree_iter,1)
+
+    def get_selected_id(self):
+        return self.mazes_selected
 
 
 def get_games_model(model):
