@@ -1,51 +1,41 @@
 ###
-# create a bubble
-POST http://localhost:8000/bubbles
+# create a game
+POST http://localhost:8000/games
 Content-Type: application/json
 
 {
-  "size": 1
+    "name": "my_game_name",
+    "password": "secret",
+    "maze_id": "maze_id1"
 }
 
 ###
-# get all bubbles
-GET http://localhost:8000/bubbles
-Content-Type: application/json
-
-{
-}
-###
-# get one bubble
-GET http://localhost:8000/bubbles/1111_2222_3333_4444
+# get all games
+GET http://localhost:8000/games
 Content-Type: application/json
 
 {
 }
-
 ###
-# connect to a bubble
-POST http://localhost:8000/bubbles/1111_2222_3333_4444/connections
-Content-Type: application/json
-
-{
-    "size": 1
-}
-
-###
-# get all connections to a bubble
-GET http://localhost:8000/bubbles/1111_2222_3333_4444/connections
+# get one game
+GET http://localhost:8000/games/bee7e9d9-0ea8-4c2a-9859-55b510aa9735
 Content-Type: application/json
 
 {
 }
 
 ###
-# Get information about a connection to a bubble
-GET http://localhost:8000/bubbles/1111_2222_3333_4444/connections/5555_6666_7777_888
+# get all mazes
+GET http://localhost:8000/mazes
 Content-Type: application/json
 
 {
 }
 
+###
+# get one maze
+GET http://localhost:8000/mazes/maze_id1
+Content-Type: application/json
 
-
+{
+}

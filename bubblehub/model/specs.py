@@ -1,22 +1,14 @@
 from typing import List
 from pydantic import BaseModel
 
-class BubbleSpec(BaseModel):
-    size: int
-    size: int
-
-
-class BubbleStatus(BaseModel):
-    state: str
-
-
-class ConnectionSpec(BaseModel):
-    size: int
+class GameSpec(BaseModel):
+    name: str
+    password: str
+    maze_id: str
 
 
 class PlayerState(BaseModel):
     id: str
-
 
 class GameState(BaseModel):
     id: str

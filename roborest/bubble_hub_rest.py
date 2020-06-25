@@ -2,7 +2,7 @@ from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 from roborest import app
 from monitor import get_monitor
-from bubblehub.model import BubbleStatus, ConnectionSpec, BubbleSpec
+from bubblehub.model import GameSpec
 from . import async_rpc_client
 
 
@@ -12,8 +12,8 @@ async def redirect():
     return response
 
 
-@app.post("/bubbles")
-async def create_game(specs: BubbleSpec):
+@app.post("/games")
+async def create_game(specs: GameSpec):
     """ Create a game"""
     async with get_monitor():
         request = {
@@ -24,7 +24,7 @@ async def create_game(specs: BubbleSpec):
         return result
 
 
-@app.get("/bubbles")
+@app.get("/games")
 async def list_games():
     """List current games"""
     async with get_monitor():
@@ -35,13 +35,38 @@ async def list_games():
         return result
 
 
-@app.get("/bubbles/{game_id}")
+@app.get("/games/{game_id}")
 async def list_game(game_id: str):
     """Information about a game"""
     async with get_monitor():
         request = {
-            "cmd": "status_game",
+            "cmd": "get_game",
             "game_id": game_id
         }
         result = await async_rpc_client.call(request)
         return result
+
+
+@app.get("/mazes")
+async def list_mazes():
+    """List current mazes"""
+    async with get_monitor():
+        request = {
+            "cmd": "list_mazes"
+        }
+        result = await async_rpc_client.call(request)
+        return result
+
+
+@app.get("/mazes/{maze_id}")
+async def list_maze(maze_id: str):
+    """List specific maze"""
+    async with get_monitor():
+        request = {
+            "cmd": "get_maze",
+            "maze_id": maze_id
+        }
+        result = await async_rpc_client.call(request)
+        return result
+
+

@@ -12,10 +12,10 @@ class RoboTeacherWindow(Gtk.Window):
         toppane = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
 
         leftbox = Gtk.Grid(expand=True, orientation=Gtk.Orientation.VERTICAL)
-        creategame_box = CreateGameComponent(self.model, self)
-        leftbox.add(creategame_box)
-        games_box = GamesComponent(self.model, self)
-        leftbox.add(games_box)
+        self.creategame_component = CreateGameComponent(self.model, self)
+        leftbox.add(self.creategame_component)
+        self.games_component = GamesComponent(self.model, self)
+        leftbox.add(self.games_component)
         rightbox = Gtk.Grid()
         view_area = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
         teams_area = Gtk.Grid(expand=True)
@@ -46,6 +46,10 @@ class RoboTeacherWindow(Gtk.Window):
     def set_text(self, text):
         self.textfield.set_text(text)
 
+    def refresh(self):
+        self.creategame_component.refresh()
+        self.games_component.refresh()
+
 
 class CreateGameComponent(Gtk.Grid):
 
@@ -56,8 +60,8 @@ class CreateGameComponent(Gtk.Grid):
         self.__construct()
 
     def __construct(self):
-        self.mazes_box = MazesComponent(self.model, self.owner)
-        self.add(self.mazes_box)
+        self.mazes_component = MazesComponent(self.model, self.owner)
+        self.add(self.mazes_component)
         self.add(Gtk.Label("name"))
         self.name_field = Gtk.Entry()
         self.add(self.name_field)
@@ -78,10 +82,7 @@ class CreateGameComponent(Gtk.Grid):
         pass
 
     def refresh(self):
-        pass
-
-    def timer(self):
-        pass
+        self.mazes_component.refresh()
 
 
 class GamesComponent(Gtk.Grid):
@@ -100,8 +101,7 @@ class GamesComponent(Gtk.Grid):
         self.attach(glabel, 0, 0, 1, 1)
 
         # list of the games
-        self.games_model = get_games_model(self.model)
-        self.games_field = Gtk.TreeView(self.games_model, expand=True)
+        self.games_field = Gtk.TreeView(expand=True)
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn("Name", renderer, text=0)
         self.games_field.append_column(column)
@@ -111,10 +111,8 @@ class GamesComponent(Gtk.Grid):
         self.attach_next_to(self.scrollable_gameslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
 
     def refresh(self):
-        pass
+        self.games_field.set_model(get_games_model(self.model))
 
-    def timer(self):
-        pass
 
 class MazesComponent(Gtk.Grid):
 
@@ -131,8 +129,7 @@ class MazesComponent(Gtk.Grid):
         glabel.modify_bg(Gtk.StateType.NORMAL, color)
         self.attach(glabel, 0, 0, 1, 1)
 
-        self.mazes_model = get_mazes_model(self.model)
-        self.mazes_field = Gtk.TreeView(self.mazes_model, expand=True)
+        self.mazes_field = Gtk.TreeView(expand=True)
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn("Name", renderer, text=0)
         self.mazes_field.append_column(column)
@@ -142,10 +139,8 @@ class MazesComponent(Gtk.Grid):
         self.attach_next_to(self.scrollable_mazeslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
 
     def refresh(self):
-        pass
+        self.mazes_field.set_model(get_mazes_model(self.model))
 
-    def timer(self):
-        pass
 
 def get_games_model(model):
     store = Gtk.ListStore(str, str, float)
@@ -153,6 +148,7 @@ def get_games_model(model):
     store.append(["game2", "test2", 2.0])
     store.append(["game3", "test3", 3.0])
     return store
+
 
 def get_mazes_model(model):
     store = Gtk.ListStore(str, str, float)
