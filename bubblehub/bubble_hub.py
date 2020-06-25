@@ -117,7 +117,11 @@ class BubbleHub:
 
     def list_games(self):
         logger.warning("list_games")
-        return self.games
+        result = {}
+        for game_id, game in self.games.items():
+            if game['status'] != GameStatus.IDLE.name:
+                result[game_id] = game
+        return result
 
     def get_game(self, game_id):
         if game_id in self.games:

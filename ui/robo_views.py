@@ -134,6 +134,9 @@ class GamesComponent(Gtk.Grid):
                         break
                 else:
                     self.games_model.append([game['id'], game_id])
+            for entry in self.games_model:
+                if not entry[1] in games:
+                    self.games_model.remove(entry.iter)
         self.model.list_games(cb)
 
     def selection_changed(self, tree_selection):
@@ -141,6 +144,9 @@ class GamesComponent(Gtk.Grid):
         for path in pathlist :
             tree_iter = model.get_iter(path)
             self.games_selected = model.get_value(tree_iter,1)
+
+    def get_selected_id(self):
+        return self.games_selected
 
 
 class MazesComponent(Gtk.Grid):
@@ -184,6 +190,9 @@ class MazesComponent(Gtk.Grid):
                         break
                 else:
                     self.mazes_model.append([maze['name'], maze_id])
+            for entry in self.mazes_model:
+                if not entry[1] in mazes:
+                    self.mazes_model.remove(entry.iter)
         self.model.list_mazes(cb)
 
     def selection_changed(self, tree_selection):
@@ -194,19 +203,3 @@ class MazesComponent(Gtk.Grid):
 
     def get_selected_id(self):
         return self.mazes_selected
-
-
-def get_games_model(model):
-    store = Gtk.ListStore(str, str, float)
-    store.append(["game1", "test1", 1.0])
-    store.append(["game2", "test2", 2.0])
-    store.append(["game3", "test3", 3.0])
-    return store
-
-
-def get_mazes_model(model):
-    store = Gtk.ListStore(str, str, float)
-    store.append(["maze1", "test1", 1.0])
-    store.append(["maze2", "test2", 2.0])
-    store.append(["maze3", "test3", 3.0])
-    return store
