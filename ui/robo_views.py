@@ -39,9 +39,9 @@ class RoboTeacherWindow(Gtk.Window):
     def add_listener(self, listener):
         self.listeners.append(listener)
 
-    def on_button_clicked(self, widget):
+    def do_signal(self, etype, sender, *argv):
         for listener in self.listeners:
-            listener.event("EVT_CREATE_GAME", self)
+            listener.do_signal(etype, self, *argv)
 
     def set_text(self, text):
         self.textfield.set_text(text)
@@ -76,7 +76,14 @@ class CreateGameComponent(Gtk.Grid):
         self.add(stop_button)
 
     def on_create_button_clicked(self, button):
-        pass
+        name = self.name_field.get_text()
+        password = self.name_field.get_text()
+        maze_id = self.mazes_component.get_selected_id()
+        self.owner.do_signal("EVT_CREATE_GAME", self, {
+            "name": name,
+            "password": password,
+            "maze_id": maze_id
+        })
 
     def on_stop_button_clicked(self, button):
         pass
@@ -91,6 +98,9 @@ class GamesComponent(Gtk.Grid):
         super().__init__(expand=True, orientation=Gtk.Orientation.VERTICAL)
         self.model = model
         self.owner = owner
+        self.games_field = None
+        self.games_model = None
+        self.games_selection = None
         self.__construct()
 
     def __construct(self):
@@ -108,10 +118,28 @@ class GamesComponent(Gtk.Grid):
         self.scrollable_gameslist = Gtk.ScrolledWindow()
         self.scrollable_gameslist.set_vexpand(True)
         self.scrollable_gameslist.add(self.games_field)
+        self.games_model = Gtk.ListStore(str, str)
+        self.games_field.set_model(self.games_model)
+        self.games_selection = self.games_field.get_selection()
+        self.games_selection.set_mode(Gtk.SelectionMode.SINGLE)
+        self.games_selection.connect("changed", self.selection_changed)
         self.attach_next_to(self.scrollable_gameslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
 
     def refresh(self):
-        self.games_field.set_model(get_games_model(self.model))
+        def cb(games):
+            for game_id, game in games.items():
+                for entry in self.games_model:
+                    if entry[1] == game_id:
+                        break
+                else:
+                    self.games_model.append([game['id'], game_id])
+        self.model.list_games(cb)
+
+    def selection_changed(self, tree_selection):
+        (model, pathlist) = tree_selection.get_selected_rows()
+        for path in pathlist :
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter,0)
 
 
 class MazesComponent(Gtk.Grid):
@@ -120,6 +148,9 @@ class MazesComponent(Gtk.Grid):
         super().__init__(expand=True, orientation=Gtk.Orientation.VERTICAL)
         self.model = model
         self.owner = owner
+        self.mazes_field = None
+        self.mazes_model = None
+        self.mazes_selection = None
         self.__construct()
 
     def __construct(self):
@@ -136,10 +167,28 @@ class MazesComponent(Gtk.Grid):
         self.scrollable_mazeslist = Gtk.ScrolledWindow()
         self.scrollable_mazeslist.set_vexpand(True)
         self.scrollable_mazeslist.add(self.mazes_field)
+        self.mazes_model = Gtk.ListStore(str, str)
+        self.mazes_field.set_model(self.mazes_model)
+        self.mazes_selection = self.mazes_field.get_selection()
+        self.mazes_selection.set_mode(Gtk.SelectionMode.SINGLE)
+        self.mazes_selection.connect("changed", self.selection_changed)
         self.attach_next_to(self.scrollable_mazeslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
 
     def refresh(self):
-        self.mazes_field.set_model(get_mazes_model(self.model))
+        def cb(mazes):
+            for maze_id, maze in mazes.items():
+                for entry in self.mazes_model:
+                    if entry[1] == maze_id:
+                        break
+                else:
+                    self.mazes_model.append([maze['name'], maze_id])
+        self.model.list_mazes(cb)
+
+    def selection_changed(self, tree_selection):
+        (model, pathlist) = tree_selection.get_selected_rows()
+        for path in pathlist :
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter,0)
 
 
 def get_games_model(model):
