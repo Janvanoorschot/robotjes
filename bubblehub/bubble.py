@@ -10,6 +10,8 @@ class GameStatus(Enum):
     IDLE = 'idle'
     CREATED = 'created'
     STARTED = 'started'
+    STOPPED = 'stopped'
+
 class GameInput(Enum):
     CREATING = 'creating'
     STARTING = 'starting'
@@ -26,7 +28,7 @@ class Bubble:
         self.gamestatus_queue_name = config.GAME_STATUS_QUEUE
         self.game_duration = 10
         self.game_state = GameStatus.IDLE
-        self.routing_key = ''
+        self.games_routing_key = ''
 
     def connect(self, channel):
         self.channel = channel
@@ -55,11 +57,24 @@ class Bubble:
 
     def create_game(self, game_id, spec):
         logger.warning("start_game")
+        # put ourselfs in the correct state
         self.game_id = game_id
         self.spec = spec
         self.timer_tick = 0
         self.game_state = GameStatus.CREATED
-        self.routing_key = f"{self.game_id}.status"
+        self.games_routing_key = f"{self.game_id}.status"
+        # start listening to messages for this game
+        result = self.channel.queue_declare('', exclusive=True)
+        self.game_queue_name = result.method.queue
+        self.game_routing_key = f"{self.game_id}.game"
+        self.channel.queue_bind(
+            exchange=self.games_exchange_name,
+            queue=self.game_queue_name,
+            routing_key=self.game_routing_key
+        )
+        self.channel.basic_consume(queue=self.game_queue_name, on_message_callback=self.on_game_message)
+
+        # send a status change
         reply = {
             'input': GameInput.CREATING.name,
             'state': self.game_state.name,
@@ -69,12 +84,34 @@ class Bubble:
         }
         j = json.dumps(reply)
         self.channel.basic_publish(
-            exchange=self.games_exchange_name, routing_key=self.routing_key, body=j)
+            exchange=self.games_exchange_name, routing_key=self.games_routing_key, body=j)
+
+    def on_game_message(self, channel, method_frame, header_frame, body):
+        logger.warning("on_game_message")
+        self.delivery_tag = method_frame.delivery_tag
+        try:
+            request = json.loads(body)
+            game_id = request["game_id"]
+            specs = request["specs"]
+            self.create_game(game_id, specs)
+        except json.decoder.JSONDecodeError as jsonerror:
+            logger.warning(f"json error: {str(jsonerror)}")
+            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+        except Exception as e:
+            logger.warning(f"message error: {str(e)}")
+            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
     def stop_game(self):
+        # put ourselfs in the correct state
         logger.warning("stop_game")
         self.channel.basic_ack(delivery_tag=self.delivery_tag)
         self.game_state = GameStatus.IDLE
+        # stop listening to the queue
+        self.channel.queue_unbind(
+            exchange=self.games_exchange_name,
+            queue=self.game_queue_name,
+            routing_key=self.game_routing_key
+        )
         # inform the hub
         reply = {
             'input': GameInput.STOPPING.name,
@@ -85,7 +122,7 @@ class Bubble:
         }
         j = json.dumps(reply)
         self.channel.basic_publish(
-            exchange=self.games_exchange_name, routing_key=self.routing_key, body=j)
+            exchange=self.games_exchange_name, routing_key=self.games_routing_key, body=j)
 
     def status(self):
         status = GameState(
