@@ -13,8 +13,8 @@ class RoboPlayerWindow(Gtk.Window):
         toppane = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
 
         leftbox = Gtk.Grid(expand=True, orientation=Gtk.Orientation.VERTICAL)
-        self.games_component = GamesComponent(self.model, self)
-        leftbox.add(self.games_component)
+        self.registerplayer_component = RegisterPlayerComponent(self.model, self)
+        leftbox.add(self.registerplayer_component)
         rightbox = Gtk.Grid()
         view_area = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
         teams_area = Gtk.Grid(expand=True)
@@ -43,9 +43,60 @@ class RoboPlayerWindow(Gtk.Window):
             listener.do_signal(etype, self, *argv)
 
     def set_text(self, text):
-        self.textfield.set_text(text)
+        pass
+
+    def refresh(self):
+        pass
+
+
+class RegisterPlayerComponent(Gtk.Grid):
+
+    def __init__(self, model, owner):
+        super().__init__(expand=True, orientation=Gtk.Orientation.VERTICAL)
+        self.model = model
+        self.owner = owner
+        self.__construct()
+
+    def __construct(self):
+        self.add(Gtk.Label("name"))
+        self.name_field = Gtk.Entry()
+        self.add(self.name_field)
+        self.dir_chooser = DirectorySelectorComponent(self)
+        self.add(self.dir_chooser)
+        self.games_component = GamesComponent(self.model, self)
+        self.add(self.games_component)
+        self.add(Gtk.Label("password"))
+        self.password_field = Gtk.Entry()
+        self.add(self.password_field)
+        create_button = Gtk.Button(label="Register")
+        create_button.connect("clicked", self.on_register_button_clicked)
+        self.add(create_button )
+
+    def on_register_button_clicked(self, button):
+        name = self.name_field.get_text()
+        password = self.name_field.get_text()
+        maze_id = self.mazes_component.get_selected_id()
+        self.owner.do_signal("EVT_REGISTER_PLAYER", self, {
+            "name": name,
+            "password": password,
+            "maze_id": maze_id
+        })
 
     def refresh(self):
         self.games_component.refresh()
 
+
+class DirectorySelectorComponent(Gtk.Box):
+
+    def __init__(self, owner):
+        super().__init__(expand=True, orientation=Gtk.Orientation.HORIZONTAL)
+        self.owner = owner
+        self.__construct()
+
+    def __construct(self):
+        self.button = Gtk.FileChooserButton(action=Gtk.FileChooserAction.SELECT_FOLDER)
+        self.add(self.button)
+
+    def refresh(self):
+        pass
 
