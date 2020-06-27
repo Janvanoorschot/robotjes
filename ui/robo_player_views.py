@@ -1,10 +1,10 @@
 from gi.repository import Gtk, Gdk
 
-class RoboTeacherWindow(Gtk.Window):
+class RoboPlayerWindow(Gtk.Window):
 
     def __init__(self, model):
         self.listeners = []
-        Gtk.Window.__init__(self, title="Teacher")
+        Gtk.Window.__init__(self, title="Player")
         self.set_default_size(800,600)
         self.model = model
         self.listeners = []

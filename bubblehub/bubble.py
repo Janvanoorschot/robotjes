@@ -44,6 +44,7 @@ class Bubble:
         logger.warning("on_hub_message")
         self.delivery_tag = method_frame.delivery_tag
         try:
+            # for the time being, the only message from bubble-hub is 'create-game'
             request = json.loads(body)
             game_id = request["game_id"]
             specs = request["specs"]
@@ -104,9 +105,8 @@ class Bubble:
     def stop_game(self):
         # put ourselfs in the correct state
         logger.warning("stop_game")
-        self.channel.basic_ack(delivery_tag=self.delivery_tag)
         self.game_state = GameStatus.IDLE
-        # stop listening to the queue
+        # stop listening to the queue for messages from this game
         self.channel.queue_unbind(
             exchange=self.games_exchange_name,
             queue=self.game_queue_name,
@@ -123,6 +123,9 @@ class Bubble:
         j = json.dumps(reply)
         self.channel.basic_publish(
             exchange=self.games_exchange_name, routing_key=self.games_routing_key, body=j)
+        # we only now can ACK the 'create-game' message
+        self.channel.basic_ack(delivery_tag=self.delivery_tag)
+
 
     def status(self):
         status = GameState(

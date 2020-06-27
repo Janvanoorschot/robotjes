@@ -1,8 +1,8 @@
 import json
 
-class RoboTeacher():
+class RoboUmpire():
 
-    """ Controller for the Robomind Teacher UI """
+    """ Controller for the Robomind Umpire UI """
 
     def __init__(self, model, view):
         self.model = model

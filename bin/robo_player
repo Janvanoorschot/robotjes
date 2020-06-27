@@ -8,12 +8,12 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import GLib
-from ui import RoboUmpireWindow, RoboUmpire, RoboRequestor
+from ui import RoboPlayerWindow, RoboPlayer, RoboRequestor
 
 
 model = RoboRequestor('http://localhost:8000/')
-view = RoboUmpireWindow(model)
-controller = RoboUmpire(model, view)
+view = RoboPlayerWindow(model)
+controller = RoboPlayer(model, view)
 view.add_listener(controller)
 
 
