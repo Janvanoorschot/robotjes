@@ -46,7 +46,7 @@ class RoboPlayerWindow(Gtk.Window):
         pass
 
     def refresh(self):
-        pass
+        self.registerplayer_component.refresh()
 
 
 class RegisterPlayerComponent(Gtk.Grid):
@@ -75,11 +75,13 @@ class RegisterPlayerComponent(Gtk.Grid):
     def on_register_button_clicked(self, button):
         name = self.name_field.get_text()
         password = self.name_field.get_text()
-        maze_id = self.mazes_component.get_selected_id()
+        game_id = self.games_component.get_selected_id()
+        directory = self.dir_chooser.get_current_folder()
         self.owner.do_signal("EVT_REGISTER_PLAYER", self, {
-            "name": name,
+            "game_id": game_id,
+            "player_name": name,
             "password": password,
-            "maze_id": maze_id
+            "directory": directory
         })
 
     def refresh(self):
@@ -97,6 +99,7 @@ class DirectorySelectorComponent(Gtk.Box):
         self.button = Gtk.FileChooserButton(action=Gtk.FileChooserAction.SELECT_FOLDER)
         self.add(self.button)
 
-    def refresh(self):
-        pass
+    def get_current_folder(self):
+        return self.button.get_current_folder()
+
 

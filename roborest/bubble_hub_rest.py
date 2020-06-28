@@ -2,7 +2,7 @@ from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 from roborest import app
 from monitor import get_monitor
-from bubblehub.model import GameSpec
+from bubblehub.model import GameSpec, RegistrationSpec
 from . import async_rpc_client
 
 
@@ -45,6 +45,13 @@ async def list_game(game_id: str):
         }
         result = await async_rpc_client.call(request)
         return result
+
+
+@app.put("/games/{game_id}")
+async def register_with_game(game_id: str, specs: RegistrationSpec):
+    """Register with a game"""
+    async with get_monitor():
+        return None
 
 
 @app.get("/mazes")

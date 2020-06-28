@@ -10,16 +10,24 @@ class RoboPlayer():
         self.game_id = None
 
     def do_signal(self, etype, sender, *argv):
-        if etype == "EVT_CREATE_GAME":
-            self.create_game(argv[0])
+        if etype == "EVT_REGISTER_PLAYER":
+            self.register_player(argv[0])
         else:
             pass
 
     def timer(self, t):
         self.view.refresh()
 
-    def create_game(self, spec):
-        self.model.create_game(self.create_game_cb, spec)
+    def register_player(self, spec):
+        player_name = spec.get("player_name", "Anon")
+        password = spec.get("password", "")
+        game_id = spec.get("game_id", None)
+        directory = spec.get("directory", ".")
+        self.model.register_player(self.register_player_cb, {
+            "game_id":game_id,
+            "player_name": player_name,
+            "password": password
+        })
 
-    def create_game_cb(self, reply):
+    def register_player_cb(self, reply):
         pass

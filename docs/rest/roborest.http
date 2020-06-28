@@ -1,3 +1,24 @@
+###############################################################
+# Mazes
+###############################################################
+###
+# get all mazes
+GET http://localhost:8000/mazes
+Content-Type: application/json
+
+{
+}
+
+###
+# get one maze
+GET http://localhost:8000/mazes/maze_id1
+Content-Type: application/json
+
+{
+}
+###############################################################
+# Games
+###############################################################
 ###
 # create a game
 POST http://localhost:8000/games
@@ -17,25 +38,19 @@ Content-Type: application/json
 {
 }
 ###
-# get one game
+# get info about a/one game
 GET http://localhost:8000/games/bee7e9d9-0ea8-4c2a-9859-55b510aa9735
 Content-Type: application/json
 
 {
 }
-
 ###
-# get all mazes
-GET http://localhost:8000/mazes
+# Modify a game, in this case register a user
+PUT http://localhost:8000/games/bee7e9d9-0ea8-4c2a-9859-55b510aa9735
 Content-Type: application/json
 
 {
 }
-
-###
-# get one maze
-GET http://localhost:8000/mazes/maze_id1
-Content-Type: application/json
-
-{
-}
+###############################################################
+# Games
+###############################################################
