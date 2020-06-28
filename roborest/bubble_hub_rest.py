@@ -1,9 +1,11 @@
+import json
 from starlette.responses import RedirectResponse
 from pydantic import BaseModel
+import roborest
 from roborest import app
 from monitor import get_monitor
 from bubblehub.model import GameSpec, RegistrationSpec
-from . import async_rpc_client
+from . import async_rpc_client, games_exchange_name, channel
 
 
 @app.get("/")
@@ -51,7 +53,16 @@ async def list_game(game_id: str):
 async def register_with_game(game_id: str, specs: RegistrationSpec):
     """Register with a game"""
     async with get_monitor():
-        return None
+        request = {
+            "cmd": "get_game",
+            "game_id": game_id
+        }
+        routing_key = f"{game_id}.game"
+        body = json.dumps(request)
+        await roborest.games_exchange.publish(
+            body,
+            routing_key=routing_key
+        )
 
 
 @app.get("/mazes")
