@@ -46,21 +46,37 @@ class RoboRequestor:
         return f"{self.url}{path}"
 
     def post_url(self, url, data):
-        r = requests.post(url, json = data)
-        return r.json()
+        try:
+            r = requests.post(url, json = data)
+            if r.status_code == 200:
+                return r.json()
+            else:
+                return {}
+        except:
+            return {}
 
     def put_url(self, url, data):
-        r = requests.put(url, json = data)
-        return r.json()
+        try:
+            r = requests.put(url, json = data)
+            if r.status_code == 200:
+                return r.json()
+            else:
+                return {}
+        except:
+            return {}
 
     def get_url(self, url):
-        r = requests.get(url)
-        return r.json()
+        try:
+            r = requests.get(url)
+            if r.status_code == 200:
+                return r.json()
+            else:
+                return {}
+        except:
+            return {}
 
     def done_url(self, cb, ftr):
         j = ftr.result()
-        if not j:
-            j = {}
         cb(j)
 
 

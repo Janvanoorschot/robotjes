@@ -26,7 +26,7 @@ class Bubble:
         self.games_exchange_name = config.GAMES_EXCHANGE
         self.bubbles_queue_name = config.BUBBLES_QUEUE
         self.gamestatus_queue_name = config.GAME_STATUS_QUEUE
-        self.game_duration = 10
+        self.game_duration = 1000
         self.game_state = GameStatus.IDLE
         self.games_routing_key = ''
 

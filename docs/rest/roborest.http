@@ -39,18 +39,20 @@ Content-Type: application/json
 }
 ###
 # get info about a/one game
-GET http://localhost:8000/games/bee7e9d9-0ea8-4c2a-9859-55b510aa9735
+GET http://localhost:8000/games/8fab52af-8bf6-425f-9227-185fbfad11ca
 Content-Type: application/json
 
 {
 }
+###############################################################
+# Register
+###############################################################
 ###
 # Modify a game, in this case register a user
-PUT http://localhost:8000/games/bee7e9d9-0ea8-4c2a-9859-55b510aa9735
+PUT http://localhost:8000/games/8fab52af-8bf6-425f-9227-185fbfad11ca
 Content-Type: application/json
 
 {
+  "player_name": "jan",
+  "password": "secret"
 }
-###############################################################
-# Games
-###############################################################

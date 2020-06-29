@@ -1,4 +1,5 @@
 import json
+from aio_pika import IncomingMessage, Message, ExchangeType
 from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 import roborest
@@ -54,15 +55,22 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
     """Register with a game"""
     async with get_monitor():
         request = {
-            "cmd": "get_game",
-            "game_id": game_id
+            "cmd": "register_with_game",
+            "game_id": game_id,
+            "player_name": specs.player_name,
+            "password": specs.password
         }
         routing_key = f"{game_id}.game"
         body = json.dumps(request)
+        message = Message(
+            body.encode(),
+            content_type="application/json"
+        )
         await roborest.games_exchange.publish(
-            body,
+            message,
             routing_key=routing_key
         )
+        return {}
 
 
 @app.get("/mazes")
