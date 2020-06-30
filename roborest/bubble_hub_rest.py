@@ -55,9 +55,10 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
     """Register with a game"""
     async with get_monitor():
         request = {
-            "cmd": "register_with_game",
+            "cmd": "register",
             "game_id": game_id,
             "player_name": specs.player_name,
+            "player_id": specs.player_id,
             "password": specs.password
         }
         routing_key = f"{game_id}.game"

@@ -6,7 +6,9 @@ import pika, json
 import logging.config
 import config
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+modpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+os.chdir(modpath)
+sys.path.append(modpath)
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
 parser.add_argument('--pikaurl', type=str, default=config.PIKA_URL, help='rabbitmq url')

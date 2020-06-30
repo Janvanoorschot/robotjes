@@ -1,22 +1,17 @@
 import json
 import config
-import uuid
 import logging
-from bubblehub.model import GameState, PlayerState
+from bubblehub.model import GameState, GameSpec
+from . import Game, Player
 logger = logging.getLogger(__name__)
 
 from enum import Enum
+
 class GameStatus(Enum):
     IDLE = 'idle'
     CREATED = 'created'
     STARTED = 'started'
     STOPPED = 'stopped'
-
-class GameInput(Enum):
-    CREATING = 'creating'
-    STARTING = 'starting'
-    STOPPING = 'stopping'
-
 
 class Bubble:
 
@@ -29,6 +24,7 @@ class Bubble:
         self.game_duration = 1000
         self.game_state = GameStatus.IDLE
         self.games_routing_key = ''
+        self.game = None
 
     def connect(self, channel):
         self.channel = channel
@@ -45,10 +41,13 @@ class Bubble:
         self.delivery_tag = method_frame.delivery_tag
         try:
             # for the time being, the only message from bubble-hub is 'create-game'
-            request = json.loads(body)
-            game_id = request["game_id"]
-            specs = request["specs"]
-            self.create_game(game_id, specs)
+            if self.game_state == GameStatus.IDLE:
+                request = json.loads(body)
+                game_id = request["game_id"]
+                specs = GameSpec.parse_obj(request["specs"])
+                if not self.create_game(game_id, specs):
+                    logger.warning(f"creating game failed")
+                    channel.basic_ack(delivery_tag=method_frame.delivery_tag)
         except json.decoder.JSONDecodeError as jsonerror:
             logger.warning(f"json error: {str(jsonerror)}")
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
@@ -56,28 +55,68 @@ class Bubble:
             logger.warning(f"message error: {str(e)}")
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
-    def create_game(self, game_id, spec):
+    def on_game_message(self, channel, method_frame, header_frame, body):
+        logger.warning("on_game_message")
+        try:
+            request = json.loads(body)
+            cmd = request.get("cmd", "unknown")
+            player_id = request.get("player_id", "")
+            if self.game_state == GameStatus.CREATED:
+                if cmd == "register":
+                    player_name = request.get("player_name", "unknown")
+                    password = request.get("password", "unknown")
+                    if password == self.password and not self.valid_player(player_id):
+                        self.register_player(player_id, player_name, password)
+                    else:
+                        self.disqualify_player(player_id)
+                else:
+                    self.disqualify_player(player_id)
+            elif self.game_state == GameStatus.STARTED:
+                if cmd == "":
+                    pass
+                else:
+                    self.disqualify_player(player_id)
+            elif self.game_state == GameStatus.STOPPED:
+                if cmd == "":
+                    pass
+                else:
+                    self.disqualify_player(player_id)
+            else:
+                self.disqualify_player(player_id)
+        except json.decoder.JSONDecodeError as jsonerror:
+            logger.warning(f"json error: {str(jsonerror)}")
+            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+        except Exception as e:
+            logger.warning(f"message error: {str(e)}")
+            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+
+    def create_game(self, game_id: str , spec: GameSpec):
         logger.warning("start_game")
-        # put ourselfs in the correct state
-        self.game_id = game_id
-        self.spec = spec
-        self.timer_tick = 0
-        self.game_state = GameStatus.CREATED
-        self.games_routing_key = f"{self.game_id}.status"
-        # start listening to messages for this game
-        result = self.channel.queue_declare('', exclusive=True)
-        self.game_queue_name = result.method.queue
-        self.game_routing_key = f"{self.game_id}.game"
-        self.channel.queue_bind(
-            exchange=self.games_exchange_name,
-            queue=self.game_queue_name,
-            routing_key=self.game_routing_key
-        )
-        self.channel.basic_consume(queue=self.game_queue_name, on_message_callback=self.on_game_message)
+        if self.game_state == GameStatus.IDLE:
+            # put ourselfs in the correct state
+            self.game_id = game_id
+            self.spec = spec
+            self.timer_tick = 0
+            self.games_routing_key = f"{self.game_id}.status"
+            # create a Game instance
+            self.game = Game.create(spec.maze_id)
+            # start listening to messages for this game
+            result = self.channel.queue_declare('', exclusive=True)
+            self.game_queue_name = result.method.queue
+            self.game_routing_key = f"{self.game_id}.game"
+            self.channel.queue_bind(
+                exchange=self.games_exchange_name,
+                queue=self.game_queue_name,
+                routing_key=self.game_routing_key
+            )
+            self.channel.basic_consume(queue=self.game_queue_name, on_message_callback=self.on_game_message, auto_ack=True)
+            self.game_state = GameStatus.CREATED
+            return True
+        else:
+            return False
 
         # send a status change
         reply = {
-            'input': GameInput.CREATING.name,
             'state': self.game_state.name,
             'bubble': self.bubble_id,
             'game': self.game_id,
@@ -86,46 +125,45 @@ class Bubble:
         j = json.dumps(reply)
         self.channel.basic_publish(
             exchange=self.games_exchange_name, routing_key=self.games_routing_key, body=j)
-
-    def on_game_message(self, channel, method_frame, header_frame, body):
-        logger.warning("on_game_message")
-        self.delivery_tag = method_frame.delivery_tag
-        try:
-            request = json.loads(body)
-            game_id = request["game_id"]
-            specs = request["specs"]
-            self.create_game(game_id, specs)
-        except json.decoder.JSONDecodeError as jsonerror:
-            logger.warning(f"json error: {str(jsonerror)}")
-            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
-        except Exception as e:
-            logger.warning(f"message error: {str(e)}")
-            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
     def stop_game(self):
         # put ourselfs in the correct state
         logger.warning("stop_game")
-        self.game_state = GameStatus.IDLE
-        # stop listening to the queue for messages from this game
-        self.channel.queue_unbind(
-            exchange=self.games_exchange_name,
-            queue=self.game_queue_name,
-            routing_key=self.game_routing_key
-        )
-        # inform the hub
-        reply = {
-            'input': GameInput.STOPPING.name,
-            'state': self.game_state.name,
-            'bubble': self.bubble_id,
-            'game': self.game_id,
-            'status': self.status().dict()
-        }
-        j = json.dumps(reply)
-        self.channel.basic_publish(
-            exchange=self.games_exchange_name, routing_key=self.games_routing_key, body=j)
-        # we only now can ACK the 'create-game' message
-        self.channel.basic_ack(delivery_tag=self.delivery_tag)
+        if self.game_state != GameStatus.IDLE:
+            # stop listening to the queue for messages from this game
+            self.channel.queue_unbind(
+                exchange=self.games_exchange_name,
+                queue=self.game_queue_name,
+                routing_key=self.game_routing_key
+            )
+            # inform the hub
+            reply = {
+                'state': self.game_state.name,
+                'bubble': self.bubble_id,
+                'game': self.game_id,
+                'status': self.status().dict()
+            }
+            j = json.dumps(reply)
+            self.channel.basic_publish(
+                exchange=self.games_exchange_name, routing_key=self.games_routing_key, body=j)
+            # we only now can ACK the 'create-game' message
+            self.channel.basic_ack(delivery_tag=self.delivery_tag)
+            self.game_state = GameStatus.IDLE
+            return True
+        else:
+            return False
 
+    def start_players(self):
+        pass
+
+    def valid_player(self, player_id):
+        pass
+
+    def register_player(self, player_id, player_name, password):
+        pass
+
+    def disqualify_player(self, player_id):
+        pass
 
     def status(self):
         status = GameState(

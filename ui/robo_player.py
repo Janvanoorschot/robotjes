@@ -1,4 +1,4 @@
-import json
+import uuid
 
 class RoboPlayer():
 
@@ -24,8 +24,9 @@ class RoboPlayer():
         game_id = spec.get("game_id", None)
         directory = spec.get("directory", ".")
         self.model.register_player(self.register_player_cb, {
-            "game_id":game_id,
+            "game_id": game_id,
             "player_name": player_name,
+            "player_id": str(uuid.uuid4()),
             "password": password
         })
 

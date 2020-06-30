@@ -10,6 +10,7 @@ class GameSpec(BaseModel):
 
 class RegistrationSpec(BaseModel):
     player_name: str
+    player_id: str
     password: str
 
 

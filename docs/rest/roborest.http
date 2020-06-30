@@ -54,5 +54,6 @@ Content-Type: application/json
 
 {
   "player_name": "jan",
+  "player_id": "eikel",
   "password": "secret"
 }
