@@ -23,7 +23,7 @@ class Bubble:
         self.gamestatus_queue_name = config.GAME_STATUS_QUEUE
         self.game_duration = 1000
         self.game_state = GameStatus.IDLE
-        self.games_routing_key = ''
+        self.game_out_routing_key = ''
         self.game = None
 
     def connect(self, channel):
@@ -97,34 +97,34 @@ class Bubble:
             self.game_id = game_id
             self.spec = spec
             self.timer_tick = 0
-            self.games_routing_key = f"{self.game_id}.status"
+            self.game_out_routing_key = f"{self.game_id}.status"
             # create a Game instance
-            self.game = Game.create(spec.maze_id)
+            self.game = Game.create(spec)
             # start listening to messages for this game
             result = self.channel.queue_declare('', exclusive=True)
             self.game_queue_name = result.method.queue
-            self.game_routing_key = f"{self.game_id}.game"
+            self.game_in_routing_key = f"{self.game_id}.game"
             self.channel.queue_bind(
                 exchange=self.games_exchange_name,
                 queue=self.game_queue_name,
-                routing_key=self.game_routing_key
+                routing_key=self.game_in_routing_key
             )
             self.channel.basic_consume(queue=self.game_queue_name, on_message_callback=self.on_game_message, auto_ack=True)
             self.game_state = GameStatus.CREATED
+            # send a status change
+            reply = {
+                'state': self.game_state.name,
+                'bubble': self.bubble_id,
+                'game': self.game_id,
+                'status': self.status().dict()
+            }
+            j = json.dumps(reply)
+            self.channel.basic_publish(
+                exchange=self.games_exchange_name, routing_key=self.game_out_routing_key, body=j)
             return True
         else:
             return False
 
-        # send a status change
-        reply = {
-            'state': self.game_state.name,
-            'bubble': self.bubble_id,
-            'game': self.game_id,
-            'status': self.status().dict()
-        }
-        j = json.dumps(reply)
-        self.channel.basic_publish(
-            exchange=self.games_exchange_name, routing_key=self.games_routing_key, body=j)
 
     def stop_game(self):
         # put ourselfs in the correct state
@@ -134,7 +134,7 @@ class Bubble:
             self.channel.queue_unbind(
                 exchange=self.games_exchange_name,
                 queue=self.game_queue_name,
-                routing_key=self.game_routing_key
+                routing_key=self.game_in_routing_key
             )
             # inform the hub
             reply = {
@@ -145,7 +145,7 @@ class Bubble:
             }
             j = json.dumps(reply)
             self.channel.basic_publish(
-                exchange=self.games_exchange_name, routing_key=self.games_routing_key, body=j)
+                exchange=self.games_exchange_name, routing_key=self.game_out_routing_key, body=j)
             # we only now can ACK the 'create-game' message
             self.channel.basic_ack(delivery_tag=self.delivery_tag)
             self.game_state = GameStatus.IDLE
