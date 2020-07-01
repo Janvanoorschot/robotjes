@@ -22,6 +22,7 @@ class Bubble:
         self.bubbles_queue_name = config.BUBBLES_QUEUE
         self.gamestatus_queue_name = config.GAME_STATUS_QUEUE
         self.game_duration = 1000
+        self.game_password = None
         self.game_state = GameStatus.IDLE
         self.game_out_routing_key = ''
         self.game = None
@@ -65,8 +66,8 @@ class Bubble:
                 if cmd == "register":
                     player_name = request.get("player_name", "unknown")
                     password = request.get("password", "unknown")
-                    if password == self.password and not self.valid_player(player_id):
-                        self.register_player(player_id, player_name, password)
+                    if password == self.game_password and not self.valid_player(player_id):
+                        self.register_player(player_id, player_name)
                     else:
                         self.disqualify_player(player_id)
                 else:
@@ -95,11 +96,13 @@ class Bubble:
         if self.game_state == GameStatus.IDLE:
             # put ourselfs in the correct state
             self.game_id = game_id
+            self.game_password = spec.password
             self.spec = spec
-            self.timer_tick = 0
             self.game_out_routing_key = f"{self.game_id}.status"
             # create a Game instance
             self.game = Game.create(spec)
+            # initialise the player store for this game in this Bubble
+            self.start_players(self.game)
             # start listening to messages for this game
             result = self.channel.queue_declare('', exclusive=True)
             self.game_queue_name = result.method.queue
@@ -111,7 +114,7 @@ class Bubble:
             )
             self.channel.basic_consume(queue=self.game_queue_name, on_message_callback=self.on_game_message, auto_ack=True)
             self.game_state = GameStatus.CREATED
-            # send a status change
+            # send a status change to the games exchange
             reply = {
                 'state': self.game_state.name,
                 'bubble': self.bubble_id,
@@ -129,14 +132,14 @@ class Bubble:
     def stop_game(self):
         # put ourselfs in the correct state
         logger.warning("stop_game")
-        if self.game_state != GameStatus.IDLE:
+        if self.game_state == GameStatus.STARTED:
             # stop listening to the queue for messages from this game
             self.channel.queue_unbind(
                 exchange=self.games_exchange_name,
                 queue=self.game_queue_name,
                 routing_key=self.game_in_routing_key
             )
-            # inform the hub
+            # send game result to anyone interested (probably the hub)
             reply = {
                 'state': self.game_state.name,
                 'bubble': self.bubble_id,
@@ -153,17 +156,28 @@ class Bubble:
         else:
             return False
 
-    def start_players(self):
-        pass
+    def start_players(self, game):
+        self.players = {}
+        self.invalid_players = {}
 
     def valid_player(self, player_id):
-        pass
+        return player_id in self.players and not player_id in self.invalid_players
 
-    def register_player(self, player_id, player_name, password):
-        pass
+    def register_player(self, player_id, player_name):
+        if player_id in self.players or player_id in self.invalid_players:
+            self.disqualify_player(player_id)
+        if len(self.players()) < self.game.player_count():
+            # we can handle a new player
+            player = Player(player_id, player_name)
+            self.players[player_id] = player
+            if len(self.players()) == self.game.player_count():
+                self.start_game()
 
     def disqualify_player(self, player_id):
-        pass
+        if player_id in self.players:
+            self.invalid_players[player_id] = self.players[player_id]
+        else:
+            self.invalid_players[player_id] = None
 
     def status(self):
         status = GameState(
@@ -173,7 +187,8 @@ class Bubble:
         return status
 
     def timer(self, now):
-        if self.game_state != GameStatus.IDLE:
-            self.timer_tick = self.timer_tick + 1
-            if self.timer_tick > self.game_duration:
+        if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
+            self.game.timer(now)
+            if self.game.stopped():
+                self.game_state = GameStatus.STOPPED
                 self.stop_game()
