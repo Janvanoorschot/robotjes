@@ -22,5 +22,6 @@ class GameState(BaseModel):
     id: str
     status: str
     players: List[PlayerState]
+    result: bool
 
 

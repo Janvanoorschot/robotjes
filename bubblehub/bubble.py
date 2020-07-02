@@ -123,16 +123,21 @@ class Bubble:
             }
             j = json.dumps(reply)
             self.channel.basic_publish(
-                exchange=self.games_exchange_name, routing_key=self.game_out_routing_key, body=j)
+                exchange=self.games_exchange_name,
+                routing_key=self.game_out_routing_key,
+                body=j)
             return True
         else:
             return False
+
+    def start_game(self):
+        pass
 
 
     def stop_game(self):
         # put ourselfs in the correct state
         logger.warning("stop_game")
-        if self.game_state == GameStatus.STARTED:
+        if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
             # stop listening to the queue for messages from this game
             self.channel.queue_unbind(
                 exchange=self.games_exchange_name,
@@ -140,6 +145,7 @@ class Bubble:
                 routing_key=self.game_in_routing_key
             )
             # send game result to anyone interested (probably the hub)
+            self.game_state = GameStatus.IDLE
             reply = {
                 'state': self.game_state.name,
                 'bubble': self.bubble_id,
@@ -148,11 +154,15 @@ class Bubble:
             }
             j = json.dumps(reply)
             self.channel.basic_publish(
-                exchange=self.games_exchange_name, routing_key=self.game_out_routing_key, body=j)
+                exchange=self.games_exchange_name,
+                routing_key=self.game_out_routing_key,
+                body=j)
             # we only now can ACK the 'create-game' message
             self.channel.basic_ack(delivery_tag=self.delivery_tag)
-            self.game_state = GameStatus.IDLE
             return True
+        elif self.game_state == GameStatus.CREATED:
+            # done but not started
+            return False
         else:
             return False
 
@@ -183,12 +193,13 @@ class Bubble:
         status = GameState(
             id=self.game_id,
             status=self.game_state.name,
-            players=[])
+            players=list(self.players.values()),
+            result=self.game.result(),
+        )
         return status
 
     def timer(self, now):
         if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
             self.game.timer(now)
             if self.game.stopped():
-                self.game_state = GameStatus.STOPPED
                 self.stop_game()
