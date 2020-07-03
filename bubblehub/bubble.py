@@ -100,7 +100,7 @@ class Bubble:
             self.spec = spec
             self.game_out_routing_key = f"{self.game_id}.status"
             # create a Game instance
-            self.game = Game.create(spec)
+            self.game = Game(spec)
             # initialise the player store for this game in this Bubble
             self.start_players(self.game)
             # start listening to messages for this game
@@ -126,18 +126,22 @@ class Bubble:
                 exchange=self.games_exchange_name,
                 routing_key=self.game_out_routing_key,
                 body=j)
+            # inform the Game it is a go
+            self.game.created()
             return True
         else:
             return False
 
     def start_game(self):
-        pass
+        self.game.started(self.players)
 
 
     def stop_game(self):
         # put ourselfs in the correct state
         logger.warning("stop_game")
         if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
+            # inform the game
+            self.game.stopped()
             # stop listening to the queue for messages from this game
             self.channel.queue_unbind(
                 exchange=self.games_exchange_name,

@@ -12,15 +12,17 @@ class Game:
         self.max_start_tick = 15
         self.max_timer_tick = 1000
 
-    @staticmethod
-    def create(spec: GameSpec):
-        return Game(spec)
+    def created(self):
+        pass
 
-    def player_count(self):
-        return self.max_player_count
+    def started(self, players):
+        pass
 
     def stopped(self):
         return self.done
+
+    def player_count(self):
+        return self.max_player_count
 
     def timer(self, now):
         self.timer_tick = self.timer_tick + 1
