@@ -13,10 +13,10 @@ class Game:
         self.max_timer_tick = 1000
 
     def created(self):
-        pass
+        self.players = []
 
     def started(self, players):
-        pass
+        self.players = players
 
     def stopped(self):
         return self.done

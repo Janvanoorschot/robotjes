@@ -96,7 +96,7 @@ class Bubble:
         if self.game_state == GameStatus.IDLE:
             # put ourselfs in the correct state
             self.game_id = game_id
-            self.game_password = spec.password
+            self.game_password = spec.game_password
             self.spec = spec
             self.game_out_routing_key = f"{self.game_id}.status"
             # create a Game instance

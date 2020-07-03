@@ -3,15 +3,16 @@ from pydantic import BaseModel
 
 
 class GameSpec(BaseModel):
-    name: str
-    password: str
+    umpire_id: str
+    game_name: str
+    game_password: str
     maze_id: str
 
 
 class RegistrationSpec(BaseModel):
     player_name: str
     player_id: str
-    password: str
+    game_password: str
 
 
 class PlayerState(BaseModel):

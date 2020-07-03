@@ -17,6 +17,10 @@ class RoboUmpireWindow(Gtk.Window):
         leftbox.add(self.creategame_component)
         self.games_component = GamesComponent(self.model, self)
         leftbox.add(self.games_component)
+        stop_button = Gtk.Button(label="Stop")
+        stop_button.connect("clicked", self.on_stop_button_clicked)
+        leftbox.add(stop_button)
+
         rightbox = Gtk.Grid()
         view_area = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
         teams_area = Gtk.Grid(expand=True)
@@ -44,8 +48,8 @@ class RoboUmpireWindow(Gtk.Window):
         for listener in self.listeners:
             listener.do_signal(etype, self, *argv)
 
-    def set_text(self, text):
-        self.textfield.set_text(text)
+    def on_stop_button_clicked(self, button):
+        pass
 
     def refresh(self):
         self.creategame_component.refresh()
@@ -72,22 +76,16 @@ class CreateGameComponent(Gtk.Grid):
         create_button = Gtk.Button(label="Create")
         create_button.connect("clicked", self.on_create_button_clicked)
         self.add(create_button )
-        stop_button = Gtk.Button(label="Stop")
-        stop_button.connect("clicked", self.on_stop_button_clicked)
-        self.add(stop_button)
 
     def on_create_button_clicked(self, button):
         name = self.name_field.get_text()
-        password = self.name_field.get_text()
+        password = self.password_field.get_text()
         maze_id = self.mazes_component.get_selected_id()
         self.owner.do_signal("EVT_CREATE_GAME", self, {
             "name": name,
             "password": password,
             "maze_id": maze_id
         })
-
-    def on_stop_button_clicked(self, button):
-        pass
 
     def refresh(self):
         self.mazes_component.refresh()

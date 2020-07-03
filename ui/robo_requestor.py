@@ -31,6 +31,12 @@ class RoboRequestor:
         ftr = self.executor.submit(self.post_url, self.create_url('games'), spec)
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
+    def delete_game(self, cb, spec):
+        game_id = spec.get('game_id', "unknown")
+        umpire_id = spec.get('umpire_id', "unknown")
+        ftr = self.executor.submit(self.delete_url, self.create_url(f"games/{game_id}/{umpire_id}"), spec)
+        ftr.add_done_callback(functools.partial(self.done_url, cb))
+
     def register_player(self, cb, spec):
         game_id = spec['game_id']
         del(spec['game_id'])
@@ -76,8 +82,16 @@ class RoboRequestor:
         except:
             return {}
 
+    def delete_url(self, url):
+        try:
+            r = requests.delete(url)
+            if r.status_code == 200:
+                return r.json()
+            else:
+                return {}
+        except:
+            return {}
+
     def done_url(self, cb, ftr):
         j = ftr.result()
         cb(j)
-
-

@@ -1,4 +1,3 @@
-from .robo_admin import RoboAdminWindow, RoboAdmin
 from .robo_umpire_views import RoboUmpireWindow
 from .robo_player_views import RoboPlayerWindow
 from .robo_umpire import RoboUmpire
