@@ -41,7 +41,7 @@ class GamesComponent(Gtk.Grid):
                     if entry[1] == game_id:
                         break
                 else:
-                    self.games_model.append([game['id'], game_id])
+                    self.games_model.append([game['game'], game_id])
             for entry in self.games_model:
                 if not entry[1] in games:
                     self.games_model.remove(entry.iter)

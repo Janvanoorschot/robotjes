@@ -92,12 +92,12 @@ class BubbleHub:
         logger.warning(f"on_game_status {body}")
         status = json.loads(body)
         self.bubbles[status["bubble"]] = status["game"]
-        self.games[status["game"]] = status["status"]
-        if status['state'] == GameStatus.CREATED.name:
+        self.games[status["game"]] = status
+        if status['msg'] == GameStatus.CREATED.name:
             pass
-        elif status['state'] == GameStatus.STARTED.name:
+        elif status['msg'] == GameStatus.STARTED.name:
             pass
-        elif status['state'] == GameStatus.IDLE.name:
+        elif status['msg'] == GameStatus.IDLE.name:
             pass
         else:
             pass
@@ -118,7 +118,7 @@ class BubbleHub:
     def list_games(self):
         result = {}
         for game_id, game in self.games.items():
-            if game['status'] != GameStatus.IDLE.name:
+            if game['msg'] != GameStatus.IDLE.name:
                 result[game_id] = game
         return result
 
