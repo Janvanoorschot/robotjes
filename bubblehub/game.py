@@ -6,7 +6,8 @@ class Game:
     def __init__(self, owner, spec: GameSpec):
         self.owner = owner
         self.spec = spec
-        self.done = False
+        self.started = False
+        self.stopped = False
         self.success = False
         self.timer_tick = 0
         self.max_player_count = 1
@@ -21,7 +22,7 @@ class Game:
         self.players = players
 
     def stopped(self):
-        return self.done
+        return self.stopped
 
     def player_count(self):
         return self.max_player_count
@@ -31,13 +32,14 @@ class Game:
 
     def timer(self, now):
         self.timer_tick = self.timer_tick + 1
-        self.status_update()
         if len(self.players) < self.max_player_count and self.timer_tick > self.max_start_tick:
-            self.done = True
+            self.stopped = True
             self.success = False
         elif self.timer_tick > self.max_timer_tick:
-            self.done = True
+            self.stopped = True
             self.success = True
+        if not self.stopped:
+            self.status_update()
 
     def result(self):
         return self.success
