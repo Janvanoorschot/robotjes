@@ -15,6 +15,8 @@ class Semantics:
             "robotHasBeacon": self.robotHasBeacon,
             "minWhitePaintUsed": self.minWhitePaintUsed,
             "minBlackPaintUsed": self.minBlackPaintUsed,
+            "putDown": self.true,
+            "pickUp": self.true,
         }
 
     def eval(self, identifier, args, world):
@@ -51,7 +53,6 @@ class Semantics:
         return world.profile["blackPaintUsed"] >= args[0]
 
     def true(self, identifier, args, world):
-        print(f"unimplemented identifier: {identifier}")
         return True
 
 ROBO_SEMANTICS = Semantics()

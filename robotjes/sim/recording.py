@@ -6,11 +6,15 @@ class Recording(object):
         self.maxsize = 1000
         self.active = True
         self.keyframes = []
+        self.linenumber = 1
+
+    def lineno(self, ln):
+        self.linenumber = ln
 
     def finalize(self, keyframe):
         keyframe['sprite'] = 'r'
         # keyframe['src'] = len(self.keyframes)
-        keyframe['src'] = 1
+        keyframe['src'] = self.linenumber
         keyframe['score'] = len(self.keyframes)
         if self.active and len(self.keyframes) < self.maxsize:
             self.keyframes.append(keyframe)
@@ -19,7 +23,7 @@ class Recording(object):
                 keyframe = {}
                 keyframe['action'] = ['message', 'recording overflow']
                 keyframe['sprite'] = 'r'
-                keyframe['src'] = len(self.keyframes)
+                keyframe['src'] = self.linenumber
                 keyframe['score'] = len(self.keyframes)
                 self.keyframes.append(keyframe)
             self.active = False

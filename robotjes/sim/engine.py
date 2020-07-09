@@ -1,5 +1,4 @@
 from .world import World
-from .map import Map
 from .recording import Recording
 
 LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
@@ -23,23 +22,24 @@ class Engine(object):
         return self.world.profile
 
     def clean_cmd(self, cmd):
-        if not cmd or not type(cmd)==list or len(cmd)< 2:
+        if not cmd or not type(cmd)==list or len(cmd)< 3:
             return ["illegal"]
-        [id, command, *args] = cmd
+        [lineno, id, command, *args] = cmd
         if command not in LEGAL_COMMANDS:
             return ["unknown"]
         else:
-            return [command, *args]
+            return [command, lineno, *args]
 
     def prepare_reply(self, cmd, *args):
         reply = [cmd, args]
         return reply
 
     def execute(self, cmd):
-        [command, *args] = self.clean_cmd(cmd)
+        [command, lineno, *args] = self.clean_cmd(cmd)
         reply = []
         self.world.inc("scriptCalls")
         self.world.inc("scriptBasicCommands")
+        self.recording.lineno(lineno)
         if command == "forward":
             expected = 1 if len(args) < 1 else int(args[0])
             actual = 0
