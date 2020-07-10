@@ -186,6 +186,10 @@ class Engine(object):
             self.world.inc("flipCoins")
         elif command == "message":
             message = "unknown" if len(args) < 1 else args[0]
+            loc = self.world.getLoc()
+            cargo = self.world.getCargo()
+            paint = self.world.getPaint()
+            message = message.format(loc=loc, cargo=cargo, paint=paint)
             self.recording.message(message)
         else:
             reply.append([False])

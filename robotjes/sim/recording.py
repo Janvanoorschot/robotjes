@@ -144,7 +144,7 @@ class Recording(object):
 
     def message(self, message):
         keyframe = {}
-        keyframe['action'] = ['message', message]
+        keyframe['action'] = ['sht', message]
         return self.finalize(keyframe)
 
     def boom(self, cmd):

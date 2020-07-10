@@ -55,6 +55,15 @@ class World(object):
             "total": 0,
         }
 
+    def getLoc(self):
+        return self.bot.pos
+
+    def getCargo(self):
+        return len(self.beacons)
+
+    def getPaint(self):
+        return self.bot.paint
+
     def inc(self, name, count=1):
         if(name in self.profile):
             self.profile[name] = self.profile[name] + count
