@@ -139,7 +139,7 @@ class Engine(object):
             self.recording.see("front", "obstacle")
             reply.append([success])
             self.world.inc("see")
-        elif command == "frontisBeacon":
+        elif command == "frontIsBeacon":
             success = self.world.check(World.FRONT, World.BEACON)
             self.recording.see("front", "beacon")
             reply.append([success])
