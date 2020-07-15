@@ -123,7 +123,7 @@ class Bubble:
             return False
 
     def start_game(self):
-        self.game.started(self.players)
+        self.game.start(self.players)
 
 
     def stop_game(self):
@@ -160,11 +160,11 @@ class Bubble:
     def register_player(self, player_id, player_name):
         if player_id in self.players or player_id in self.invalid_players:
             self.disqualify_player(player_id)
-        if len(self.players()) < self.game.player_count():
+        if len(self.players) < self.game.player_count():
             # we can handle a new player
             player = Player(player_id, player_name)
             self.players[player_id] = player
-            if len(self.players()) == self.game.player_count():
+            if len(self.players) == self.game.player_count():
                 self.start_game()
 
     def disqualify_player(self, player_id):

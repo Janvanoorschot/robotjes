@@ -12,14 +12,17 @@ class Game:
         self.timer_tick = 0
         self.max_player_count = 1
         self.max_start_tick = 15
-        self.max_timer_tick = 1000
+        self.max_timer_tick = 60
         self.players = []
 
     def created(self):
         pass
 
-    def started(self, players):
+    def start(self, players):
         self.players = players
+        self.isStarted = True
+        self.isStopped = False
+        self.isSuccess = True
 
     def stopped(self):
         return self.isStopped
@@ -28,7 +31,11 @@ class Game:
         return self.max_player_count
 
     def status_update(self):
-        self.owner.publish('STATUS',{})
+        self.owner.publish('STATUS',{
+            "isStarted": self.isStarted,
+            "isStopped": self.isStopped,
+            "isSuccess": self.isSuccess
+        })
 
     def timer(self, now):
         self.timer_tick = self.timer_tick + 1
