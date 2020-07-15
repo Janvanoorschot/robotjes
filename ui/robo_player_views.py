@@ -74,7 +74,7 @@ class RegisterPlayerComponent(Gtk.Grid):
 
     def on_register_button_clicked(self, button):
         name = self.name_field.get_text()
-        password = self.name_field.get_text()
+        password = self.password_field.get_text()
         game_id = self.games_component.get_selected_id()
         directory = self.dir_chooser.get_current_folder()
         self.owner.do_signal("EVT_REGISTER_PLAYER", self, {

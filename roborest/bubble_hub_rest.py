@@ -59,7 +59,7 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
             "game_id": game_id,
             "player_name": specs.player_name,
             "player_id": specs.player_id,
-            "password": specs.password
+            "password": specs.game_password
         }
         routing_key = f"{game_id}.game"
         body = json.dumps(request)

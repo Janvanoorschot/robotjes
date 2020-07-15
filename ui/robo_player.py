@@ -27,7 +27,7 @@ class RoboPlayer():
             "game_id": game_id,
             "player_name": player_name,
             "player_id": str(uuid.uuid4()),
-            "password": password
+            "game_password": password
         })
 
     def register_player_cb(self, reply):
