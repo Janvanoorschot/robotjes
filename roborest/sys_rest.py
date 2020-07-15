@@ -5,7 +5,7 @@ from roborest import app, pikaurl
 from monitor import mon
 from aio_pika import connect, ExchangeType
 import config
-from . import async_rpc_client, games_exchange_name
+from . import async_rpc_client, games_exchange_name, async_topic_listener
 
 
 
@@ -17,6 +17,7 @@ async def startup_event():
     roborest.games_exchange = await roborest.channel.declare_exchange(games_exchange_name, ExchangeType.TOPIC)
     await mon.connect(loop, roborest.channel)
     await async_rpc_client.connect(loop, roborest.channel)
+    await async_topic_listener.connect(loop, roborest.channel)
 
 
 @app.on_event("startup")

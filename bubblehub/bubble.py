@@ -21,7 +21,6 @@ class Bubble:
         self.games_exchange_name = config.GAMES_EXCHANGE
         self.bubbles_queue_name = config.BUBBLES_QUEUE
         self.gamestatus_queue_name = config.GAME_STATUS_QUEUE
-        self.game_duration = 1000
         self.game_password = None
         self.game_state = GameStatus.IDLE
         self.game_out_routing_key = ''
@@ -127,11 +126,8 @@ class Bubble:
 
 
     def stop_game(self):
-        # put ourselfs in the correct state
-        logger.warning("stop_game")
         if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
-            # inform the game
-            self.game.stopped()
+            logger.warning("stop_game")
             # stop listening to the queue for messages from this game
             self.channel.queue_unbind(
                 exchange=self.games_exchange_name,
@@ -144,9 +140,6 @@ class Bubble:
             # we only now can ACK the 'create-game' message
             self.channel.basic_ack(delivery_tag=self.delivery_tag)
             return True
-        elif self.game_state == GameStatus.CREATED:
-            # done but not started
-            return False
         else:
             return False
 

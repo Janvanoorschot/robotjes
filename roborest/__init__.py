@@ -5,6 +5,7 @@ pikaurl = None
 # fastapi vars
 app = None
 async_rpc_client = None
+async_topic_listener = None
 # aio_pika vars
 connection = None
 channel = None

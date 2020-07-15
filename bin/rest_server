@@ -15,6 +15,7 @@ parser.add_argument('--pikaurl', type=str, default=config.PIKA_URL, help='rabbit
 parser.add_argument('--bubblehubsexchange', type=str, default=config.BUBBLEHUBS_EXCHANGE, help='rabbitmq queue to use for rpc calls')
 parser.add_argument('--bubblehubsqueue', type=str, default=config.BUBBLEHUBS_QUEUE, help='rabbitmq queue to use for rpc calls')
 parser.add_argument('--monitorexchange', type=str, default=config.MONITOR_EXCHANGE, help='monitor exchange')
+parser.add_argument('--gamesexchange', type=str, default=config.GAMES_EXCHANGE, help='games exchange')
 args = parser.parse_args()
 
 # initialise
@@ -25,10 +26,15 @@ roborest.pikaurl = args.pikaurl
 import monitor
 monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchange)
 
+def listener(routing_key, request):
+    pass
+
 # initialise the roborest module
 import fastapi
 from roborest.async_rpc_client import AsyncRPCClient
 roborest.async_rpc_client = AsyncRPCClient(args.bubblehubsexchange, args.bubblehubsqueue)
+from roborest.async_topic_listener import AsyncTopicListener
+roborest.async_topic_listener = AsyncTopicListener(args.gamesexchange, "*.status", listener)
 roborest.app = fastapi.FastAPI()
 # import the files with REST calls
 import roborest.sys_rest
