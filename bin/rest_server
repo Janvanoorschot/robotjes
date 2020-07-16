@@ -26,8 +26,10 @@ roborest.pikaurl = args.pikaurl
 import monitor
 monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchange)
 
+from roborest.status_keeper import  StatusKeeper
+score_keeper = StatusKeeper()
 def listener(routing_key, request):
-    pass
+    score_keeper.game_status_event(request)
 
 # initialise the roborest module
 import fastapi
