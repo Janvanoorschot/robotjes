@@ -169,14 +169,15 @@ class Bubble:
     def publish(self, msg, data):
         if self.game == None:
             item = {
-                'bubble': self.bubble_id,
+                'bubble_id': self.bubble_id,
                 'msg': msg,
                 'data': data
             }
         else:
             item = {
-                'bubble': self.bubble_id,
-                'game': self.game_id,
+                'bubble_id': self.bubble_id,
+                'game_id': self.game_id,
+                'game_name': self.game.game_name,
                 'state': self.game_state.name,
                 'status': self.game.get_status(),
                 'msg': msg,

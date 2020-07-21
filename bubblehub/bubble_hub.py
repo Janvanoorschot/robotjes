@@ -91,9 +91,9 @@ class BubbleHub:
     def on_game_status(self, ch, method, props, body):
         logger.warning(f"on_game_status {body}")
         status = json.loads(body)
-        if status["bubble"] not in self.bubbles:
-            self.bubbles[status["bubble"]] = status["game"]
-        self.games[status["game"]] = status
+        if status["bubble_id"] not in self.bubbles:
+            self.bubbles[status["bubble_id"]] = status["game_id"]
+        self.games[status["game_id"]] = status
         if status['state'] == GameStatus.CREATED.name:
             pass
         elif status['state'] == GameStatus.STARTED.name:

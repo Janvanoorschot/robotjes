@@ -6,6 +6,8 @@ class Game:
     def __init__(self, owner, spec: GameSpec):
         self.owner = owner
         self.spec = spec
+        self.game_name = spec.game_name
+        self.maze_id = spec.maze_id
         self.isStarted = False
         self.isStopped = False
         self.isSuccess = False

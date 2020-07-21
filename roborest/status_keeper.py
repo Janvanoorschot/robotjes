@@ -13,11 +13,11 @@ class StatusKeeper(object):
         self.keep_alive = 10
 
     def game_status_event(self, request):
-        bubble_id = request['bubble']
-        game_id = request['game']
+        bubble_id = request['bubble_id']
+        game_id = request['game_id']
         if game_id not in self.games:
             if request['msg'] == 'CREATED':
-                game_status = GameStatus(game_id, self.now)
+                game_status = GameStatus(self.now, request)
                 self.games[game_id] = game_status
             else:
                 logger.warning(f"unexpected message from game: {game_id}")
@@ -46,8 +46,9 @@ class StatusKeeper(object):
 
 class GameStatus(object):
 
-    def __init__(self, game_id, now):
-        self.game_id = game_id
+    def __init__(self, now, request):
+        self.game_id = request['game_id']
+        self.game_name = request['game_name']
         self.starttime = now
         self.stoptime = None
 
