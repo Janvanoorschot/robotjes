@@ -27,9 +27,9 @@ import monitor
 monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchange)
 
 from roborest.status_keeper import  StatusKeeper
-score_keeper = StatusKeeper()
+roborest.status_keeper = StatusKeeper()
 def listener(routing_key, request):
-    score_keeper.game_status_event(request)
+    roborest.status_keeper.game_status_event(request)
 
 # initialise the roborest module
 import fastapi
@@ -38,9 +38,11 @@ roborest.async_rpc_client = AsyncRPCClient(args.bubblehubsexchange, args.bubbleh
 from roborest.async_topic_listener import AsyncTopicListener
 roborest.async_topic_listener = AsyncTopicListener(args.gamesexchange, "*.status", listener)
 roborest.app = fastapi.FastAPI()
-# import the files with REST calls
+
+# import the files with REST calls (do not remove!!!)
 import roborest.sys_rest
 import roborest.bubble_hub_rest
+
 # do static files support
 from fastapi.staticfiles import StaticFiles
 roborest.app.mount("/", StaticFiles(directory="www"), name="www")

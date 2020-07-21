@@ -30,12 +30,15 @@ class Game:
     def player_count(self):
         return self.max_player_count
 
-    def status_update(self):
-        self.owner.publish('STATUS',{
+    def get_status(self):
+        return {
             "isStarted": self.isStarted,
             "isStopped": self.isStopped,
             "isSuccess": self.isSuccess
-        })
+        }
+
+    def status_update(self):
+        self.owner.publish('STATUS', {})
 
     def timer(self, now):
         self.timer_tick = self.timer_tick + 1

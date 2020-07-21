@@ -1,10 +1,10 @@
+import datetime
 import asyncio
 from fastapi_utils.tasks import repeat_every
 import roborest
-from roborest import app, pikaurl
+from roborest import app, pikaurl, status_keeper
 from monitor import mon
 from aio_pika import connect, ExchangeType
-import config
 from . import async_rpc_client, games_exchange_name, async_topic_listener
 
 
@@ -23,5 +23,7 @@ async def startup_event():
 @app.on_event("startup")
 @repeat_every(seconds=2)
 async def timer_task():
-    await mon.timer()
+    now = datetime.datetime.now()
+    await mon.timer(now)
+    roborest.status_keeper.timer(now)
 

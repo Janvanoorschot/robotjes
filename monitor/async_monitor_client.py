@@ -34,7 +34,7 @@ class AsyncMonitorClient:
         self.measurements[funname]['count'] = self.measurements[funname]['count'] + 1
         self.measurements[funname]['cummulated'] = self.measurements[funname]['cummulated'] + duration
 
-    async def timer(self):
+    async def timer(self, now):
         msg = self.build_message()
         await self.send(msg)
 

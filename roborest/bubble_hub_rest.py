@@ -30,12 +30,14 @@ async def create_game(specs: GameSpec):
 @app.get("/games")
 async def list_games():
     """List current games"""
-    async with get_monitor():
-        request = {
-            "cmd": "list_games"
-        }
-        result = await async_rpc_client.call(request)
-        return result
+    lst = roborest.status_keeper.list_games()
+    return lst
+    # async with get_monitor():
+    #     request = {
+    #         "cmd": "list_games"
+    #     }
+    #     result = await async_rpc_client.call(request)
+    #     return result
 
 
 @app.get("/games/{game_id}")

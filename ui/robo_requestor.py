@@ -11,10 +11,11 @@ class RoboRequestor:
 
     def list_games(self, cb):
         def my_cb(j):
-            if not j or not j['success']:
-                cb({})
-            else:
-                cb(j['list'])
+            cb(j)
+            # if not j or not j['success']:
+            #     cb({})
+            # else:
+            #     cb(j['list'])
         ftr = self.executor.submit(self.get_url, self.create_url('games'))
         ftr.add_done_callback(functools.partial(self.done_url, my_cb))
 

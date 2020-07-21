@@ -167,13 +167,21 @@ class Bubble:
             self.invalid_players[player_id] = None
 
     def publish(self, msg, data):
-        item = {
-            'state': self.game_state.name,
-            'bubble': self.bubble_id,
-            'game': self.game_id,
-            'msg': msg,
-            'data': data
-        }
+        if self.game == None:
+            item = {
+                'bubble': self.bubble_id,
+                'msg': msg,
+                'data': data
+            }
+        else:
+            item = {
+                'bubble': self.bubble_id,
+                'game': self.game_id,
+                'state': self.game_state.name,
+                'status': self.game.get_status(),
+                'msg': msg,
+                'data': data
+            }
         j = json.dumps(item)
         self.channel.basic_publish(
             exchange=self.games_exchange_name,
