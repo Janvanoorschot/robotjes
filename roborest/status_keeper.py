@@ -37,7 +37,10 @@ class StatusKeeper(object):
             logger.warning(f"unknown msg: {msg}")
 
     def list_games(self):
-        return self.games
+        result = {}
+        for game_id, game in self.games.items():
+            result[game_id] = game.game_name
+        return result
 
     def timer(self, now):
         self.now = now

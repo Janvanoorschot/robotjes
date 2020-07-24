@@ -36,12 +36,12 @@ class GamesComponent(Gtk.Grid):
 
     def refresh(self):
         def cb(games):
-            for game_id, game in games.items():
+            for game_id, game_name in games.items():
                 for entry in self.games_model:
                     if entry[1] == game_id:
                         break
                 else:
-                    self.games_model.append([game['game_id'], game_id])
+                    self.games_model.append([game_id, game_id])
             for entry in self.games_model:
                 if not entry[1] in games:
                     self.games_model.remove(entry.iter)
