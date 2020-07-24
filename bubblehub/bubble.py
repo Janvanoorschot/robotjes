@@ -2,16 +2,9 @@ import json
 import config
 import logging
 from bubblehub.model import GameState, GameSpec
-from . import Game, Player
+from . import Game, Player, GameStatus
 logger = logging.getLogger(__name__)
 
-from enum import Enum
-
-class GameStatus(Enum):
-    IDLE = 'idle'
-    CREATED = 'created'
-    STARTED = 'started'
-    STOPPED = 'stopped'
 
 class Bubble:
 
@@ -25,6 +18,10 @@ class Bubble:
         self.game_state = GameStatus.IDLE
         self.game_out_routing_key = ''
         self.game = None
+        self.channel = None
+        self.delivery_tag = None
+        self.now = None
+        self.starttime = None
 
     def connect(self, channel):
         self.channel = channel
@@ -37,7 +34,6 @@ class Bubble:
         self.channel.exchange_declare(exchange=self.games_exchange_name, exchange_type="topic")
 
     def on_hub_message(self, channel, method_frame, header_frame, body):
-        logger.warning("on_hub_message")
         self.delivery_tag = method_frame.delivery_tag
         try:
             # for the time being, the only message from bubble-hub is 'create-game'
@@ -56,7 +52,6 @@ class Bubble:
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
     def on_game_message(self, channel, method_frame, header_frame, body):
-        logger.warning("on_game_message")
         try:
             request = json.loads(body)
             cmd = request.get("cmd", "unknown")
@@ -113,9 +108,7 @@ class Bubble:
             )
             self.channel.basic_consume(queue=self.game_queue_name, on_message_callback=self.on_game_message, auto_ack=True)
             self.game_state = GameStatus.CREATED
-            # send a status change to the games exchange
-            self.publish(GameStatus.CREATED.name, {})
-            # inform the Game it is a go
+            self.starttime = self.now
             self.game.created()
             return True
         else:
@@ -136,7 +129,7 @@ class Bubble:
             )
             # send game result to anyone interested (probably the hub)
             self.game_state = GameStatus.IDLE
-            self.publish(GameStatus.STOPPED.name, {})
+            self.game.stopped()
             # we only now can ACK the 'create-game' message
             self.channel.basic_ack(delivery_tag=self.delivery_tag)
             return True
@@ -166,11 +159,12 @@ class Bubble:
         else:
             self.invalid_players[player_id] = None
 
-    def publish(self, msg, data):
-        if self.game == None:
+    def publish(self, msg: GameStatus, data: dict):
+        if not self.game:
             item = {
                 'bubble_id': self.bubble_id,
-                'msg': msg,
+                'msg': msg.name,
+                'tick': self.tick,
                 'data': data
             }
         else:
@@ -180,7 +174,8 @@ class Bubble:
                 'game_name': self.game.game_name,
                 'state': self.game_state.name,
                 'status': self.game.get_status(),
-                'msg': msg,
+                'msg': msg.name,
+                'tick': self.tick,
                 'data': data
             }
         j = json.dumps(item)
@@ -190,7 +185,12 @@ class Bubble:
             body=j)
 
     def timer(self, now):
+        self.now = now
+        if self.now and self.starttime:
+            self.tick = (self.now - self.starttime).total_seconds()
+        else:
+            self.tick = 0
         if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
-            self.game.timer(now)
-            if self.game.stopped():
+            self.game.timer(self.tick)
+            if self.game.is_stopped():
                 self.stop_game()

@@ -13,6 +13,7 @@ class Semantics:
             "robot": self.check,
             "maxEats": self.maxEats,
             "robotHasBeacon": self.robotHasBeacon,
+            "robotHasBumped": self.robotHasBumped,
             "minWhitePaintUsed": self.minWhitePaintUsed,
             "minBlackPaintUsed": self.minBlackPaintUsed,
             "putDown": self.true,
@@ -37,10 +38,13 @@ class Semantics:
     def maxEats(self, identifier, args, world):
         if len(args) != 1:
             return False
-        return world.profile["eats"] < args[0]
+        return world.get("eats") < args[0]
 
     def robotHasBeacon(self, identifier, args, world):
         return len(world.bot.beacons) > 0
+
+    def robotHasBumped(self, identifier, args, world):
+        return world.get("robotHasBumped") > 0
 
     def minWhitePaintUsed(self, identifier, args, world):
         if len(args) != 1:

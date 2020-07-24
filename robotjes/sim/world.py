@@ -1,5 +1,6 @@
 import random
-from .map import Map
+import logging
+logger = logging.getLogger(__name__)
 
 class World(object):
 
@@ -67,6 +68,15 @@ class World(object):
     def inc(self, name, count=1):
         if(name in self.profile):
             self.profile[name] = self.profile[name] + count
+        else:
+            logger.warning(f"unknown profile variable: {name}")
+
+    def get(self, name):
+        if(name in self.profile):
+            return self.profile[name]
+        else:
+            logger.warning(f"unknown profile variable: {name}")
+            return 0
 
     def available_pos(self, pos):
         return self.map.available_pos(pos) and not pos in self.beacons and pos != self.bot.pos
@@ -130,7 +140,7 @@ class World(object):
             front = self.calc_pos(self.bot, self.FRONT, 1)
             self.bot.beacons.pop()
             self.beacons.add(front)
-            self.inc("successfulPuts     ")
+            self.inc("successfulPuts")
             return True
         else:
             return False
@@ -235,9 +245,3 @@ class Bot(object):
     def right(self):
         self.dir = dir_right(self.dir)
         return self.dir
-
-
-
-
-
-
