@@ -18,6 +18,7 @@ class Bubble:
         self.game_state = GameStatus.IDLE
         self.game_out_routing_key = ''
         self.game = None
+        self.players = {}
         self.channel = None
         self.delivery_tag = None
         self.now = None
@@ -109,6 +110,7 @@ class Bubble:
             self.channel.basic_consume(queue=self.game_queue_name, on_message_callback=self.on_game_message, auto_ack=True)
             self.game_state = GameStatus.CREATED
             self.starttime = self.now
+            self.players.clear()
             self.game.created()
             return True
         else:
@@ -174,6 +176,7 @@ class Bubble:
                 'game_name': self.game.game_name,
                 'state': self.game_state.name,
                 'status': self.game.get_status(),
+                'players': sorted(self.players.keys()),
                 'msg': msg.name,
                 'tick': self.tick,
                 'data': data
