@@ -6,31 +6,45 @@ logger = logging.getLogger(__name__)
 class StatusKeeper(object):
 
     def __init__(self):
-        self.starttime = datetime.datetime.now()
-        self.now = self.starttime
-        self.stoptime = None
         self.games = {}
+        self.now = None
         self.keep_alive = 10
 
     def game_status_event(self, request):
-        bubble_id = request['bubble_id']
+        # {
+        #   'bubble_id': 'd0f90888-bd84-48b3-b56e-523433a1e7aa',
+        #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
+        #   'game_name': 'game2',
+        #   'status': {'isStarted': False, 'isStopped': False, 'isSuccess': False},
+        #   'players': [],
+        #   'msg': 'CREATED',
+        #   'tick': 1327.285712,
+        #   'data': {}
+        # }
         game_id = request['game_id']
+        msg = request['msg']
         if game_id not in self.games:
-            if request['msg'] == 'CREATED':
+            if msg == 'CREATED':
                 game_status = GameStatus(self.now, request)
                 self.games[game_id] = game_status
             else:
                 logger.warning(f"unexpected message from game: {game_id}")
                 return
         game = self.games[game_id]
-        if request['msg'] == 'CREATED':
+        if msg == 'STARTED':
+            game.started(self.now, request)
+        elif msg == 'UPDATE':
+            game.updated(self.now, request)
+        elif msg == 'STOPPED':
+            game.stopped(self.now, request)
+        elif msg == 'CREATED':
+            # CREATED event is already handled
             pass
-        elif request['msg'] == 'STATUS':
+        elif msg == 'IDLE':
+            # IDLE is IDLE
             pass
-        elif request['msg'] == 'STOPPED':
-            game.stop(self.now)
         else:
-            logger.warning(f"unknown msg: {request['msg']}")
+            logger.warning(f"unknown msg: {msg}")
 
     def list_games(self):
         return self.games
@@ -47,15 +61,21 @@ class StatusKeeper(object):
 class GameStatus(object):
 
     def __init__(self, now, request):
-        self.game_id = request['game_id']
-        self.game_name = request['game_name']
         self.starttime = now
         self.stoptime = None
-
-    def stop(self, now):
-        self.stoptime = now
+        self.game_id = request['game_id']
+        self.game_name = request['game_name']
 
     def is_stopped(self):
-        return self.stoptime != None
+        return self.stoptime is not None
+
+    def started(self, now, request):
+        pass
+
+    def updated(self, now, request):
+        pass
+
+    def stopped(self, now, request):
+        pass
 
 

@@ -4,9 +4,8 @@ import uuid
 import logging
 logger = logging.getLogger(__name__)
 import config
-
 from bubblehub.model import GameSpec
-from . import GameStatus
+
 
 class BubbleHub:
 
@@ -17,13 +16,11 @@ class BubbleHub:
         self.bubbles_queue_name = config.BUBBLES_QUEUE
         self.bubblehubs_queue_name = config.BUBBLEHUBS_QUEUE
         self.games_queue_name = None
-        self.games = {}
         self.mazes = {
             "maze_id1": {"name": "maze1"},
             "maze_id2": {"name": "maze2"},
             "maze_id3": {"name": "maze3"}
         }
-        self.bubbles = {}
 
     def connect(self, channel):
         self.channel = channel
@@ -36,20 +33,6 @@ class BubbleHub:
         self.channel.exchange_declare(exchange=self.bubbles_exchange_name, exchange_type="direct")
         self.channel.queue_declare(queue=self.bubbles_queue_name)
         self.channel.queue_bind(queue=self.bubbles_queue_name, exchange=self.bubbles_exchange_name)
-        # create exchange/queue to and from the games (run by bubbles) (we are in the consumer role)
-        self.channel.exchange_declare(exchange=self.games_exchange_name, exchange_type="topic")
-        result = self.channel.queue_declare('', exclusive=True)
-        self.games_queue_name = result.method.queue
-        self.status_routing_key = "*.status"
-        channel.queue_bind(
-            exchange=self.games_exchange_name,
-            queue=self.games_queue_name,
-            routing_key=self.status_routing_key)
-        self.channel.basic_consume(
-            queue=self.games_queue_name,
-            on_message_callback=self.on_game_status,
-            auto_ack=True
-        )
 
     def on_rest_request(self, ch, method, props, body):
         """ do the request/run/reply cycle"""
@@ -60,13 +43,6 @@ class BubbleHub:
                 specs = request.get('specs', None)
                 game_id = self.create_game(GameSpec.parse_obj(specs))
                 reply = {'success': True, "game_id": game_id}
-            elif cmd == 'list_games':
-                list = self.list_games()
-                reply = {'success': True, 'list': list}
-            elif cmd == 'get_game':
-                game_id = request.get('game_id', None)
-                status = self.get_game(game_id)
-                reply = {'success': True, 'status': status}
             elif cmd == 'list_mazes':
                 list = self.list_mazes()
                 reply = {'success': True, 'list': list}
@@ -88,21 +64,6 @@ class BubbleHub:
                          body=j)
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
-    def on_game_status(self, ch, method, props, body):
-        logger.warning(f"on_game_status {body}")
-        status = json.loads(body)
-        if status["bubble_id"] not in self.bubbles:
-            self.bubbles[status["bubble_id"]] = status["game_id"]
-        self.games[status["game_id"]] = status
-        if status['state'] == GameStatus.CREATED.name:
-            pass
-        elif status['state'] == GameStatus.STARTED.name:
-            pass
-        elif status['state'] == GameStatus.IDLE.name:
-            pass
-        else:
-            pass
-
     def create_game(self, specs: GameSpec):
         logger.warning("create_game")
         game_id = str(uuid.uuid4())
@@ -115,25 +76,6 @@ class BubbleHub:
                              routing_key=self.bubbles_queue_name,
                              body=body)
         return game_id
-
-    def list_games(self):
-        result = {}
-        for game_id, game in self.games.items():
-            if game['msg'] != GameStatus.IDLE.name:
-                result[game_id] = game
-        return result
-
-    def get_game(self, game_id):
-        if game_id in self.games:
-            status = {
-                "game_id": game_id,
-                "status": self.games[game_id]
-            }
-        else:
-            status = {
-                "game_id": game_id
-            }
-        return status
 
     def list_mazes(self):
         return self.mazes

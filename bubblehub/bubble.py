@@ -174,7 +174,6 @@ class Bubble:
                 'bubble_id': self.bubble_id,
                 'game_id': self.game_id,
                 'game_name': self.game.game_name,
-                'state': self.game_state.name,
                 'status': self.game.get_status(),
                 'players': sorted(self.players.keys()),
                 'msg': msg.name,
