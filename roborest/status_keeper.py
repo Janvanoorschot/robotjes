@@ -11,16 +11,6 @@ class StatusKeeper(object):
         self.keep_alive = 10
 
     def game_status_event(self, request):
-        # {
-        #   'bubble_id': 'd0f90888-bd84-48b3-b56e-523433a1e7aa',
-        #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
-        #   'game_name': 'game2',
-        #   'status': {'isStarted': False, 'isStopped': False, 'isSuccess': False},
-        #   'players': [],
-        #   'msg': 'CREATED',
-        #   'tick': 1327.285712,
-        #   'data': {}
-        # }
         game_id = request['game_id']
         msg = request['msg']
         if game_id not in self.games:
@@ -57,25 +47,50 @@ class StatusKeeper(object):
                     del self.games[game_id]
 
 
-
 class GameStatus(object):
 
     def __init__(self, now, request):
-        self.starttime = now
-        self.stoptime = None
+        self.bubble_id = request['bubble_id']
         self.game_id = request['game_id']
         self.game_name = request['game_name']
+        self.starttime = now
+        self.stoptime = None
+        self.tick = 0.0
+        self.isStarted = False
+        self.isStopped = False
+        self.isSuccess = False
+        self.players = None
+        self.data = {}
 
     def is_stopped(self):
         return self.stoptime is not None
 
     def started(self, now, request):
-        pass
+        self.update(request)
 
     def updated(self, now, request):
-        pass
+        self.update(request)
 
     def stopped(self, now, request):
-        pass
+        self.update(request)
+        self.stoptime = now
+
+    def update(self, request):
+        # {
+        #   'bubble_id': 'd0f90888-bd84-48b3-b56e-523433a1e7aa',
+        #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
+        #   'game_name': 'game2',
+        #   'status': {'isStarted': False, 'isStopped': False, 'isSuccess': False},
+        #   'players': [],
+        #   'msg': 'CREATED',
+        #   'tick': 1327.285712,
+        #   'data': {}
+        # }
+        self.tick = request['tick']
+        self.isStarted = request['status']['isStarted']
+        self.isStopped = request['status']['isStopped']
+        self.isSuccess = request['status']['isSuccess']
+        self.players = request['players']
+
 
 
