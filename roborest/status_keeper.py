@@ -42,6 +42,12 @@ class StatusKeeper(object):
             result[game_id] = game.game_name
         return result
 
+    def get_game(self, game_id):
+        if game_id in self.games:
+            return self.games[game_id].to_map()
+        else:
+            return {}
+
     def timer(self, now):
         self.now = now
         for game_id, game in self.games.items():
@@ -94,6 +100,14 @@ class GameStatus(object):
         self.isStopped = request['status']['isStopped']
         self.isSuccess = request['status']['isSuccess']
         self.players = request['players']
+
+    def to_map(self):
+        return {
+            'game_id': self.game_id,
+            'game_name': self.game_name,
+            'tick': self.tick,
+            'players': self.players
+        }
 
 
 

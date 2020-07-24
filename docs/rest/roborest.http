@@ -25,8 +25,9 @@ POST http://localhost:8000/games
 Content-Type: application/json
 
 {
-    "name": "my_game_name",
-    "password": "secret",
+    "umpire_id": "12345",
+    "game_name": "my_game_name",
+    "game_password": "secret",
     "maze_id": "maze_id1"
 }
 
@@ -39,7 +40,7 @@ Content-Type: application/json
 }
 ###
 # get info about a/one game
-GET http://localhost:8000/games/8fab52af-8bf6-425f-9227-185fbfad11ca
+GET http://localhost:8000/games/cc79dfcf-9d53-4afd-aabe-ff5e08512dd7
 Content-Type: application/json
 
 {

@@ -32,24 +32,13 @@ async def list_games():
     """List current games"""
     lst = roborest.status_keeper.list_games()
     return lst
-    # async with get_monitor():
-    #     request = {
-    #         "cmd": "list_games"
-    #     }
-    #     result = await async_rpc_client.call(request)
-    #     return result
 
 
 @app.get("/games/{game_id}")
 async def list_game(game_id: str):
     """Information about a game"""
-    async with get_monitor():
-        request = {
-            "cmd": "get_game",
-            "game_id": game_id
-        }
-        result = await async_rpc_client.call(request)
-        return result
+    result = roborest.status_keeper.get_game(game_id)
+    return result
 
 
 @app.put("/games/{game_id}")
