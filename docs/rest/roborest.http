@@ -40,7 +40,7 @@ Content-Type: application/json
 }
 ###
 # get info about a/one game
-GET http://localhost:8000/games/cc79dfcf-9d53-4afd-aabe-ff5e08512dd7
+GET http://localhost:8000/games/ec2441b6-a7a9-4253-b598-961523581538
 Content-Type: application/json
 
 {
