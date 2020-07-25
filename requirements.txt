@@ -16,7 +16,7 @@ psycopg2-binary
 
 # client: GTK client side UI
 pycairo
-# PyGObject
+PyGObject
 
 # client: HTTP/REST
 requests
