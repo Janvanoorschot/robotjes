@@ -15,6 +15,10 @@ class RoboUmpire():
             self.create_game(argv[0])
         elif etype == "EVT_STOP_GAME":
             self.stop_game(argv[0])
+        elif etype == "EVT_CHANGE_SELECTED_MAZE":
+            pass
+        elif etype == "EVT_CHANGE_SELECTED_GAME":
+            pass
         else:
             pass
 

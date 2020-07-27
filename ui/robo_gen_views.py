@@ -1,6 +1,66 @@
 from gi.repository import Gtk, Gdk
 
 
+class MazesComponent(Gtk.Grid):
+
+    def __init__(self, model, owner):
+        super().__init__(expand=True, orientation=Gtk.Orientation.VERTICAL)
+        self.model = model
+        self.owner = owner
+        self.mazes_field = None
+        self.mazes_model = None
+        self.mazes_selection = None
+        self.mazes_selected = None
+        self.__construct()
+
+    def __construct(self):
+        glabel = Gtk.EventBox()
+        glabel.add(Gtk.Label("Available Mazes"))
+        color = Gdk.color_parse('grey')
+        glabel.modify_bg(Gtk.StateType.NORMAL, color)
+        self.attach(glabel, 0, 0, 1, 1)
+
+        self.mazes_field = Gtk.TreeView(expand=True)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("Name", renderer, text=0)
+        self.mazes_field.append_column(column)
+        self.scrollable_mazeslist = Gtk.ScrolledWindow()
+        self.scrollable_mazeslist.set_vexpand(True)
+        self.scrollable_mazeslist.add(self.mazes_field)
+        self.mazes_model = Gtk.ListStore(str, str)
+        self.mazes_field.set_model(self.mazes_model)
+        self.mazes_selection = self.mazes_field.get_selection()
+        self.mazes_selection.set_mode(Gtk.SelectionMode.SINGLE)
+        self.mazes_selection.connect("changed", self.selection_changed)
+        self.attach_next_to(self.scrollable_mazeslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
+
+    def refresh(self):
+        def cb(mazes):
+            for maze_id, maze in mazes.items():
+                for entry in self.mazes_model:
+                    if entry[1] == maze_id:
+                        break
+                else:
+                    self.mazes_model.append([maze['name'], maze_id])
+            for entry in self.mazes_model:
+                if not entry[1] in mazes:
+                    self.mazes_model.remove(entry.iter)
+        self.model.list_mazes(cb)
+
+    def selection_changed(self, tree_selection):
+        (model, pathlist) = tree_selection.get_selected_rows()
+        for path in pathlist :
+            tree_iter = model.get_iter(path)
+            self.mazes_selected = model.get_value(tree_iter,1)
+            self.owner.do_signal("EVT_CHANGE_SELECTED_MAZE", self, {
+                "name": model.get_value(tree_iter,0),
+                "id": model.get_value(tree_iter,1)
+            })
+
+    def get_selected_id(self):
+        return self.mazes_selected
+
+
 class GamesComponent(Gtk.Grid):
 
     def __init__(self, model, owner):
@@ -53,6 +113,10 @@ class GamesComponent(Gtk.Grid):
         for path in pathlist :
             tree_iter = model.get_iter(path)
             self.games_selected = model.get_value(tree_iter,1)
+            self.owner.do_signal("EVT_CHANGE_SELECTED_GAME", self, {
+                "name": model.get_value(tree_iter,0),
+                "id": model.get_value(tree_iter,1)
+            })
 
     def get_selected_id(self):
         return self.games_selected
@@ -60,10 +124,10 @@ class GamesComponent(Gtk.Grid):
 
 class GameComponent(Gtk.Grid):
 
-    def __init__(self, model, game_id, owner):
+    def __init__(self, model, owner):
         super().__init__(expand=True, orientation=Gtk.Orientation.VERTICAL)
         self.model = model
-        self.game_id = game_id
+        self.game_id = None
         self.owner = owner
         self.players_field = None
         self.scrollable_playerslist = None
@@ -92,7 +156,11 @@ class GameComponent(Gtk.Grid):
         self.players_selection = self.players_field.get_selection()
         self.players_selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.players_selection.connect("changed", self.selection_changed)
-        self.attach_next_to(self.scrollable_playerslist, glabel, Gtk.PositionType.RIGHT, 1, 1)
+        self.attach_next_to(self.scrollable_playerslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
+
+    def set_game(self, game_id):
+        self.game_id = game_id
+        self.refresh()
 
     def refresh(self):
         def cb(game_status):
@@ -108,13 +176,20 @@ class GameComponent(Gtk.Grid):
             for entry in self.players_model:
                 if not entry[1] in player_ids:
                     self.players_model.remove(entry.iter)
-        self.model.status_game(self.game_id, cb)
+        if self.game_id:
+            self.model.status_game(self.game_id, cb)
+        else:
+            pass
 
     def selection_changed(self, tree_selection):
         (model, pathlist) = tree_selection.get_selected_rows()
         for path in pathlist :
             tree_iter = model.get_iter(path)
             self.player_selected = model.get_value(tree_iter,1)
+            self.owner.do_signal("EVT_CHANGE_SELECTED_PLAYER", self, {
+                "name": model.get_value(tree_iter,0),
+                "id": model.get_value(tree_iter,1)
+            })
 
     def get_selected_id(self):
         return self.player_selected
