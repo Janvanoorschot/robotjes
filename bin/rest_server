@@ -2,8 +2,8 @@
 
 import sys, os
 import argparse
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(rootdir)
 import config
 
 # get commandline arguments
@@ -45,7 +45,7 @@ import roborest.bubble_hub_rest
 
 # do static files support
 from fastapi.staticfiles import StaticFiles
-roborest.app.mount("/", StaticFiles(directory="www"), name="www")
+roborest.app.mount("/", StaticFiles(directory=os.path.join(rootdir, "www")), name="www")
 
 # start the webserver (note the logging configuration)
 import uvicorn
