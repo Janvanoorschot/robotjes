@@ -149,6 +149,9 @@ class GameComponent(Gtk.Grid):
         self.add(Gtk.Label("ticks"))
         self.ticks_field = Gtk.Entry()
         self.add(self.ticks_field)
+        self.add(Gtk.Label("status"))
+        self.status_field = Gtk.Entry()
+        self.add(self.status_field)
 
         # list of the players
         self.players_field = Gtk.TreeView(expand=True)
@@ -172,9 +175,17 @@ class GameComponent(Gtk.Grid):
 
     def refresh(self):
         def cb(game_status):
-            if "tick" in game_status and "players" in game_status:
+            if "tick" in game_status and "players" in game_status and "status" in game_status:
                 self.tick = game_status.get("tick", -1)
+                self.isStarted = game_status["status"]["isStarted"]
+                self.isStopped = game_status["status"]["isStopped"]
+                self.isSuccess = game_status["status"]["isSuccess"]
                 self.ticks_field.set_text(str(int(self.tick)))
+                statusstr = "/"
+                if self.isStarted: statusstr = statusstr + "/started"
+                if self.isStopped: statusstr = statusstr + "/stopped"
+                if self.isSuccess: statusstr = statusstr + "/success"
+                self.status_field.set_text(statusstr)
                 player_ids = set()
                 for player_spec in game_status["players"]:
                     player_ids.add(player_spec["player_id"])

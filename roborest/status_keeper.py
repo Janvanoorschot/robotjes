@@ -105,6 +105,11 @@ class GameStatus(object):
         return {
             'game_id': self.game_id,
             'game_name': self.game_name,
+            'status': {
+                'isStarted': self.isStarted,
+                'isStopped': self.isStopped,
+                'isSuccess': self.isSuccess
+            },
             'tick': self.tick,
             'players': self.players
         }
