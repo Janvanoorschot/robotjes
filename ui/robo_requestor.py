@@ -1,6 +1,7 @@
 import requests
 import concurrent.futures
 import functools
+from gi.repository import GLib
 
 
 class RoboRequestor:
@@ -91,4 +92,5 @@ class RoboRequestor:
 
     def done_url(self, cb, ftr):
         j = ftr.result()
-        cb(j)
+        GLib.idle_add(cb, j)
+        # cb(j)

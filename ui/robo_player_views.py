@@ -84,6 +84,16 @@ class RegisterPlayerComponent(Gtk.Grid):
             "directory": directory
         })
 
+    def do_signal(self, etype, sender, *argv):
+        if etype == "EVT_CHANGE_SELECTED_GAME":
+            if argv[0]:
+                pass
+            else:
+                pass
+        else:
+            for listener in self.listeners:
+                listener.do_signal(etype, self, *argv)
+
     def refresh(self):
         self.games_component.refresh()
 

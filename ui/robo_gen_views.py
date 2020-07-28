@@ -182,7 +182,7 @@ class GameComponent(Gtk.Grid):
                         if entry[1] == player_spec["player_id"]:
                             break
                     else:
-                        self.players_model.append([player_spec["game_name"], player_spec["game_id"]])
+                        self.players_model.append([player_spec["player_name"], player_spec["player_id"]])
                 for entry in self.players_model:
                     if not entry[1] in player_ids:
                         self.players_model.remove(entry.iter)

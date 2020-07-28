@@ -18,7 +18,8 @@ view.add_listener(controller)
 
 
 def timer():
-    controller.timer(datetime.datetime.now())
+    GLib.idle_add(controller.timer, datetime.datetime.now())
+    # controller.timer(datetime.datetime.now())
     GLib.timeout_add(1000, timer)
 
 
