@@ -110,13 +110,17 @@ class GamesComponent(Gtk.Grid):
 
     def selection_changed(self, tree_selection):
         (model, pathlist) = tree_selection.get_selected_rows()
-        for path in pathlist :
-            tree_iter = model.get_iter(path)
-            self.games_selected = model.get_value(tree_iter,1)
-            self.owner.do_signal("EVT_CHANGE_SELECTED_GAME", self, {
-                "name": model.get_value(tree_iter,0),
-                "id": model.get_value(tree_iter,1)
-            })
+        if len(pathlist) > 0:
+            for path in pathlist :
+                tree_iter = model.get_iter(path)
+                self.games_selected = model.get_value(tree_iter,1)
+                self.owner.do_signal("EVT_CHANGE_SELECTED_GAME", self, {
+                    "name": model.get_value(tree_iter,0),
+                    "id": model.get_value(tree_iter,1)
+                })
+        else:
+            self.owner.do_signal("EVT_CHANGE_SELECTED_GAME", self, None)
+
 
     def get_selected_id(self):
         return self.games_selected
@@ -142,6 +146,9 @@ class GameComponent(Gtk.Grid):
         color = Gdk.color_parse('grey')
         glabel.modify_bg(Gtk.StateType.NORMAL, color)
         self.attach(glabel, 0, 0, 1, 1)
+        self.add(Gtk.Label("ticks"))
+        self.ticks_field = Gtk.Entry()
+        self.add(self.ticks_field)
 
         # list of the players
         self.players_field = Gtk.TreeView(expand=True)
@@ -156,7 +163,8 @@ class GameComponent(Gtk.Grid):
         self.players_selection = self.players_field.get_selection()
         self.players_selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.players_selection.connect("changed", self.selection_changed)
-        self.attach_next_to(self.scrollable_playerslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
+        # self.attach_next_to(self.scrollable_playerslist, glabel, Gtk.PositionType.BOTTOM, 1, 1)
+        self.add(self.scrollable_playerslist)
 
     def set_game(self, game_id):
         self.game_id = game_id
@@ -164,18 +172,20 @@ class GameComponent(Gtk.Grid):
 
     def refresh(self):
         def cb(game_status):
-            self.tick = game_status.get("tick", -1)
-            player_ids = set()
-            for player_spec in game_status["players"]:
-                player_ids.add(player_spec["player_id"])
+            if "tick" in game_status and "players" in game_status:
+                self.tick = game_status.get("tick", -1)
+                self.ticks_field.set_text(str(int(self.tick)))
+                player_ids = set()
+                for player_spec in game_status["players"]:
+                    player_ids.add(player_spec["player_id"])
+                    for entry in self.players_model:
+                        if entry[1] == player_spec["player_id"]:
+                            break
+                    else:
+                        self.players_model.append([player_spec["game_name"], player_spec["game_id"]])
                 for entry in self.players_model:
-                    if entry[1] == player_spec["player_id"]:
-                        break
-                else:
-                    self.players_model.append([player_spec["game_name"], player_spec["game_id"]])
-            for entry in self.players_model:
-                if not entry[1] in player_ids:
-                    self.players_model.remove(entry.iter)
+                    if not entry[1] in player_ids:
+                        self.players_model.remove(entry.iter)
         if self.game_id:
             self.model.status_game(self.game_id, cb)
         else:

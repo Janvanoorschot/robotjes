@@ -47,9 +47,12 @@ class RoboUmpireWindow(Gtk.Window):
 
     def do_signal(self, etype, sender, *argv):
         if etype == "EVT_CHANGE_SELECTED_GAME":
-            game_id = argv[0]["id"]
-            game_name = argv[0]["name"]
-            self.game_component.set_game(game_id)
+            if argv[0]:
+                game_id = argv[0]["id"]
+                game_name = argv[0]["name"]
+                self.game_component.set_game(game_id)
+            else:
+                self.game_component.set_game(None)
         else:
             for listener in self.listeners:
                 listener.do_signal(etype, self, *argv)
