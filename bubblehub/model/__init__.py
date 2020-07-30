@@ -1,1 +1,2 @@
-from .specs import GameSpec, PlayerState, GameState, RegistrationSpec
+from .specs import GameSpec, PlayerState, GameState
+from .specs import RegistrationSpec, MoveSpec

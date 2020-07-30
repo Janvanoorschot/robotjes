@@ -68,12 +68,16 @@ class Bubble:
                 else:
                     self.disqualify_player(player_id)
             elif self.game_state == GameStatus.STARTED:
-                if cmd == "":
-                    pass
+                if cmd == "move":
+                    player_id = request.get("player_id", "unknown")
+                    move = request("move", {})
+                    if player_id in self.players:
+                        self.game.move(player_id, move)
                 else:
                     self.disqualify_player(player_id)
             elif self.game_state == GameStatus.STOPPED:
-                if cmd == "":
+                if cmd == "move":
+                    # to little, to late
                     pass
                 else:
                     self.disqualify_player(player_id)

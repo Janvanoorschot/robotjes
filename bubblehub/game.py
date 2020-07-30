@@ -60,3 +60,6 @@ class Game:
 
     def result(self):
         return self.isSuccess
+
+    def move(self, player_id, move):
+        pass

@@ -46,6 +46,14 @@ class RoboRequestor:
         ftr = self.executor.submit(self.put_url, self.create_url(f"game/{game_id}/register"), spec)
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
+    def player_move(self, cb, game_id, player_id, move):
+        spec = {
+            "player_id": player_id,
+            "move": move
+        }
+        ftr = self.executor.submit(self.put_url, self.create_url(f"game/{game_id}/move"), spec)
+        ftr.add_done_callback(functools.partial(self.done_url, cb))
+
     # requests support calls
     def create_url(self, path):
         return f"{self.url}{path}"

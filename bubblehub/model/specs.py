@@ -26,3 +26,8 @@ class GameState(BaseModel):
     result: bool
 
 
+class MoveSpec(BaseModel):
+    player_id: str
+    move: dict
+
+
