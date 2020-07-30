@@ -70,7 +70,7 @@ class Bubble:
             elif self.game_state == GameStatus.STARTED:
                 if cmd == "move":
                     player_id = request.get("player_id", "unknown")
-                    move = request("move", {})
+                    move = request.get("move", {})
                     if player_id in self.players:
                         self.game.move(player_id, move)
                 else:
@@ -122,6 +122,7 @@ class Bubble:
 
     def start_game(self):
         self.game.start(self.players)
+        self.game_state = GameStatus.STARTED
 
 
     def stop_game(self):
