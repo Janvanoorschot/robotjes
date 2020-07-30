@@ -42,6 +42,7 @@ roborest.app = fastapi.FastAPI()
 # import the files with REST calls (do not remove!!!)
 import roborest.sys_rest
 import roborest.bubble_hub_rest
+import roborest.game_rest
 
 # do static files support
 from fastapi.staticfiles import StaticFiles

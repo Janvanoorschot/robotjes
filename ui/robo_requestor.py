@@ -43,7 +43,7 @@ class RoboRequestor:
     def register_player(self, cb, spec):
         game_id = spec['game_id']
         del(spec['game_id'])
-        ftr = self.executor.submit(self.put_url, self.create_url(f"games/{game_id}"), spec)
+        ftr = self.executor.submit(self.put_url, self.create_url(f"game/{game_id}/register"), spec)
         ftr.add_done_callback(functools.partial(self.done_url, cb))
 
     # requests support calls

@@ -41,30 +41,6 @@ async def list_game(game_id: str):
     return result
 
 
-@app.put("/games/{game_id}")
-async def register_with_game(game_id: str, specs: RegistrationSpec):
-    """Register with a game"""
-    async with get_monitor():
-        request = {
-            "cmd": "register",
-            "game_id": game_id,
-            "player_name": specs.player_name,
-            "player_id": specs.player_id,
-            "password": specs.game_password
-        }
-        routing_key = f"{game_id}.game"
-        body = json.dumps(request)
-        message = Message(
-            body.encode(),
-            content_type="application/json"
-        )
-        await roborest.games_exchange.publish(
-            message,
-            routing_key=routing_key
-        )
-        return {}
-
-
 @app.get("/mazes")
 async def list_mazes():
     """List current mazes"""
