@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, os, uuid
+import sys, os, uuid, datetime
 import argparse
 import pika, json
 import logging.config
@@ -42,11 +42,22 @@ bubble.connect(channel)
 
 def timer():
     import datetime
-    bubble.timer(datetime.datetime.now())
-    connection.add_timeout(1, timer)
+    now = datetime.datetime.now()
+    delta = datetime.timedelta(seconds=1)
+    next_second = (now + delta).replace(microsecond=0)
+    bubble.timer(now)
+    sleep_seconds = (next_second - datetime.datetime.now()).total_seconds()
+    if sleep_seconds > 0:
+        connection.add_timeout(sleep_seconds, timer)
+    else:
+        connection.add_timeout(0, timer)
 
 
-connection.add_timeout(1, timer)
+# sleep until the next whole second (get close)
+now = datetime.datetime.now()
+delta = datetime.timedelta(seconds=1)
+next_second = (now + delta).replace(microsecond=0)
+connection.add_timeout((next_second - now).total_seconds(), timer)
 
 try:
     channel.start_consuming()

@@ -19,6 +19,7 @@ class Bubble:
         self.game_out_routing_key = ''
         self.game = None
         self.players = {}
+        self.moves = {}
         self.channel = None
         self.delivery_tag = None
         self.now = None
@@ -72,7 +73,7 @@ class Bubble:
                     player_id = request.get("player_id", "unknown")
                     move = request.get("move", {})
                     if player_id in self.players:
-                        self.game.move(player_id, move)
+                        self.moves[player_id] = move
                 else:
                     self.disqualify_player(player_id)
             elif self.game_state == GameStatus.STOPPED:
@@ -121,7 +122,7 @@ class Bubble:
             return False
 
     def start_game(self):
-        self.game.start(self.players)
+        self.game.started(self.players)
         self.game_state = GameStatus.STARTED
 
 
@@ -198,10 +199,14 @@ class Bubble:
     def timer(self, now):
         self.now = now
         if self.now and self.starttime:
-            self.tick = (self.now - self.starttime).total_seconds()
+            # self.tick = (self.now - self.starttime).total_seconds()
+            self.tick = self.tick + 1
         else:
             self.tick = 0
         if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
             self.game.timer(self.tick)
+            if self.game_state == GameStatus.STARTED and len(self.moves) > 0:
+                self.game.moves(self.tick, self.moves)
+                self.moves.clear()
             if self.game.is_stopped():
                 self.stop_game()

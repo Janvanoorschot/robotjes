@@ -22,17 +22,21 @@ class Game:
         # send a status change to the games exchange
         self.owner.publish(GameStatus.CREATED, {})
 
-    def stopped(self):
-        self.owner.publish(GameStatus.STOPPED, {})
-
-    def start(self, players):
+    def started(self, players):
         self.players = players
         self.isStarted = True
         self.isStopped = False
         self.isSuccess = True
+        self.owner.publish(GameStatus.STARTED, {})
+
+    def stopped(self):
+        self.owner.publish(GameStatus.STOPPED, {})
 
     def is_stopped(self):
         return self.isStopped
+
+    def result(self):
+        return self.isSuccess
 
     def player_count(self):
         return self.max_player_count
@@ -58,8 +62,5 @@ class Game:
         if not self.isStopped:
             self.status_update()
 
-    def result(self):
-        return self.isSuccess
-
-    def move(self, player_id, move):
+    def moves(self, player_id, move):
         pass
