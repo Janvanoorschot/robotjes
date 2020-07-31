@@ -20,7 +20,7 @@ args = parser.parse_args()
 def run_simulation(mapstr, successjson, scriptstr):
     """ run a simulation """
 
-    # prepare supporting obects
+    # prepare supporting objects
     map = Map.fromstring(mapstr)
     script = scriptstr.split('\n')
     engine = Engine(map)
