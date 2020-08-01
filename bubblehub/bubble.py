@@ -95,6 +95,7 @@ class Bubble:
         logger.warning("start_game")
         if self.game_state == GameStatus.IDLE:
             # put ourselfs in the correct state
+            self.tick = 0
             self.game_id = game_id
             self.game_password = spec.game_password
             self.spec = spec
@@ -140,6 +141,7 @@ class Bubble:
             self.game.stopped()
             # we only now can ACK the 'create-game' message
             self.channel.basic_ack(delivery_tag=self.delivery_tag)
+
             return True
         else:
             return False
