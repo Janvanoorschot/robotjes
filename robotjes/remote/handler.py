@@ -4,7 +4,9 @@ from subprocess import call
 
 class Handler(object):
 
-    def __init__(self, host, port, authkey, runscript="bin/runscript"):
+    ROOTDIR=os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+
+    def __init__(self, host, port, authkey, runscript=f"{ROOTDIR}/bin/runscript"):
         self.host = host
         self.port = port
         self.authkey = authkey

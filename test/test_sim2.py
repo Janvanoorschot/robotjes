@@ -1,11 +1,11 @@
 import unittest
 import os
-from subprocess import call
 
 from robotjes.remote import Handler
 from robotjes.sim import Engine, Map
 
-DIR = os.path.dirname(os.path.abspath(__file__))
+TESTDIR = os.path.dirname(os.path.abspath(__file__))
+ROOTDIR = os.path.abspath(os.path.join(TESTDIR, os.pardir))
 
 
 class Sim2TestCase(unittest.TestCase):
@@ -26,8 +26,8 @@ class Sim2TestCase(unittest.TestCase):
         return [self.engine]
 
     def test_sim201(self):
-        map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim2.map')
-        script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim201.py')
+        map_file = os.path.join(TESTDIR, 'datafiles', 'sim2.map')
+        script_file = os.path.join(TESTDIR, 'datafiles', 'sim201.py')
         # bot starts at (11,11)
         [engine] = self.init(map_file)
         self.assertEqual((7, 11), engine.world.bot.pos)
@@ -37,8 +37,8 @@ class Sim2TestCase(unittest.TestCase):
         self.assertEqual((14, 11), engine.world.bot.pos)
 
     def test_sim202(self):
-        map_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim2.map')
-        script_file = os.path.join(DIR, os.pardir, 'tests/datafiles', 'sim201.py')
+        map_file = os.path.join(TESTDIR, 'datafiles', 'sim2.map')
+        script_file = os.path.join(TESTDIR, 'datafiles', 'sim201.py')
         # bot starts at (11,11)
         [engine] = self.init(map_file)
         [engine] = self.exec(script_file)
