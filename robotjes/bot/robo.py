@@ -115,3 +115,9 @@ class Robo(object):
 
     def message(self, message):
         self.requestor.execute([self.id, 'message', message])
+
+    def set_stdout(self, message):
+        self.requestor.execute([self.id, 'stdout', message])
+
+    def set_stderr(self, message):
+        self.requestor.execute([self.id, 'stderr', message])
