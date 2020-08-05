@@ -6,7 +6,7 @@ LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
                   "leftIsClear", "leftIsObstacle", "leftIsBeacon", "leftIsWhite", "leftIsBlack",
                   "frontIsClear", "frontIsObstacle", "frontIsBeacon", "frontIsWhite", "frontIsBlack",
                   "rightIsClear", "rightIsObstacle", "rightIsBeacon", "rightIsWhite", "rightIsBlack",
-                  "flipCoin", "message", "stdout", "stderr"
+                  "flipCoin", "message", "error"
                   ]
 class Engine(object):
 
@@ -191,14 +191,10 @@ class Engine(object):
             paint = self.world.getPaint()
             message = message.format(loc=loc, cargo=cargo, paint=paint)
             self.recording.message(message)
-        elif command == "stderr":
+        elif command == "error":
             message = "none" if len(args) < 1 else args[0]
             if len(message)>1 and message != "none":
-                pass
-        elif command == "stdout":
-            message = "none" if len(args) < 1 else args[0]
-            if len(message)>1 and message != "none":
-                pass
+                self.recording.error(message)
         else:
             reply.append([False])
         return self.prepare_reply(cmd, reply)

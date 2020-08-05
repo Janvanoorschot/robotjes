@@ -22,21 +22,21 @@ class Sim3TestCase(unittest.TestCase):
         script_file = os.path.join(TESTDIR, 'datafiles', 'sim302.py')
         success_file = os.path.join(TESTDIR, 'datafiles', 'sim3.json')
         [engine, recording, success] = go_robo(map_file, script_file, success_file)
-        self.assertTrue(recording.isSuccess() and success.isSuccess())
+        self.assertTrue(not recording.isSuccess() and success.isSuccess())
 
     def test_sim303(self):
         map_file = os.path.join(TESTDIR, 'datafiles', 'sim3.map')
         script_file = os.path.join(TESTDIR, 'datafiles', 'sim303.py')
         success_file = os.path.join(TESTDIR, 'datafiles', 'sim3.json')
         [engine, recording, success] = go_robo(map_file, script_file, success_file)
-        self.assertTrue(recording.isSuccess() and success.isSuccess())
+        self.assertTrue(not recording.isSuccess() and success.isSuccess())
 
     def test_sim304(self):
         map_file = os.path.join(TESTDIR, 'datafiles', 'sim3.map')
         script_file = os.path.join(TESTDIR, 'datafiles', 'sim304.py')
         success_file = os.path.join(TESTDIR, 'datafiles', 'sim3.json')
         [engine, recording, success] = go_robo(map_file, script_file, success_file)
-        self.assertTrue(recording.isSuccess() and success.isSuccess())
+        self.assertTrue(not recording.isSuccess() and success.isSuccess())
 
 
 if __name__ == '__main__':

@@ -147,6 +147,11 @@ class Recording(object):
         keyframe['action'] = ['sht', message]
         return self.finalize(keyframe)
 
+    def error(self, message):
+        keyframe = {}
+        keyframe['action'] = ['message', message]
+        return self.finalize(keyframe)
+
     def boom(self, cmd):
         keyframe = {}
         keyframe['action'] = ['boom', json.dumps(cmd, default=str)]

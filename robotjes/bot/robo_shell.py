@@ -73,9 +73,9 @@ class RoboShell(object):
             localsParameter = {'print': print, 'range': range, 'quit': quit}
             (timeout, exception, stderr, stdout) =  run_with_limited_time((data, globalsParameter, localsParameter), TIMEOUT)
             if timeout:
-                robo.message(f"program took longer then {TIMEOUT} secconds, failed by time out.")
+                robo.error(f"program took longer then {TIMEOUT} secconds, failed by time out.")
             if exception:
-                robo.message(f"program failed: {exception}")
+                robo.error(f"program failed: {exception}")
         if "delete_me_" in script_file:
             import os
             os.unlink(script_file)
