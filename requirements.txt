@@ -15,6 +15,7 @@ sqlalchemy
 psycopg2-binary
 
 # client: GTK client side UI
+wheel
 pycairo
 PyGObject
 
