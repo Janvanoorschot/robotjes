@@ -69,8 +69,8 @@ class RoboShell(object):
     def run(self, robo, script_file):
         with open(script_file, 'r') as file:
             data = file.read()
-            globalsParameter = {'__builtins__' : None, 'robo': robo}
-            localsParameter = {'print': print, 'range': range, 'quit': quit, 'str': str}
+            globalsParameter = {'__builtins__' : None, 'robo': robo, 'print': print, 'range': range, 'quit': quit, 'str': str}
+            localsParameter = {}
             (timeout, exception, stderr, stdout) =  run_with_limited_time((data, globalsParameter, localsParameter), TIMEOUT)
             if timeout:
                 robo.error(f"program took longer then {TIMEOUT} secconds, failed by time out.")
