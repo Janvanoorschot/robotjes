@@ -1,0 +1,8 @@
+# Dockerfile-rabbitmq -- Robomind RabbitMQ Dockerfile
+FROM rabbitmq:3-management
+
+RUN apt update && apt install -y --no-install-recommends \
+	        curl \
+	    && rm -rf /var/lib/apt/lists/*
+
+

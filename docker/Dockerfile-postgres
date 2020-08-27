@@ -1,0 +1,6 @@
+# Dockerfile-postgres -- Robomind Academy Postgres Dockerfile
+FROM postgres:11-alpine
+
+COPY "rm_dump.sql" /docker-entrypoint-initdb.d/
+COPY "rm_env.sh" /docker-entrypoint-initdb.d/
+

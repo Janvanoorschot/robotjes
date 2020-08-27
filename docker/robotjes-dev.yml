@@ -1,0 +1,39 @@
+# robomindacademy: Start the Docker containers supporting the Robomind Academy
+version: '2.4'
+
+services:
+
+  rapostgres:
+    image: robomind/postgres:1.0
+    volumes:
+      - pgdata11:/var/lib/postgresql/data
+    restart: always
+    environment:
+      - POSTGRES_DB=rmdev
+      - POSTGRES_USER=rmprod
+      - POSTGRES_PASSWORD=rmprodsecret
+    mem_limit: 1gb
+    memswap_limit: 2gb
+    mem_reservation: 512m
+    privileged: true
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    image: robomind/rabbitmq:1.0
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata11:
+
