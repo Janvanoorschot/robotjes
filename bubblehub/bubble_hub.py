@@ -16,11 +16,10 @@ class BubbleHub:
         self.bubbles_queue_name = config.BUBBLES_QUEUE
         self.bubblehubs_queue_name = config.BUBBLEHUBS_QUEUE
         self.games_queue_name = None
-        self.mazes = {
-            "maze_id1": {"name": "maze1"},
-            "maze_id2": {"name": "maze2"},
-            "maze_id3": {"name": "maze3"}
-        }
+        self.mazes = None
+
+    def set_mazes(self, mazes):
+        self.mazes = mazes
 
     def connect(self, channel):
         self.channel = channel
@@ -78,16 +77,7 @@ class BubbleHub:
         return game_id
 
     def list_mazes(self):
-        return self.mazes
+        return self.mazes.list_mazes()
 
     def get_maze(self, maze_id):
-        if maze_id in self.mazes:
-            status = {
-                "maze_id": maze_id,
-                "status": self.mazes[maze_id]
-            }
-        else:
-            status = {
-                "maze_id": maze_id
-            }
-        return status
+        return self.mazes.status_maze(maze_id)

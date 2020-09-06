@@ -34,6 +34,13 @@ logger = logging.getLogger(__name__)
 # create the BubbleHub class that will handle the requests
 from bubblehub import BubbleHub
 bubble_hub = BubbleHub()
+
+# feed the BubbleHub with a Mazes object
+from robotjes.sim import Mazes
+mazesdir = os.path.join(modpath, "datafiles/mazes")
+mazes = Mazes(mazesdir)
+bubble_hub.set_mazes(mazes)
+
 bubble_hub.connect(channel)
 
 # start listening for RPC calls

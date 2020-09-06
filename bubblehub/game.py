@@ -1,14 +1,12 @@
 from bubblehub.model import GameSpec
-from . import GameStatus
-
+from . import GameStatus, RoboGame
 
 class Game:
 
     def __init__(self, owner, spec: GameSpec):
         self.owner = owner
-        self.spec = spec
+        self.game = self.create_game(spec)
         self.game_name = spec.game_name
-        self.maze_id = spec.maze_id
         self.isStarted = False
         self.isStopped = False
         self.isSuccess = False
@@ -17,6 +15,11 @@ class Game:
         self.max_start_tick = 15
         self.max_tick = 60
         self.players = []
+
+    def create_game(self, spec: GameSpec):
+        # for the time being only create RoboGame's
+        map = self.owner.mazes.get_map(spec.maze_id)
+        return RoboGame(map)
 
     def created(self):
         # send a status change to the games exchange

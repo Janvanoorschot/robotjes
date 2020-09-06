@@ -1,6 +1,7 @@
 # Dockerfile-rabbitmq -- Robomind RabbitMQ Dockerfile
 FROM rabbitmq:3-management
 
+RUN rabbitmq-plugins enable --offline rabbitmq_prometheus
 RUN apt update && apt install -y --no-install-recommends \
 	        curl \
 	    && rm -rf /var/lib/apt/lists/*

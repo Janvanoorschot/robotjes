@@ -24,6 +24,10 @@ class Bubble:
         self.delivery_tag = None
         self.now = None
         self.starttime = None
+        self.mazes = None
+
+    def set_mazes(self, mazes):
+        self.mazes = mazes
 
     def connect(self, channel):
         self.channel = channel
