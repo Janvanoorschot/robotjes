@@ -68,7 +68,7 @@ class GameStatus(object):
         self.isStarted = False
         self.isStopped = False
         self.isSuccess = False
-        self.players = None
+        self.players = []
         self.data = {}
 
     def is_stopped(self):

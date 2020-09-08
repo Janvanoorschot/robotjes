@@ -65,5 +65,5 @@ class Game:
         if not self.isStopped:
             self.status_update()
 
-    def moves(self, player_id, move):
+    def game_timer(self, tick, moves):
         pass

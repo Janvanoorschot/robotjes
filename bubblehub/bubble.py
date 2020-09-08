@@ -25,6 +25,8 @@ class Bubble:
         self.now = None
         self.starttime = None
         self.mazes = None
+        self.tick = 0
+        self.resolution = 2
 
     def set_mazes(self, mazes):
         self.mazes = mazes
@@ -41,6 +43,10 @@ class Bubble:
 
     def on_hub_message(self, channel, method_frame, header_frame, body):
         self.delivery_tag = method_frame.delivery_tag
+        if self.game_state != GameStatus.IDLE:
+            # busy, try someplace else
+            channel.basic_reject(self.delivery_tag, requeue=True)
+            return
         try:
             # for the time being, the only message from bubble-hub is 'create-game'
             if self.game_state == GameStatus.IDLE:
@@ -49,6 +55,8 @@ class Bubble:
                 specs = GameSpec.parse_obj(request["specs"])
                 if not self.create_game(game_id, specs):
                     logger.warning(f"creating game failed")
+                    channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+                else:
                     channel.basic_ack(delivery_tag=method_frame.delivery_tag)
         except json.decoder.JSONDecodeError as jsonerror:
             logger.warning(f"json error: {str(jsonerror)}")
@@ -90,10 +98,8 @@ class Bubble:
                 self.disqualify_player(player_id)
         except json.decoder.JSONDecodeError as jsonerror:
             logger.warning(f"json error: {str(jsonerror)}")
-            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
         except Exception as e:
             logger.warning(f"message error: {str(e)}")
-            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
     def create_game(self, game_id: str , spec: GameSpec):
         logger.warning("start_game")
@@ -143,9 +149,6 @@ class Bubble:
             # send game result to anyone interested (probably the hub)
             self.game_state = GameStatus.IDLE
             self.game.stopped()
-            # we only now can ACK the 'create-game' message
-            self.channel.basic_ack(delivery_tag=self.delivery_tag)
-
             return True
         else:
             return False
@@ -177,6 +180,10 @@ class Bubble:
         if not self.game:
             item = {
                 'bubble_id': self.bubble_id,
+                'game_id': "unknown",
+                'game_name': "unknown",
+                'status': {},
+                'players': [],
                 'msg': msg.name,
                 'tick': self.tick,
                 'data': data
@@ -185,7 +192,6 @@ class Bubble:
             players = []
             for player_id, player in self.players.items():
                 players.append({"player_id": player_id, "player_name": player.player_name})
-
             item = {
                 'bubble_id': self.bubble_id,
                 'game_id': self.game_id,
@@ -210,9 +216,10 @@ class Bubble:
         else:
             self.tick = 0
         if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
-            self.game.timer(self.tick)
-            if self.game_state == GameStatus.STARTED and len(self.moves) > 0:
-                self.game.moves(self.tick, self.moves)
-                self.moves.clear()
+            if self.game_state == GameStatus.STARTED:
+                self.game.timer(self.tick)
+                if self.tick % self.resolution == 0:
+                    self.game.game_timer(self.tick/self.resolution, self.moves)
+                    self.moves.clear()
             if self.game.is_stopped():
                 self.stop_game()

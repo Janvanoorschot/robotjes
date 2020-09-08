@@ -18,7 +18,11 @@ class RoboPlayer():
 
     def timer(self, t):
         if self.player_id and self.game_id:
-            self.model.player_move(self.player_move_cb, self.game_id, self.player_id, {"aap": "noot"})
+            self.model.player_move(
+                self.player_move_cb,
+                self.game_id,
+                self.player_id,
+                {"move": f"count[{t}]"})
         self.view.refresh()
 
     def register_player(self, spec):
