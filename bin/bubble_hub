@@ -30,6 +30,7 @@ monitor.mon.connect()
 # prepare logging
 logging.config.fileConfig(args.logconf)
 logger = logging.getLogger(__name__)
+logger.warning("starting bubble_hub")
 
 # create the BubbleHub class that will handle the requests
 from bubblehub import BubbleHub

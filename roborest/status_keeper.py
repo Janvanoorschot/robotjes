@@ -7,8 +7,10 @@ class StatusKeeper(object):
 
     def __init__(self):
         self.games = {}
+        self.lastseen = {}
         self.now = None
         self.keep_alive = 10
+        self.inactive_limit = 10
 
     def game_status_event(self, request):
         game_id = request['game_id']
@@ -20,6 +22,8 @@ class StatusKeeper(object):
             else:
                 logger.warning(f"unexpected message from game: {game_id}")
                 return
+        now = datetime.datetime.now()
+        self.lastseen[game_id] = now
         game = self.games[game_id]
         if msg == 'STARTED':
             game.started(self.now, request)
@@ -51,9 +55,17 @@ class StatusKeeper(object):
     def timer(self, now):
         self.now = now
         for game_id, game in self.games.items():
+            # check for 'stopped for long enough'
             if game.is_stopped():
                 if (now - game.stoptime).total_seconds() > self.keep_alive:
                     del self.games[game_id]
+                    del self.lastseen[game_id]
+            # check for 'inactive'
+            if game_id in self.lastseen and self.games[game_id].isStarted:
+                if (now - self.lastseen[game_id]).total_seconds() > self.inactive_limit:
+                    logger.warning(f"inactive game: {game_id}")
+                    del self.games[game_id]
+                    del self.lastseen[game_id]
 
 
 class GameStatus(object):

@@ -31,7 +31,7 @@ monitor.mon.connect()
 # prepare logging
 logging.config.fileConfig(args.logconf)
 logger = logging.getLogger(__name__)
-logger.warning("starting logger")
+logger.warning("starting bubble")
 
 # create the Bubble instance.
 from bubblehub import Bubble
