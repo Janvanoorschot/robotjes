@@ -2,6 +2,11 @@ from bubblehub.model import GameSpec
 from . import GameStatus, RoboGame
 
 class Game:
+    """ Represents the Game currenlty run by the Bubble.
+        Current limitations:
+           * only RoboGame type game is supported
+           * only one robot per player
+        """
 
     def __init__(self, owner, spec: GameSpec):
         self.owner = owner
@@ -18,8 +23,8 @@ class Game:
 
     def create_game(self, spec: GameSpec):
         # for the time being only create RoboGame's
-        map = self.owner.mazes.get_map(spec.maze_id)
-        return RoboGame(map)
+        mapstr = self.owner.mazes.get_map(spec.maze_id)
+        return RoboGame(mapstr)
 
     def created(self):
         # send a status change to the games exchange

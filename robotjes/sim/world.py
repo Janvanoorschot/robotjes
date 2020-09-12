@@ -24,8 +24,8 @@ class World(object):
         self.paints_black = set(self.map.paints_blacks())
         self.paints_white = set(self.map.paints_whites())
         self.beacons = set(self.map.start_beacons())
-        start_positions = self.map.start_positions()
-        self.bot = Bot(start_positions[0], 90)
+        self.bots = {}
+        self.bot = Bot(self.map.start_positions()[0], 90)
         self.profile = {
             "paintWhites": 0,
             "paintBlacks": 0,
@@ -55,6 +55,16 @@ class World(object):
             "successfulPuts": 0,
             "total": 0,
         }
+
+    def create_robo(self, robo_id):
+        ix_start_position = len(self.map.start_positions()) % len(self.bots)
+        start_position = self.map.start_beacons()[ix_start_position]
+        if self.available_pos(start_position):
+            bot = Bot(start_position, 90)
+            self.bots[robo_id] = bot
+            return True
+        else:
+            return False
 
     def getLoc(self):
         return self.bot.pos

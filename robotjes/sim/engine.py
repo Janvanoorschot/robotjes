@@ -1,3 +1,4 @@
+import uuid
 from .world import World
 from .recording import Recording
 
@@ -14,6 +15,7 @@ class Engine(object):
         self.map = map
         self.world = World(self.map)
         self.recording = Recording()
+        self.robos = {}
 
     def get_recording(self):
         return self.recording
@@ -33,6 +35,14 @@ class Engine(object):
     def prepare_reply(self, cmd, *args):
         reply = [cmd, args]
         return reply
+
+    def create_robo(self, player_id):
+        robo_id = uuid.uuid4()
+        if self.world.create_robo(robo_id):
+            self.robos[player_id] = [robo_id]
+            return robo_id
+        else:
+            return None
 
     def execute(self, cmd):
         [command, lineno, *args] = self.clean_cmd(cmd)
