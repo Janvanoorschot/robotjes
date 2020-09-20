@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys, os
+import uuid
 import argparse
 import pika, json
 
@@ -24,6 +25,8 @@ def run_simulation(mapstr, successjson, scriptstr):
     map = Map.fromstring(mapstr)
     script = scriptstr.split('\n')
     engine = Engine(map)
+    player_id = str(uuid.uuid4())
+    robo_id = engine.create_robo(player_id)
     success = Success.from_json(successjson, engine)
     handler = Handler(args.simhost, args.simport, args.authkey)
 
@@ -32,12 +35,13 @@ def run_simulation(mapstr, successjson, scriptstr):
     engine.world.inc("scriptCharacters", len(scriptstr))
     success.beforeRun()
     handler.run_client(script)
-    handler.run(engine)
+    handler.run(engine, robo_id)
     success.afterRun()
-    engine.world.inc("robotHasBeacon", len(engine.world.bot.beacons)>0)
-    engine.world.inc("robotOrientation", engine.world.bot.dir)
-    engine.world.inc("robotX", engine.world.bot.pos[0])
-    engine.world.inc("robotY", engine.world.bot.pos[1])
+    bot = engine.world.bots[robo_id]
+    engine.world.inc("robotHasBeacon", len(bot.beacons)>0)
+    engine.world.inc("robotOrientation", bot.dir)
+    engine.world.inc("robotX", bot.pos[0])
+    engine.world.inc("robotY", bot.pos[1])
 
     # prepare the reply
     recording = engine.get_recording()

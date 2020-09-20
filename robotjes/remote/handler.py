@@ -13,7 +13,7 @@ class Handler(object):
         self.address = (host, port)
         self.runscript = runscript
 
-    def run(self, engine):
+    def run(self, engine, robo_id):
         """ Feed the Engine (read/exec/write)"""
         listener = Listener(self.address)
         con = listener.accept()
@@ -22,7 +22,7 @@ class Handler(object):
                 cmd = con.recv()
             except:
                 break
-            result = engine.execute(cmd)
+            result = engine.execute(robo_id, cmd)
             if result:
                 try:
                     con.send(result)

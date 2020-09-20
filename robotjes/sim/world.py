@@ -25,7 +25,7 @@ class World(object):
         self.paints_white = set(self.map.paints_whites())
         self.beacons = set(self.map.start_beacons())
         self.bots = {}
-        self.bot = Bot(self.map.start_positions()[0], 90)
+        # self.bot = Bot(self.map.start_positions()[0], 90)
         self.profile = {
             "paintWhites": 0,
             "paintBlacks": 0,
@@ -57,8 +57,8 @@ class World(object):
         }
 
     def create_robo(self, robo_id):
-        ix_start_position = len(self.map.start_positions()) % len(self.bots)
-        start_position = self.map.start_beacons()[ix_start_position]
+        ix_start_position = len(self.bots) % len(self.map.start_positions())
+        start_position = self.map.start_positions()[ix_start_position]
         if self.available_pos(start_position):
             bot = Bot(start_position, 90)
             self.bots[robo_id] = bot
@@ -66,14 +66,23 @@ class World(object):
         else:
             return False
 
-    def getLoc(self):
-        return self.bot.pos
+    def getLoc(self, robo_id):
+        if robo_id in self.bots:
+            return self.bots[robo_id].pos
+        else:
+            raise Exception(f"unknown robo: {robo_id}")
 
-    def getCargo(self):
-        return len(self.beacons)
+    def getCargo(self, robo_id):
+        if robo_id in self.bots:
+            return len(self.bots[robo_id].beacons)
+        else:
+            raise Exception(f"unknown robo: {robo_id}")
 
-    def getPaint(self):
-        return self.bot.paint
+    def getPaint(self, robo_id):
+        if robo_id in self.bots:
+            return self.bots[robo_id].paint
+        else:
+            raise Exception(f"unknown robo: {robo_id}")
 
     def inc(self, name, count=1):
         if(name in self.profile):
@@ -89,7 +98,10 @@ class World(object):
             return 0
 
     def available_pos(self, pos):
-        return self.map.available_pos(pos) and not pos in self.beacons and pos != self.bot.pos
+        available = self.map.available_pos(pos)
+        available = available and not (pos in self.beacons)
+        available = available and not (pos in [robo.pos for robo in self.bots.values()])
+        return available
 
     def calc_pos(self, bot, viewdir, dist):
         pos = bot.pos
@@ -110,100 +122,126 @@ class World(object):
         else:
             return None
 
-    def move_to(self, pos):
-        if self.map.available_pos(pos) and not pos in self.beacons:
-            self.bot.pos = pos
-            self.paint()
+    def move_to(self, robo_id, pos):
+        if robo_id in self.bots and self.available_pos(pos):
+            bot = self.bots[robo_id]
+            bot.pos = pos
+            self.paint(robo_id)
             return True
         else:
             return False
 
-    def left(self):
-        return self.bot.left()
+    def left(self, robo_id):
+        if robo_id in self.bots:
+            return self.bots[robo_id].left()
+        else:
+            return False
 
-    def right(self):
-        return self.bot.right()
+    def right(self, robo_id):
+        if robo_id in self.bots:
+            return self.bots[robo_id].right()
+        else:
+            return False
 
-    def pickUp(self):
-        self.inc("gets")
-        if self.check(World.FRONT, World.BEACON):
-            front = self.calc_pos(self.bot, self.FRONT, 1)
+    def pickUp(self, robo_id):
+        if robo_id in self.bots and self.check(robo_id, World.FRONT, World.BEACON):
+            self.inc("gets")
+            bot = self.bots[robo_id]
+            front = self.calc_pos(bot, self.FRONT, 1)
             self.beacons.remove(front)
-            self.bot.beacons.add(front)
+            bot.beacons.add(front)
             return True
         else:
             return False
 
-    def eatUp(self):
-        self.inc("eats")
-        if self.check(World.FRONT, World.BEACON):
-            front = self.calc_pos(self.bot, self.FRONT, 1)
-            self.beacons.remove(front)
+    def eatUp(self, robo_id):
+        if robo_id in self.bots and self.check(robo_id, World.FRONT, World.BEACON):
+            self.inc("eats")
             self.inc("successfulEats")
+            bot = self.bots[robo_id]
+            front = self.calc_pos(bot, self.FRONT, 1)
+            self.beacons.remove(front)
             return True
         else:
             return False
 
-    def putDown(self):
-        self.inc("puts")
-        if self.check(World.FRONT, World.CLEAR) and len(self.bot.beacons) > 0:
-            front = self.calc_pos(self.bot, self.FRONT, 1)
-            self.bot.beacons.pop()
-            self.beacons.add(front)
+    def putDown(self, robo_id):
+        if robo_id in self.bots and self.check(robo_id, World.FRONT, World.CLEAR) and len(self.bots[robo_id].beacons) > 0:
+            self.inc("puts")
             self.inc("successfulPuts")
+            bot = self.bots[robo_id]
+            front = self.calc_pos(bot, self.FRONT, 1)
+            bot.beacons.pop()
+            self.beacons.add(front)
             return True
         else:
             return False
 
-    def paintWhite(self):
-        start = True
-        if self.bot.paint == self.WHITE:
-            start = False
-        self.bot.paint = self.WHITE
-        self.paint()
-        return start
+    def paintWhite(self, robo_id):
+        if robo_id in self.bots:
+            bot = self.bots[robo_id]
+            start = True
+            if bot.paint == self.WHITE:
+                start = False
+            bot.paint = self.WHITE
+            self.paint(robo_id)
+            return start
+        else:
+            return False
 
-    def paintBlack(self):
-        start = True
-        if self.bot.paint == self.BLACK:
-            start = False
-        self.bot.paint = self.BLACK
-        self.paint()
-        return start
+    def paintBlack(self, robo_id):
+        if robo_id in self.bots:
+            bot = self.bots[robo_id]
+            start = True
+            if bot.paint == self.BLACK:
+                start = False
+            bot.paint = self.BLACK
+            self.paint(robo_id)
+            return start
+        else:
+            return False
 
-    def stopPainting(self):
-        self.bot.paint = self.NOPAINT
-        return False
+    def stopPainting(self, robo_id):
+        if robo_id in self.bots:
+            self.bots[robo_id].paint = self.NOPAINT
+            return True
+        else:
+            return False
 
-    def paint(self):
-        if self.bot.paint == self.BLACK:
-            if self.bot.pos in self.paints_white:
-                self.inc("paintWhites", -1)
-                self.paints_white.discard(self.bot.pos)
-            self.paints_black.add(self.bot.pos)
-            self.inc("blackPaintUsed")
-            self.inc("paintBlacks")
-        elif self.bot.paint == self.WHITE:
-            if self.bot.pos in self.paints_black:
-                self.inc("paintBlacks", -1)
-                self.paints_black.discard(self.bot.pos)
-            self.paints_white.add(self.bot.pos)
-            self.inc("whitePaintUsed")
-            self.inc("paintWhites")
+    def paint(self, robo_id):
+        if robo_id in self.bots:
+            bot = self.bots[robo_id]
+            if bot.paint == self.BLACK:
+                if bot.pos in self.paints_white:
+                    self.inc("paintWhites", -1)
+                    self.paints_white.discard(bot.pos)
+                self.paints_black.add(bot.pos)
+                self.inc("blackPaintUsed")
+                self.inc("paintBlacks")
+            elif bot.paint == self.WHITE:
+                if bot.pos in self.paints_black:
+                    self.inc("paintBlacks", -1)
+                    self.paints_black.discard(bot.pos)
+                self.paints_white.add(bot.pos)
+                self.inc("whitePaintUsed")
+                self.inc("paintWhites")
 
-    def check(self, dir, cond):
-        pos = self.calc_pos(self.bot, dir, 1)
-        return self.check_pos(pos, cond)
+    def check(self, robo_id, dir, cond):
+        if robo_id in self.bots:
+            pos = self.calc_pos(self.bots[robo_id], dir, 1)
+            return self.check_pos(pos, cond)
+        else:
+            return False
 
     def check_pos(self, pos, cond):
         if cond == self.CLEAR:
-            return self.map.available_pos(pos) and not pos in self.beacons
+            return self.available_pos(pos)
         elif cond == self.OBSTACLE:
-            return not self.map.available_pos(pos) or pos in self.beacons
+            return not self.available_pos(pos)
         elif cond == self.BEACON:
             return pos in self.beacons
         elif cond == self.ROBOT:
-            return pos == self.bot.pos
+            return (pos in [robo.pos for robo in self.bots.values()])
         elif cond == self.WHITE:
             return pos in self.paints_white
         elif cond == self.BLACK:
@@ -212,7 +250,6 @@ class World(object):
             return pos not in self.paints_white and pos not in self.paints_black
         else:
             return False
-
 
     def flipCoin(self):
         return bool(random.getrandbits(1))

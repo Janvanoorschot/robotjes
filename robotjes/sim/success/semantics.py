@@ -41,7 +41,10 @@ class Semantics:
         return world.get("eats") < args[0]
 
     def robotHasBeacon(self, identifier, args, world):
-        return len(world.bot.beacons) > 0
+        owned_beacons = 0
+        for bot in world.bots.values():
+            owned_beacons = owned_beacons + len(bot.beacons)
+        return owned_beacons > 0
 
     def robotHasBumped(self, identifier, args, world):
         return world.get("robotHasBumped") > 0
