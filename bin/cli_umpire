@@ -22,7 +22,8 @@ args = parser.parse_args()
 
 async def main(loop):
     umpire = cli.CLIUmpire(loop, args.url)
-    result = await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    id = await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    print(f"created game {args.name} -> {id}")
 
 # run our main loop
 aloop = asyncio.get_event_loop()
