@@ -20,10 +20,29 @@ parser.add_argument('--maze', type=str, default="default", help='password needed
 args = parser.parse_args()
 
 
+class Timer:
+    def __init__(self, timeout, callback, repeat=False):
+        self.timeout = timeout
+        self.callback = callback
+        self.repeat = repeat
+        self.task = asyncio.ensure_future(self.job())
+
+    async def job(self):
+        await asyncio.sleep(self.timeout)
+        await self.callback()
+        if self.repeat:
+            self.task = asyncio.ensure_future(self.job())
+
+    def cancel(self):
+        self.task.cancel()
+
+
 async def main(loop):
     umpire = cli.CLIUmpire(loop, args.url)
-    id = await umpire.run_game(args.umpire, args.name, args.password, args.maze)
-    print(f"created game {args.name} -> {id}")
+    timer = Timer(1,umpire.timer, True)
+    success = await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    # timer.cancel()
+    print(f"created game {args.name} -> {success}")
 
 # run our main loop
 aloop = asyncio.get_event_loop()
