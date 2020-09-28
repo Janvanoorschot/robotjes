@@ -11,6 +11,7 @@ class CLIUmpire():
         self.ready = False
         self.success = False
         self.started = False
+        self.stopped = False
         self.lock = asyncio.Lock()
 
     async def run_game(self, umpire, name, password, maze):
@@ -24,16 +25,18 @@ class CLIUmpire():
         if not self.game_id:
             raise Exception(f"create game failed")
         await self.lock.acquire()
-        return self.game_id
+        return self.success
 
     async def timer(self):
         if not self.ready:
             status = await self.requestor.status_game(self.game_id)
-            if isinstance(status, collections.Mapping) and len(status) > 0:
+            if self.started and isinstance(status, collections.Mapping) and len(status) <= 0:
+                self.lock.release()
+                return
+            if not self.started and isinstance(status, collections.Mapping) and len(status) > 0:
                 self.started = True
-            if self.started:
-                isStarted = status['status']['isStarted']
-                isStopped = status['status']['isStopped']
-                isSuccess = status['status']['isSuccess']
-                print(f"{isStarted}/{isStopped}/{isSuccess}")
-                # self.lock.release()
+            if not self.stopped and status['status']['isStopped']:
+                self.stopped = True
+                self.succes = status['status']['isSuccess']
+                self.lock.release()
+                return

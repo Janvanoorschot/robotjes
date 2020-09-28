@@ -216,8 +216,8 @@ class Bubble:
         else:
             self.tick = 0
         if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
+            self.game.timer(self.tick)
             if self.game_state == GameStatus.STARTED:
-                self.game.timer(self.tick)
                 if self.tick % self.resolution == 0:
                     self.game.game_timer(self.tick/self.resolution, self.moves)
                     self.moves.clear()
