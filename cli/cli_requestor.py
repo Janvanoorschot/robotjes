@@ -35,6 +35,19 @@ class CLIRequestor:
         else:
             raise Exception(f"failed rest call create_game:{reply.text}")
 
+    async def register_player(self, player_id, player_name, game_id, password):
+        spec = {
+            "player_name": player_name,
+            "player_id": player_id,
+            "game_password": password,
+        }
+        reply = await self.loop.run_in_executor(
+            None, functools.partial(requests.put, self.create_url(f'game/{game_id}/register'), json=spec))
+        if reply.status_code == 200:
+            return True
+        else:
+            raise Exception(f"failed rest call register_player:{reply.text}")
+
     async def status_game(self, game_id):
         reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"games/{game_id}"))
         if reply.status_code == 200:

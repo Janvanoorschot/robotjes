@@ -17,8 +17,8 @@ class Game:
         self.isSuccess = False
         self.tick = 0
         self.max_player_count = 1
-        self.max_start_tick = 15
-        self.max_tick = 60
+        self.max_start_tick = 150
+        self.max_tick = 600
         self.players = []
 
     def create_game(self, spec: GameSpec):
