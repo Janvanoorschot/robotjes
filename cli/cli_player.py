@@ -35,6 +35,7 @@ class CLIPlayer():
                     raise Exception(f"invalid player module {module_name}")
                 success = await self.requestor.register_player(self.player_id, player_name, self.game_id, password)
                 if success:
+                    # the game has not yet started, that should come later
                     pass
                 else:
                     raise Exception(f"can not join game {game_name}")
@@ -47,7 +48,7 @@ class CLIPlayer():
             if self.started and isinstance(status, collections.Mapping) and len(status) <= 0:
                 self.lock.release()
                 return
-            if not self.started and isinstance(status, collections.Mapping) and len(status) > 0:
+            if not self.started and isinstance(status, collections.Mapping) and len(status) > 0 and status['status']['isStarted']:
                 self.started = True
             if not self.stopped and status['status']['isStopped']:
                 self.stopped = True

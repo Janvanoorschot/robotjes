@@ -13,6 +13,7 @@ class CLIUmpire():
         self.started = False
         self.stopped = False
         self.lock = asyncio.Lock()
+        self.players = set()
 
     async def run_game(self, umpire, name, password, maze):
         """ Validate the params, create the game and wait for the game to finish. """
@@ -33,10 +34,15 @@ class CLIUmpire():
             if self.started and isinstance(status, collections.Mapping) and len(status) <= 0:
                 self.lock.release()
                 return
-            if not self.started and isinstance(status, collections.Mapping) and len(status) > 0:
+            if not self.started and isinstance(status, collections.Mapping) and len(status) > 0 and status['status']['isStarted']:
                 self.started = True
             if not self.stopped and status['status']['isStopped']:
                 self.stopped = True
                 self.succes = status['status']['isSuccess']
                 self.lock.release()
                 return
+            if isinstance(status, collections.Mapping) and len(status) > 0:
+                for player in status['players']:
+                    if player not in self.players:
+                        print(f"new player: {player}")
+                        self.players.add(player)
