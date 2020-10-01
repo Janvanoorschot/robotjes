@@ -36,13 +36,33 @@ class Timer:
     def cancel(self):
         self.task.cancel()
 
+class Umpire_Client:
+
+    def __init__(self):
+        pass
+
+    def registered(self, game_id):
+        print(f"game registered: {game_id}")
+
+    def player(self, player_id, player_name):
+        print(f"player registered: {player_id}/{player_name}")
+
+    def started(self):
+        print(f"game started")
+
+    def stopped(self, success):
+        print(f"game stopped: {success}")
+
+    def tick(self, game_tick):
+        print(f"game tick: {game_tick}")
+
+
 
 async def main(loop):
-    umpire = cli.CLIUmpire(loop, args.url)
-    timer = Timer(1,umpire.timer, True)
+    client = Umpire_Client()
+    umpire = cli.CLIUmpire(loop, args.url, client)
+    timer = Timer(0.5,umpire.timer, True)
     success = await umpire.run_game(args.umpire, args.name, args.password, args.maze)
-    # timer.cancel()
-    print(f"created game {args.name} -> {success}")
 
 # run our main loop
 aloop = asyncio.get_event_loop()

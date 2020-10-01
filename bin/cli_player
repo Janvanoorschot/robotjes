@@ -37,11 +37,32 @@ class Timer:
         self.task.cancel()
 
 
+class Player_Client:
+
+    def __init__(self):
+        pass
+
+    def registered(self, game_id):
+        print(f"player registered: {game_id}")
+
+    def player(self, player_id, player_name):
+        print(f"player registered: {player_id}/{player_name}")
+
+    def started(self):
+        print(f"game started")
+
+    def stopped(self, success):
+        print(f"game stopped: {success}")
+
+    def tick(self, game_tick):
+        print(f"game tick: {game_tick}")
+
+
 async def main(loop):
-    player = cli.CLIPlayer(loop, args.url)
+    client = Player_Client()
+    player = cli.CLIPlayer(loop, args.url, client)
     timer = Timer(1,player.timer, True)
     success = await player.run_game(args.player, args.name, args.password, args.module)
-    print(f"playing game {args.name} -> {success}")
 
 # run our main loop
 aloop = asyncio.get_event_loop()
