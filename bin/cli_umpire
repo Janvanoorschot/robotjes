@@ -44,6 +44,9 @@ class Umpire_Client:
     def registered(self, game_id):
         print(f"game registered: {game_id}")
 
+    def discovered(self, game_id):
+        print(f"game discovered: {game_id}")
+
     def player(self, player_id, player_name):
         print(f"player registered: {player_id}/{player_name}")
 

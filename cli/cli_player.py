@@ -39,7 +39,7 @@ class CLIPlayer():
                 if not success:
                     raise Exception(f"can not join game {game_name}")
                 else:
-                    self.callback('registered', self.player_id)
+                    self.callback('registered', self.player_id, player_name)
                 break
         else:
             raise Exception(f"no such game {game_name}")

@@ -42,11 +42,11 @@ class Player_Client:
     def __init__(self):
         pass
 
-    def registered(self, game_id):
-        print(f"player registered: {game_id}")
+    def registered(self, game_id, player_name):
+        print(f"player registered: {game_id}/{player_name}")
 
     def player(self, player_id, player_name):
-        print(f"player registered: {player_id}/{player_name}")
+        print(f"player discovered: {player_id}/{player_name}")
 
     def started(self):
         print(f"game started")
