@@ -53,7 +53,10 @@ class StatusKeeper(object):
             return {}
 
     def get_player(self, game_id, player_id):
-        return {}
+        if game_id in self.games:
+            return self.games[game_id].to_map()
+        else:
+            return {}
 
     def timer(self, now):
         self.now = now

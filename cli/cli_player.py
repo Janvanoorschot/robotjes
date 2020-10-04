@@ -49,33 +49,34 @@ class CLIPlayer():
 
     async def timer(self):
         if not self.stopped:
-            status = await self.requestor.status_game(self.game_id)
-            if status and isinstance(status, collections.Mapping):
-                if 'players' in status:
+            status = await self.requestor.status_player(self.game_id, self.player_id)
+            gamestatus = status
+            if gamestatus and isinstance(gamestatus, collections.Mapping):
+                if 'players' in gamestatus:
                     # check for new players
-                    for player in status['players']:
+                    for player in gamestatus['players']:
                         player_name = player['player_name']
                         player_id = player['player_id']
                         if player_id not in self.players:
                             self.players[player_id] = player_name
                             self.callback('player', player_id, player_name)
-                if 'status' in status:
-                    if not self.stopped and status['status']['isStopped']:
+                if 'status' in gamestatus:
+                    if not self.stopped and gamestatus['status']['isStopped']:
                         # normal stop
                         self.stopped = True
-                        self.success = status['status']['isSuccess']
+                        self.success = gamestatus['status']['isSuccess']
                         self.callback('stopped', self.success)
                         self.lock.release()
                         return
-                    if not self.started and status['status']['isStarted']:
+                    if not self.started and gamestatus['status']['isStarted']:
                         # normal game start
                         self.started = True
                         self.stopped = False
                         self.callback('started')
-                if 'tick' in status and status['tick'] != self.game_tick:
-                    self.game_tick = status['tick']
+                if 'tick' in gamestatus and gamestatus['tick'] != self.game_tick:
+                    self.game_tick = gamestatus['tick']
                     self.callback('tick', self.game_tick)
-                if len(status) <= 0:
+                if len(gamestatus) <= 0:
                     # emergency stop
                     self.stopped = True
                     self.success = False

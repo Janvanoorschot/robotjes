@@ -12,7 +12,7 @@ from roborest import app
 async def register_with_game(game_id: str, specs: RegistrationSpec):
     """Register with a game"""
     async with get_monitor():
-        player_id = str(uuid.uuid4)
+        player_id = str(uuid.uuid4())
         request = {
             "cmd": "register",
             "game_id": game_id,
