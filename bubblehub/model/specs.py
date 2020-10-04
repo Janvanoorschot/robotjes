@@ -11,7 +11,6 @@ class GameSpec(BaseModel):
 
 class RegistrationSpec(BaseModel):
     player_name: str
-    player_id: str
     game_password: str
 
 
@@ -27,7 +26,6 @@ class GameState(BaseModel):
 
 
 class MoveSpec(BaseModel):
-    player_id: str
     move: dict
 
 

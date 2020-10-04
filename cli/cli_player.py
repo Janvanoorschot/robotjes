@@ -14,7 +14,7 @@ class CLIPlayer():
     def __init__(self, loop, url, client):
         self.requestor = CLIRequestor(loop, url)
         self.client = client
-        self.player_id = str(uuid.uuid4())
+        self.player_id = None
         self.game_id = None
         self.game_tick = None
         self.success = False
@@ -35,10 +35,11 @@ class CLIPlayer():
                     player = module.player
                 else:
                     raise Exception(f"invalid player module {module_name}")
-                success = await self.requestor.register_player(self.player_id, player_name, self.game_id, password)
-                if not success:
+                result = await self.requestor.register_player(player_name, self.game_id, password)
+                if not result:
                     raise Exception(f"can not join game {game_name}")
                 else:
+                    self.player_id = result['player_id']
                     self.callback('registered', self.player_id, player_name)
                 break
         else:
