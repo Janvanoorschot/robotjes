@@ -37,7 +37,7 @@ class CLIUmpire():
             if status and isinstance(status, collections.Mapping):
                 if 'players' in status:
                     # check for new players
-                    for player in status['players']:
+                    for player_id, player in status['players'].items():
                         player_name = player['player_name']
                         player_id = player['player_id']
                         if player_id not in self.players:

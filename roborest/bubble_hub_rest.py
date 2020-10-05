@@ -34,13 +34,6 @@ async def list_games():
     return lst
 
 
-@app.get("/games/{game_id}")
-async def list_game(game_id: str):
-    """Information about a game"""
-    result = roborest.status_keeper.get_game(game_id)
-    return result
-
-
 @app.get("/mazes")
 async def list_mazes():
     """List current mazes"""

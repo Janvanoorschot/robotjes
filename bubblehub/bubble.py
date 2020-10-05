@@ -191,7 +191,11 @@ class Bubble:
         else:
             players = []
             for player_id, player in self.players.items():
-                players.append({"player_id": player_id, "player_name": player.player_name})
+                players.append({
+                    "player_id": player_id,
+                    "player_name": player.player_name,
+                    "player_status": self.game.get_player_status(player)
+                })
             item = {
                 'bubble_id': self.bubble_id,
                 'game_id': self.game_id,

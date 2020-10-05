@@ -35,6 +35,20 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
         }
 
 
+@app.get("/game/{game_id}")
+async def get_game_status(game_id: str):
+    """Get the current player status"""
+    result = roborest.status_keeper.get_game_status(game_id)
+    return result
+
+
+@app.get("/game/{game_id}/player/{player_id}")
+async def get_player_status(game_id: str, player_id: str):
+    """Get the current player status"""
+    result = roborest.status_keeper.get_player_status(game_id, player_id)
+    return result
+
+
 @app.put("/game/{game_id}/player/{player_id}")
 async def player_move(game_id: str, player_id: str, specs: MoveSpec):
     """Move within a game"""
@@ -57,9 +71,3 @@ async def player_move(game_id: str, player_id: str, specs: MoveSpec):
         )
         return {}
 
-
-@app.get("/game/{game_id}/player/{player_id}")
-async def get_status(game_id: str, player_id: str):
-    """Get the current player status"""
-    result = roborest.status_keeper.get_player(game_id, player_id)
-    return result

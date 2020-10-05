@@ -49,7 +49,7 @@ class CLIRequestor:
             raise Exception(f"failed rest call register_player:{reply.text}")
 
     async def status_game(self, game_id):
-        reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"games/{game_id}"))
+        reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}"))
         if reply.status_code == 200:
             result = reply.json()
             return result

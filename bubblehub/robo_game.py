@@ -13,7 +13,7 @@ class RoboGame:
 
     def fog_of_war(self, robo_id):
         # get the current 'fog-of-war' view for the given robo
-        pass
+        return {}
 
     def recording_delta (self, timeslot):
         # get the recording-delta valid since the last time this function was called

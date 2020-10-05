@@ -55,6 +55,10 @@ class Game:
             "isStopped": self.isStopped,
             "isSuccess": self.isSuccess
         }
+    def get_player_status(self, player):
+        return {
+            "fog_of_war": self.game.fog_of_war(player.player_id)
+        }
 
     def status_update(self):
         self.owner.publish(GameStatus.UPDATE, {})

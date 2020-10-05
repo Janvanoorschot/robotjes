@@ -50,39 +50,24 @@ class CLIPlayer():
     async def timer(self):
         if not self.stopped:
             status = await self.requestor.status_player(self.game_id, self.player_id)
-            gamestatus = status
-            if gamestatus and isinstance(gamestatus, collections.Mapping):
-                if 'players' in gamestatus:
-                    # check for new players
-                    for player in gamestatus['players']:
-                        player_name = player['player_name']
-                        player_id = player['player_id']
-                        if player_id not in self.players:
-                            self.players[player_id] = player_name
-                            self.callback('player', player_id, player_name)
-                if 'status' in gamestatus:
-                    if not self.stopped and gamestatus['status']['isStopped']:
-                        # normal stop
-                        self.stopped = True
-                        self.success = gamestatus['status']['isSuccess']
-                        self.callback('stopped', self.success)
-                        self.lock.release()
-                        return
-                    if not self.started and gamestatus['status']['isStarted']:
-                        # normal game start
-                        self.started = True
-                        self.stopped = False
-                        self.callback('started')
-                if 'tick' in gamestatus and gamestatus['tick'] != self.game_tick:
-                    self.game_tick = gamestatus['tick']
-                    self.callback('tick', self.game_tick)
-                if len(gamestatus) <= 0:
-                    # emergency stop
+            if status and isinstance(status, collections.Mapping):
+                player_status = status['player_status']
+                game_status = status['game_status']
+                if not self.stopped and game_status['isStopped']:
+                    # normal stop
                     self.stopped = True
-                    self.success = False
+                    self.success = game_status['isSuccess']
                     self.callback('stopped', self.success)
                     self.lock.release()
                     return
+                if not self.started and game_status['isStarted']:
+                    # normal game start
+                    self.started = True
+                    self.stopped = False
+                    self.callback('started')
+                if 'tick' in game_status and game_status['tick'] != self.game_tick:
+                    self.game_tick = game_status['tick']
+                    self.callback('tick', self.game_tick)
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)

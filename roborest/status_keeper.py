@@ -46,15 +46,23 @@ class StatusKeeper(object):
             result[game_id] = game.game_name
         return result
 
-    def get_game(self, game_id):
+    def get_game_status(self, game_id):
         if game_id in self.games:
             return self.games[game_id].to_map()
         else:
             return {}
 
-    def get_player(self, game_id, player_id):
+    def get_player_status(self, game_id, player_id):
         if game_id in self.games:
-            return self.games[game_id].to_map()
+            game_status = self.games[game_id]
+            if player_id in game_status.players:
+                player_status = game_status.players[player_id]
+                return {
+                    "game_status": game_status,
+                    "player_status": player_status
+                }
+            else:
+                return {}
         else:
             return {}
 
@@ -86,7 +94,7 @@ class GameStatus(object):
         self.isStarted = False
         self.isStopped = False
         self.isSuccess = False
-        self.players = []
+        self.players = {}
         self.data = {}
 
     def is_stopped(self):
@@ -108,16 +116,26 @@ class GameStatus(object):
         #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
         #   'game_name': 'game2',
         #   'status': {'isStarted': False, 'isStopped': False, 'isSuccess': False},
-        #   'players': [],
-        #   'msg': 'CREATED',
-        #   'tick': 1327.285712,
+        #   'players': [
+        #         {
+        #             'player_id': 'ba8e8d5c-50e8-4591-9076-aae3d5e40942',
+        #             'player_name': 'me',
+        #             'player_status': {
+        #                   'fog_of_war': {}
+        #             }
+        #         }
+        #   ],
+        #   'msg': 'UPDATE',
+        #   'tick': 7,
         #   'data': {}
         # }
         self.tick = request['tick']
         self.isStarted = request['status']['isStarted']
         self.isStopped = request['status']['isStopped']
         self.isSuccess = request['status']['isSuccess']
-        self.players = request['players']
+        self.players.clear()
+        for player in request['players']:
+            self.players[player['player_id']] = player
 
     def to_map(self):
         return {
