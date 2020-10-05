@@ -48,18 +48,16 @@ class StatusKeeper(object):
 
     def get_game_status(self, game_id):
         if game_id in self.games:
-            return self.games[game_id].to_map()
+            return self.games[game_id].game_map()
         else:
             return {}
 
     def get_player_status(self, game_id, player_id):
         if game_id in self.games:
-            game_status = self.games[game_id]
-            if player_id in game_status.players:
-                player_status = game_status.players[player_id]
+            if player_id in self.games[game_id].players:
                 return {
-                    "game_status": game_status,
-                    "player_status": player_status
+                    "game_status": self.games[game_id].game_map(),
+                    "player_status": self.games[game_id].player_map(player_id)
                 }
             else:
                 return {}
@@ -137,7 +135,7 @@ class GameStatus(object):
         for player in request['players']:
             self.players[player['player_id']] = player
 
-    def to_map(self):
+    def game_map(self):
         return {
             'game_id': self.game_id,
             'game_name': self.game_name,
@@ -147,8 +145,20 @@ class GameStatus(object):
                 'isSuccess': self.isSuccess
             },
             'tick': self.tick,
-            'players': self.players
+            'players': list(self.players.keys())
         }
 
-
+    def player_map(self, player_id):
+        if player_id in self.players:
+            player = self.players[player_id]
+            return {
+                'tick': self.tick,
+                'player_id': player['player_id'],
+                'player_name': player['player_name'],
+                'player_status': {
+                    'fog_of_war': player['player_status']['fog_of_war']
+                }
+            }
+        else:
+            return {}
 

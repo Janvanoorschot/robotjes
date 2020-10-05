@@ -37,12 +37,10 @@ class CLIUmpire():
             if status and isinstance(status, collections.Mapping):
                 if 'players' in status:
                     # check for new players
-                    for player_id, player in status['players'].items():
-                        player_name = player['player_name']
-                        player_id = player['player_id']
+                    for player_id in status['players']:
                         if player_id not in self.players:
-                            self.players[player_id] = player_name
-                            self.callback('player', player_id, player_name)
+                            self.players[player_id] = player_id
+                            self.callback('player', player_id, player_id)
                 if 'status' in status:
                     if not self.stopped and status['status']['isStopped']:
                         # normal stop

@@ -53,14 +53,14 @@ class CLIPlayer():
             if status and isinstance(status, collections.Mapping):
                 player_status = status['player_status']
                 game_status = status['game_status']
-                if not self.stopped and game_status['isStopped']:
+                if not self.stopped and game_status['status']['isStopped']:
                     # normal stop
                     self.stopped = True
-                    self.success = game_status['isSuccess']
+                    self.success = game_status['status']['isSuccess']
                     self.callback('stopped', self.success)
                     self.lock.release()
                     return
-                if not self.started and game_status['isStarted']:
+                if not self.started and game_status['status']['isStarted']:
                     # normal game start
                     self.started = True
                     self.stopped = False
