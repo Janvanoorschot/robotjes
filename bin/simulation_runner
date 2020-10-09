@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys, os
+import resource
 import uuid
 import argparse
 import pika, json
@@ -17,6 +18,10 @@ parser.add_argument('--simhost', type=str, default='localhost', help='host used 
 parser.add_argument('--simport', type=int, default=9876, help='port on simulation server')
 parser.add_argument('--authkey', type=str, default='myownsecret', help='shared secret')
 args = parser.parse_args()
+
+def set_max_memory(size):    # size (in bytes)
+    soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+    resource.setrlimit(resource.RLIMIT_AS, (size, hard))
 
 def run_simulation(mapstr, successjson, scriptstr):
     """ run a simulation """
@@ -104,6 +109,9 @@ parameters = pika.URLParameters(args.pikaurl)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
 channel.queue_declare(queue=args.rmqqueue)
+
+# limit memory usage
+set_max_memory(400000000)
 
 # start listening for work
 channel.basic_qos(prefetch_count=1)
