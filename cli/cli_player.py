@@ -16,6 +16,7 @@ class CLIPlayer():
         self.client = client
         self.player_id = None
         self.game_id = None
+        self.tick = None
         self.game_tick = None
         self.success = False
         self.started = False
@@ -65,9 +66,15 @@ class CLIPlayer():
                     self.started = True
                     self.stopped = False
                     self.callback('started')
-                if 'tick' in game_status and game_status['tick'] != self.game_tick:
-                    self.game_tick = game_status['tick']
-                    self.callback('tick', self.game_tick)
+                tick = game_status['tick']
+                game_tick = game_status['status']['game_tick']
+                if game_tick != self.game_tick:
+                    self.game_tick = game_tick
+                    self.callback('game_tick', self.game_tick)
+                if tick != self.tick:
+                    self.tick = tick
+                    self.callback('tick', self.tick)
+
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)

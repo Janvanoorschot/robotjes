@@ -56,9 +56,11 @@ class Umpire_Client:
     def stopped(self, success):
         print(f"game stopped: {success}")
 
-    def tick(self, game_tick):
-        print(f"game tick: {game_tick}")
+    def tick(self, tick):
+        print(f"tick: {tick}")
 
+    def game_tick(self, game_tick):
+        print(f"game tick: {game_tick}")
 
 
 async def main(loop):

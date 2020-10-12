@@ -9,6 +9,7 @@ class CLIUmpire():
         self.requestor = CLIRequestor(loop, url)
         self.client = client
         self.game_id = None
+        self.tick = None
         self.game_tick = None
         self.discovered = False
         self.success = False
@@ -54,9 +55,14 @@ class CLIUmpire():
                         self.started = True
                         self.stopped = False
                         self.callback('started')
-                if 'tick' in status and status['tick'] != self.game_tick:
-                    self.game_tick = status['tick']
-                    self.callback('tick', self.game_tick)
+                tick = status['tick']
+                game_tick = status['status']['game_tick']
+                if tick != self.tick:
+                    self.tick = tick
+                    self.callback('tick', self.tick)
+                if game_tick != self.game_tick:
+                    self.game_tick = game_tick
+                    self.callback('game_tick', self.game_tick)
                 if len(status) > 0:
                     if not self.discovered:
                         self.discovered = True

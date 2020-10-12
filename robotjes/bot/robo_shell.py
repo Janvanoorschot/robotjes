@@ -3,7 +3,7 @@ from .robo import Robo
 # inspiration from https://stackoverflow.com/questions/366682/how-to-limit-execution-time-of-a-function-call-in-python
 # The goal is to execute a piece of Python code including a timeout.
 
-TIMEOUT = 0.1
+TIMEOUT = 0.3
 
 import sys
 from io import StringIO

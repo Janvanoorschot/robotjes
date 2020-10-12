@@ -128,6 +128,7 @@ class GameStatus(object):
         #   'data': {}
         # }
         self.tick = request['tick']
+        self.game_tick = request['status']['game_tick']
         self.isStarted = request['status']['isStarted']
         self.isStopped = request['status']['isStopped']
         self.isSuccess = request['status']['isSuccess']
@@ -140,6 +141,7 @@ class GameStatus(object):
             'game_id': self.game_id,
             'game_name': self.game_name,
             'status': {
+                'game_tick': self.game_tick,
                 'isStarted': self.isStarted,
                 'isStopped': self.isStopped,
                 'isSuccess': self.isSuccess
@@ -153,6 +155,7 @@ class GameStatus(object):
             player = self.players[player_id]
             return {
                 'tick': self.tick,
+                'game_tick': self.game_tick,
                 'player_id': player['player_id'],
                 'player_name': player['player_name'],
                 'player_status': {

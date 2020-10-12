@@ -16,10 +16,11 @@ class Game:
         self.isStopped = False
         self.isSuccess = False
         self.tick = 0
+        self.game_tick = 0
         self.max_player_count = 1
         self.max_start_tick = 15
         self.max_tick = 30
-        self.players = []
+        self.players = {}
 
     def create_game(self, spec: GameSpec):
         # for the time being only create RoboGame's
@@ -31,7 +32,12 @@ class Game:
         self.owner.publish(GameStatus.CREATED, {})
 
     def started(self, players):
-        self.players = players
+        for player_id, player in players.items():
+            self.players[player_id] = {
+                "player": player,
+                "robo" : self.game.create_robo()
+            }
+        self.game_tick = 0
         self.isStarted = True
         self.isStopped = False
         self.isSuccess = True
@@ -51,6 +57,7 @@ class Game:
 
     def get_status(self):
         return {
+            "game_tick": self.game_tick,
             "isStarted": self.isStarted,
             "isStopped": self.isStopped,
             "isSuccess": self.isSuccess
@@ -75,4 +82,10 @@ class Game:
             self.status_update()
 
     def game_timer(self, tick, moves):
-        pass
+        self.game_tick = self.game_tick + 1
+        # feed the moves to the game
+        for move in moves:
+            print(f"move: {move}")
+        # collect fog_of_war for each of the player/robos
+        for player in self.players:
+            print(f"player: {player}")
