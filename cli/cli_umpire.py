@@ -33,8 +33,12 @@ class CLIUmpire():
         return self.success
 
     async def timer(self):
-        if not self.stopped:
-            status = await self.requestor.status_game(self.game_id)
+        if self.game_id and not self.stopped:
+            try:
+                status = await self.requestor.status_game(self.game_id)
+            except Exception:
+                print("?")
+                return
             if status and isinstance(status, collections.Mapping):
                 if 'players' in status:
                     # check for new players

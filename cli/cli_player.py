@@ -50,7 +50,11 @@ class CLIPlayer():
 
     async def timer(self):
         if not self.stopped:
-            status = await self.requestor.status_player(self.game_id, self.player_id)
+            try:
+                status = await self.requestor.status_player(self.game_id, self.player_id)
+            except Exception:
+                print("?")
+                return
             if status and isinstance(status, collections.Mapping):
                 player_status = status['player_status']
                 game_status = status['game_status']

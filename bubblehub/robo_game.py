@@ -15,13 +15,21 @@ class RoboGame:
         # we need to place the robo in the map
         return robo_id
 
+    def start_moves(self, game_tick):
+        self.game_tick = game_tick
+
     def execute(self, robo_id, move):
         # execute the move for the given robo
         pass
 
+    def end_moves(self, game_tick):
+        pass
+
     def fog_of_war(self, robo_id):
         # get the current 'fog-of-war' view for the given robo
-        return {}
+        return {
+            robo_id: self.game_tick
+        }
 
     def recording_delta (self, timeslot):
         # get the recording-delta valid since the last time this function was called

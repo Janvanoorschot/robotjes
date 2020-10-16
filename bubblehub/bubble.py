@@ -194,7 +194,7 @@ class Bubble:
                 players.append({
                     "player_id": player_id,
                     "player_name": player.player_name,
-                    "player_status": self.game.get_player_status(player)
+                    "player_status": self.game.get_player_status(player_id)
                 })
             item = {
                 'bubble_id': self.bubble_id,

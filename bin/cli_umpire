@@ -57,7 +57,8 @@ class Umpire_Client:
         print(f"game stopped: {success}")
 
     def tick(self, tick):
-        print(f"tick: {tick}")
+        # print(f"tick: {tick}")
+        pass
 
     def game_tick(self, game_tick):
         print(f"game tick: {game_tick}")

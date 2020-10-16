@@ -54,11 +54,12 @@ class Player_Client:
     def stopped(self, success):
         print(f"player stopped: {success}")
 
-    def game_tick(self, game_tick):
-        print(f"player tick: {game_tick}")
-
     def tick(self, tick):
-        print(f"player tick: {tick}")
+        # print(f"tick: {tick}")
+        pass
+
+    def game_tick(self, game_tick):
+        print(f"game tick: {game_tick}")
 
 
 async def main(loop):

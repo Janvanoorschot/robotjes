@@ -35,7 +35,8 @@ class Game:
         for player_id, player in players.items():
             self.players[player_id] = {
                 "player": player,
-                "robo" : self.game.create_robo()
+                "robo_id" : self.game.create_robo(),
+                "status": {}
             }
         self.game_tick = 0
         self.isStarted = True
@@ -62,9 +63,12 @@ class Game:
             "isStopped": self.isStopped,
             "isSuccess": self.isSuccess
         }
-    def get_player_status(self, player):
+
+    def get_player_status(self, player_id):
         return {
-            "fog_of_war": self.game.fog_of_war(player.player_id)
+            "fog_of_war": {
+                self.players[player_id]["robo_id"]: self.players[player_id]["status"]
+            }
         }
 
     def status_update(self):
@@ -84,8 +88,12 @@ class Game:
     def game_timer(self, tick, moves):
         self.game_tick = self.game_tick + 1
         # feed the moves to the game
+        self.game.start_moves(self.game_tick)
         for move in moves:
             print(f"move: {move}")
+        self.game.end_moves(self.game_tick)
         # collect fog_of_war for each of the player/robos
-        for player in self.players:
-            print(f"player: {player}")
+        for player_id, player in self.players.items():
+            fow = self.game.fog_of_war(player["robo_id"])
+            player["status"]["fog_of_war"] = fow
+            print(f"player:{self.game_tick}/{player}")
