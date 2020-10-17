@@ -271,7 +271,6 @@ class World(object):
         return [ tile_content, paint, bot]
 
     def fog_of_war(self, robo_id):
-        tile_content = self.map
         bot = self.bots[robo_id]
         pos_front = self.calc_pos(bot, self.FRONT, 1)
         pos_left = self.calc_pos(bot, self.RIGHT, 1)
