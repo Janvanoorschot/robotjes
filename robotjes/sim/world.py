@@ -254,9 +254,33 @@ class World(object):
     def flipCoin(self):
         return bool(random.getrandbits(1))
 
-    def fog_of_war(self, robo_id):
-        return {}
+    def get_content(self, pos):
+        tile_content = self.map.tiles_type.get(pos)
+        if tile_content:
+            paint = None
+            bot = None
+        else:
+            bots = [robo for robo in self.bots.values() if robo.pos==pos]
+            bot = bots[0] if len(bots) > 0 else None
+            if pos in self.paints_black:
+                paint = self.BLACK
+            elif pos in self.paints_white:
+                paint = self.WHITE
+            else:
+                paint = None
+        return [ tile_content, paint, bot]
 
+    def fog_of_war(self, robo_id):
+        tile_content = self.map
+        bot = self.bots[robo_id]
+        pos_front = self.calc_pos(bot, self.FRONT, 1)
+        pos_left = self.calc_pos(bot, self.RIGHT, 1)
+        pos_right = self.calc_pos(bot, self.LEFT, 1)
+        return {
+            "front": self.get_content(pos_front),
+            "left": self.get_content(pos_left),
+            "right": self.get_content(pos_right)
+        }
 
 DIRS = [0, 90, 180, 270]
 

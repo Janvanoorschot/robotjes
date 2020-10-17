@@ -16,7 +16,7 @@ parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the
 parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
 parser.add_argument('--name', type=str, default="the_game", help='name of the game to create')
 parser.add_argument('--password', type=str, default="secret", help='password needed to enter the game')
-parser.add_argument('--maze', type=str, default="default", help='password needed to enter the game')
+parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
 args = parser.parse_args()
 
 
