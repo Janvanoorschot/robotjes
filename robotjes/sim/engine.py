@@ -36,16 +36,16 @@ class Engine(object):
         reply = [cmd, args]
         return reply
 
-    def create_robo(self, player_id):
+    def create_robo(self):
         robo_id = str(uuid.uuid4())
         if self.world.create_robo(robo_id):
-            self.robos[player_id] = robo_id
+            self.robos[robo_id] = {}
             return robo_id
         else:
             return None
 
     def execute(self, robo_id, cmd):
-        if not robo_id in self.robos.values():
+        if not robo_id in self.robos:
             reply = [[False]]
             return self.prepare_reply(cmd, reply)
         [command, lineno, *args] = self.clean_cmd(cmd)

@@ -35,7 +35,7 @@ class Game:
         for player_id, player in players.items():
             self.players[player_id] = {
                 "player": player,
-                "robo_id" : self.game.create_robo(),
+                "robo_id" : self.game.create_robo(player_id),
                 "status": {}
             }
         self.game_tick = 0

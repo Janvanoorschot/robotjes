@@ -9,10 +9,11 @@ class RoboGame:
         self.map = map
         self.engine = Engine(map)
 
-    def create_robo(self):
-        robo_id = str(uuid.uuid4())
-        self.robos[robo_id] = {}
-        # we need to place the robo in the map
+    def create_robo(self, player_id):
+        robo_id = self.engine.create_robo()
+        self.robos[robo_id] = {
+            'player': player_id
+        }
         return robo_id
 
     def start_moves(self, game_tick):
