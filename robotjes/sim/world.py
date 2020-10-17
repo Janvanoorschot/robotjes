@@ -254,6 +254,9 @@ class World(object):
     def flipCoin(self):
         return bool(random.getrandbits(1))
 
+    def fog_of_war(self, robo_id):
+        return {}
+
 
 DIRS = [0, 90, 180, 270]
 

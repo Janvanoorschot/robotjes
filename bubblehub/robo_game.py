@@ -29,7 +29,9 @@ class RoboGame:
     def fog_of_war(self, robo_id):
         # get the current 'fog-of-war' view for the given robo
         return {
-            robo_id: self.game_tick
+            "robo": robo_id,
+            "game_tick": self.game_tick,
+            "fog_of_war": self.engine.fog_of_war(robo_id)
         }
 
     def recording_delta (self, timeslot):
