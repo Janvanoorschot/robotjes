@@ -15,18 +15,19 @@ class LocalRequestor(object):
         lineno = caller.lineno
         cmd.insert(0, lineno)
         # switch to the async environment
-        future = asyncio.run_coroutine_threadsafe(functools.partial(self.async_execute,cmd), self.loop)
+        future = asyncio.run_coroutine_threadsafe(self.async_execute(cmd), self.loop)
         return future.result()
 
     async def async_execute(self, cmd):
         await self.command_queue.put(cmd)
-        return await self.reply_queue.get()
+        reply = await self.reply_queue.get()
+        return reply
 
     async def get(self):
-        pass
+        return await self.command_queue.get()
 
     async def put(self, reply):
-        pass
+        await self.reply_queue.put(reply)
 
     async def stop(self):
         pass

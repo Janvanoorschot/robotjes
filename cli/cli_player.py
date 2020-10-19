@@ -30,6 +30,8 @@ class CLIPlayer():
         self.timer_lock = asyncio.Lock()
         self.robo_coroutine = None
         self.players = {}
+        self.player_status = None
+        self.game_status = None
 
     async def run_game(self, player_name, game_name, password, code_file):
         """ Validate the params and  join the game. """
@@ -62,23 +64,19 @@ class CLIPlayer():
         # enter the command/reply cycle until the local_requestor is stopped
         while not self.stopped:
             cmd = await self.local_requestor.get()
-            reply = await self.handle_command(cmd)
+            if Robo.is_observation(cmd):
+                boolean = Robo.observation(self.player_status, cmd)
+                reply = {'result': boolean}
+            else:
+                # at this point, we need to contact the server
+                await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
+                reply = {'result': True}
             await self.timer_lock.acquire()
             await self.local_requestor.put(reply)
 
         # await the client code to we terminate elegantly
         result = await self.robo_coroutine
         return self.success
-
-    async def handle_command(self, cmd):
-        # isolate/handle the observation commands
-        if Robo.is_observation(cmd):
-            boolean = Robo.observation(self.player_status, cmd)
-            return {'result': boolean}
-        else:
-            # at this point, we need to contact the server
-            reply = await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
-            return {'result': True}
 
     async def timer(self):
         if not self.stopped:
@@ -89,26 +87,27 @@ class CLIPlayer():
                 return
             if status and isinstance(status, collections.Mapping):
                 # we received a valid status (about the game, this player and all the robo's), handle it
-                player_status = status['player_status']
-                game_status = status['game_status']
-                if game_status['status']['isStopped']:
+                self.player_status = status['player_status']
+                self.game_status = status['game_status']
+                if self.game_status['status']['isStopped']:
                     # normal stop
                     self.stopped = True
-                    self.success = game_status['status']['isSuccess']
+                    self.success = self.game_status['status']['isSuccess']
                     self.callback('stopped', self.success)
                     await self.local_requestor.stop()
                     return
-                if not self.started and game_status['status']['isStarted']:
+                if not self.started and self.game_status['status']['isStarted']:
                     # normal game start
                     self.started = True
                     self.stopped = False
                     self.callback('started')
-                tick = game_status['tick']
-                game_tick = game_status['status']['game_tick']
+                tick = self.game_status['tick']
+                game_tick = self.game_status['status']['game_tick']
                 if game_tick != self.game_tick:
                     self.game_tick = game_tick
                     self.callback('game_tick', self.game_tick)
-                    await self.game_tick.release()
+                    if self.timer_lock.locked():
+                        self.timer_lock.release()
                 if tick != self.tick:
                     self.tick = tick
                     self.callback('tick', self.tick)

@@ -2,11 +2,23 @@ import uuid
 
 class Robo(object):
 
-    OBSERVATIONS=set([
-        'leftIsClear', 'leftIsObstacle', 'leftIsBeacon', 'leftIsBlack', 'leftIsWhite',
-        'frontIsClear', 'frontIsObstacle', 'frontIsBeacon', 'frontIsBlack', 'frontIsWhite',
-        'rightIsClear', 'rightIsObstacle', 'rightIsBeacon', 'rightIsBlack', 'rightIsWhite'
-    ])
+    OBSERVATIONS={
+        'leftIsClear': ['left', 'clear'],
+        'leftIsObstacle': ['left', 'obstacle'],
+        'leftIsBeacon': ['left', 'beacon'],
+        'leftIsBlack': ['left', 'black'],
+        'leftIsWhite': ['left', 'white'],
+        'frontIsClear': ['front', 'clear'],
+        'frontIsObstacle': ['front', 'obstacle'],
+        'frontIsBeacon': ['front', 'beacon'],
+        'frontIsBlack': ['front', 'black'],
+        'frontIsWhite': ['front', 'white'],
+        'rightIsClear': ['right', 'clear'],
+        'rightIsObstacle': ['right', 'obstacle'],
+        'rightIsBeacon': ['right', 'beacon'],
+        'rightIsBlack': ['right', 'black'],
+        'rightIsWhite': ['right', 'white']
+    }
 
     def __init__(self, requestor, id=uuid.uuid4()):
         self.requestor = requestor
@@ -127,7 +139,7 @@ class Robo(object):
 
     @staticmethod
     def is_observation(cmd):
-        return cmd and isinstance(cmd, list) and len(cmd) >= 2 and cmd[1] in Robo.OBSERVATIONS
+        return cmd and isinstance(cmd, list) and len(cmd) >= 3 and cmd[2] in Robo.OBSERVATIONS
 
     @staticmethod
     def observation(status, cmd):

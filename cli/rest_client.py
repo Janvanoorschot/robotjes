@@ -49,8 +49,11 @@ class RestClient:
             raise Exception(f"failed rest call register_player:{reply.text}")
 
     async def issue_command(self, game_id, player_id, cmd):
+        query = {
+            'cmd': cmd
+        }
         reply = await self.loop.run_in_executor(
-            None, functools.partial(requests.put, self.create_url(f'game/{game_id}/player/{player_id}'), json=cmd))
+            None, functools.partial(requests.put, self.create_url(f'game/{game_id}/player/{player_id}'), json=query))
         if reply.status_code == 200:
             result = reply.json()
             return result
