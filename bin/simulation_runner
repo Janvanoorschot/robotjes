@@ -8,7 +8,7 @@ import pika, json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
-from robotjes.remote import Handler
+from robotjes.remote import RemoteHandler
 from robotjes.sim import Engine, Map, Success
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
@@ -19,9 +19,11 @@ parser.add_argument('--simport', type=int, default=9876, help='port on simulatio
 parser.add_argument('--authkey', type=str, default='myownsecret', help='shared secret')
 args = parser.parse_args()
 
+
 def set_max_memory(size):    # size (in bytes)
     soft, hard = resource.getrlimit(resource.RLIMIT_AS)
     resource.setrlimit(resource.RLIMIT_AS, (size, hard))
+
 
 def run_simulation(mapstr, successjson, scriptstr):
     """ run a simulation """
@@ -33,7 +35,7 @@ def run_simulation(mapstr, successjson, scriptstr):
     player_id = str(uuid.uuid4())
     robo_id = engine.create_robo(player_id)
     success = Success.from_json(successjson, engine)
-    handler = Handler(args.simhost, args.simport, args.authkey)
+    handler = RemoteHandler(args.simhost, args.simport, args.authkey)
 
     # run client and server (client is async)
     engine.world.inc("scriptTotalCharacters", len(scriptstr))

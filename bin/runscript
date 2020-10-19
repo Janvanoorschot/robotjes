@@ -5,7 +5,7 @@ import argparse
 
 sys.path.insert(0, os.path.abspath(os.getcwd()))
 
-from robotjes.remote import Requestor
+from robotjes.remote import RemoteRequestor
 from robotjes.bot import Robo, RoboShell
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
@@ -15,7 +15,7 @@ parser.add_argument('authkey', type=str, help='shared secret')
 parser.add_argument('script', type=str, help='an integer for the accumulator')
 args = parser.parse_args()
 
-requestor = Requestor(args.host, args.port, args.authkey.encode())
+requestor = RemoteRequestor(args.host, args.port, args.authkey.encode())
 robo = Robo(requestor)
 shell = RoboShell()
 shell.run(robo, args.script)

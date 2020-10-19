@@ -2,9 +2,15 @@ import uuid
 
 class Robo(object):
 
-    def __init__(self, requestor):
+    OBSERVATIONS=set([
+        'leftIsClear', 'leftIsObstacle', 'leftIsBeacon', 'leftIsBlack', 'leftIsWhite',
+        'frontIsClear', 'frontIsObstacle', 'frontIsBeacon', 'frontIsBlack', 'frontIsWhite',
+        'rightIsClear', 'rightIsObstacle', 'rightIsBeacon', 'rightIsBlack', 'rightIsWhite'
+    ])
+
+    def __init__(self, requestor, id=uuid.uuid4()):
         self.requestor = requestor
-        self.id = uuid.uuid4()
+        self.id = id
 
     def handle_result(self, result):
         return result
@@ -118,3 +124,11 @@ class Robo(object):
 
     def error(self, message):
         self.requestor.execute([self.id, 'error', message])
+
+    @staticmethod
+    def is_observation(cmd):
+        return cmd and isinstance(cmd, list) and len(cmd) >= 2 and cmd[1] in Robo.OBSERVATIONS
+
+    @staticmethod
+    def observation(status, cmd):
+        return False

@@ -25,7 +25,7 @@ class GameState(BaseModel):
     result: bool
 
 
-class MoveSpec(BaseModel):
-    move: dict
+class CommandSpec(BaseModel):
+    cmd: dict
 
 

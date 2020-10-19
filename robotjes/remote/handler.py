@@ -2,7 +2,7 @@ import tempfile, os
 from multiprocessing.connection import Listener
 from subprocess import call
 
-class Handler(object):
+class RemoteHandler(object):
 
     ROOTDIR=os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 

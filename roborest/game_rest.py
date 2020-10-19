@@ -3,7 +3,7 @@ import uuid
 import roborest
 from aio_pika import Message
 from monitor import get_monitor
-from bubblehub.model import RegistrationSpec, MoveSpec
+from bubblehub.model import RegistrationSpec, CommandSpec
 import roborest
 from roborest import app
 
@@ -50,14 +50,14 @@ async def get_player_status(game_id: str, player_id: str):
 
 
 @app.put("/game/{game_id}/player/{player_id}")
-async def player_move(game_id: str, player_id: str, specs: MoveSpec):
+async def player_move(game_id: str, player_id: str, specs: CommandSpec):
     """Move within a game"""
     async with get_monitor():
         request = {
             "cmd": "move",
             "game_id": game_id,
             "player_id": player_id,
-            "move": specs.move
+            "cmd": specs.cmd
         }
         routing_key = f"{game_id}.game"
         body = json.dumps(request)

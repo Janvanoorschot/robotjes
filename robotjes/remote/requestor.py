@@ -1,7 +1,7 @@
 from multiprocessing.connection import Client
 from inspect import getframeinfo, stack
 
-class Requestor(object):
+class RemoteRequestor(object):
 
     def __init__(self, host, port, authkey):
         address = (host, port)

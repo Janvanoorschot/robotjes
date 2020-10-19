@@ -1,2 +1,2 @@
-from .handler import Handler
-from .requestor import Requestor
+from .handler import RemoteHandler
+from .requestor import RemoteRequestor

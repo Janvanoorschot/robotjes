@@ -1,12 +1,12 @@
 import collections
-from . import CLIRequestor
+from . import RestClient
 import asyncio
 
 
 class CLIUmpire():
 
     def __init__(self, loop, url, client):
-        self.requestor = CLIRequestor(loop, url)
+        self.rest_client = RestClient(loop, url)
         self.client = client
         self.game_id = None
         self.tick = None
@@ -21,11 +21,11 @@ class CLIUmpire():
     async def run_game(self, umpire, name, password, maze):
         """ Validate the params, create the game and wait for the game to finish. """
         await self.lock.acquire()
-        list = await self.requestor.list_games()
+        list = await self.rest_client.list_games()
         for id, game_name in list.items():
             if name == game_name:
                 raise Exception(f"game {game_name}/{id} already running")
-        self.game_id = await self.requestor.create_game(umpire, name, password, maze)
+        self.game_id = await self.rest_client.create_game(umpire, name, password, maze)
         self.callback("registered", self.game_id)
         if not self.game_id:
             raise Exception(f"create game failed")
@@ -35,7 +35,7 @@ class CLIUmpire():
     async def timer(self):
         if self.game_id and not self.stopped:
             try:
-                status = await self.requestor.status_game(self.game_id)
+                status = await self.rest_client.status_game(self.game_id)
             except Exception:
                 print("?")
                 return
