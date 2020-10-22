@@ -20,7 +20,7 @@ class Robo(object):
         'rightIsWhite': ['right', 'white']
     }
 
-    def __init__(self, requestor, id=uuid.uuid4()):
+    def __init__(self, requestor, id=str(uuid.uuid4())):
         self.requestor = requestor
         self.id = id
 

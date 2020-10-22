@@ -56,7 +56,7 @@ class CLIPlayer():
 
         # start the client code
         client_code = RoboThread()
-        robo = Robo(self.local_requestor)
+        robo = Robo(self.local_requestor, id=self.player_id)
         self.robo_coroutine = self.loop.run_in_executor(
             None,
             functools.partial(client_code.run, robo, code_file))

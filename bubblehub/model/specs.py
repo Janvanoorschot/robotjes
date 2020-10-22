@@ -26,6 +26,6 @@ class GameState(BaseModel):
 
 
 class CommandSpec(BaseModel):
-    cmd: dict
+    cmd: list
 
 
