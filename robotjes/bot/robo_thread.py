@@ -20,13 +20,11 @@ def exec_on_steroid(object, globals, locals):
 
 class RoboThread():
 
-    def __init__(self):
-        self.robo = None
-        self.script_file = None
-
-    def run(self, robo, script_file):
+    def __init__(self, robo, script_file):
         self.robo = robo
         self.script_file = script_file
+
+    def run(self):
         with open(self.script_file, 'r') as file:
             data = file.read()
             globals = {'robo': self.robo}
@@ -35,6 +33,3 @@ class RoboThread():
         if "delete_me_" in script_file:
             import os
             os.unlink(script_file)
-
-    def start(self):
-        pass

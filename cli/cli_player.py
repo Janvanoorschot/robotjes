@@ -59,11 +59,11 @@ class CLIPlayer():
             raise Exception(f"no such game {game_name}")
 
         # start the client code
-        self.client_code = RoboThread()
         self.robo = Robo(self.local_requestor)
-        self.robo_coroutine = self.loop.run_in_executor(
-            None,
-            functools.partial(self.client_code.run, self.robo, code_file))
+        self.client_code = RoboThread(self.robo,code_file)
+        # self.robo_coroutine = self.loop.run_in_executor(
+        #     None,
+        #     functools.partial(self.client_code.run, self.robo, code_file))
 
         # enter the command/reply cycle until the local_requestor is stopped
         while not self.stopped:
@@ -128,8 +128,9 @@ class CLIPlayer():
         if robo_id not in self.robo_status:
             # first time we see this robo, activate its logic
             self.robo.set_id(robo_id)
-            self.client_code.start()
-            print("eikel")
+            self.robo_coroutine = self.loop.run_in_executor(
+               None,
+               self.client_code.run)
         self.robo_status[robo_id] = robo_status
 
     def callback(self, cmd, *args):
