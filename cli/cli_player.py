@@ -33,6 +33,9 @@ class CLIPlayer():
         self.player_status = None
         self.game_status = None
         self.robo_status = {}
+        self.client_code = None
+        self.robo = None
+
 
     async def run_game(self, player_name, game_name, password, code_file):
         """ Validate the params and  join the game. """
@@ -56,11 +59,11 @@ class CLIPlayer():
             raise Exception(f"no such game {game_name}")
 
         # start the client code
-        client_code = RoboThread()
-        robo = Robo(self.local_requestor, id=self.player_id)
+        self.client_code = RoboThread()
+        self.robo = Robo(self.local_requestor)
         self.robo_coroutine = self.loop.run_in_executor(
             None,
-            functools.partial(client_code.run, robo, code_file))
+            functools.partial(self.client_code.run, self.robo, code_file))
 
         # enter the command/reply cycle until the local_requestor is stopped
         while not self.stopped:
@@ -90,7 +93,7 @@ class CLIPlayer():
                 # we received a valid status (about the game, this player and all the robo's), handle it
                 self.set_game_status(status['game_status'])
                 self.set_player_status(status['player_status'])
-                for robo_id, fog_of_war in status['player_status']['player_status']['fog_of_war']:
+                for robo_id, fog_of_war in status['player_status']['player_status']['fog_of_war'].items():
                     self.set_robo_status(robo_id, fog_of_war)
 
     def set_game_status(self, game_status):
@@ -122,6 +125,11 @@ class CLIPlayer():
         self.player_status = player_status
 
     def set_robo_status(self, robo_id, robo_status):
+        if robo_id not in self.robo_status:
+            # first time we see this robo, activate its logic
+            self.robo.set_id(robo_id)
+            self.client_code.start()
+            print("eikel")
         self.robo_status[robo_id] = robo_status
 
     def callback(self, cmd, *args):

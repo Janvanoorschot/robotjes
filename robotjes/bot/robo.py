@@ -24,6 +24,9 @@ class Robo(object):
         self.requestor = requestor
         self.id = id
 
+    def set_id(self, robo_id):
+        self.id = robo_id
+
     def handle_result(self, result):
         return result
 
