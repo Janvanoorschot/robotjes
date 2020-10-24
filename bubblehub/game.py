@@ -90,7 +90,9 @@ class Game:
         # feed the moves to the game
         self.game.start_moves(self.game_tick)
         for player_id, move in moves.items():
-            print(f"move: {move}")
+            line_no = move.pop(0)
+            robo_id = move.pop(0)
+            self.game.execute(robo_id, move)
         self.game.end_moves(self.game_tick)
         # collect fog_of_war for each of the player/robos
         for player_id, player in self.players.items():
