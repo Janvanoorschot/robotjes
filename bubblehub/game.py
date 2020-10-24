@@ -89,7 +89,7 @@ class Game:
         self.game_tick = self.game_tick + 1
         # feed the moves to the game
         self.game.start_moves(self.game_tick)
-        for move in moves:
+        for player_id, move in moves.items():
             print(f"move: {move}")
         self.game.end_moves(self.game_tick)
         # collect fog_of_war for each of the player/robos

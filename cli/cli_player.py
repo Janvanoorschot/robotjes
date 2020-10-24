@@ -32,6 +32,7 @@ class CLIPlayer():
         self.players = {}
         self.player_status = None
         self.game_status = None
+        self.robo_status = {}
 
     async def run_game(self, player_name, game_name, password, code_file):
         """ Validate the params and  join the game. """
@@ -87,31 +88,41 @@ class CLIPlayer():
                 return
             if status and isinstance(status, collections.Mapping):
                 # we received a valid status (about the game, this player and all the robo's), handle it
-                self.player_status = status['player_status']
-                self.game_status = status['game_status']
-                if self.game_status['status']['isStopped']:
-                    # normal stop
-                    self.stopped = True
-                    self.success = self.game_status['status']['isSuccess']
-                    self.callback('stopped', self.success)
-                    await self.local_requestor.stop()
-                    return
-                if not self.started and self.game_status['status']['isStarted']:
-                    # normal game start
-                    self.started = True
-                    self.stopped = False
-                    self.callback('started')
-                tick = self.game_status['tick']
-                game_tick = self.game_status['status']['game_tick']
-                if game_tick != self.game_tick:
-                    self.game_tick = game_tick
-                    self.callback('game_tick', self.game_tick)
-                    if self.timer_lock.locked():
-                        self.timer_lock.release()
-                if tick != self.tick:
-                    self.tick = tick
-                    self.callback('tick', self.tick)
+                self.set_game_status(status['game_status'])
+                self.set_player_status(status['player_status'])
+                for robo_id, fog_of_war in status['player_status']['player_status']['fog_of_war']:
+                    self.set_robo_status(robo_id, fog_of_war)
 
+    def set_game_status(self, game_status):
+        self.game_status = game_status
+        if not self.stopped and game_status['status']['isStopped']:
+            # normal stop
+            self.stopped = True
+            self.success = game_status['status']['isSuccess']
+            self.callback('stopped', self.success)
+            # await self.local_requestor.stop()
+            return
+        if not self.started and game_status['status']['isStarted']:
+            # normal game start
+            self.started = True
+            self.stopped = False
+            self.callback('started')
+        tick = self.game_status['tick']
+        game_tick = game_status['status']['game_tick']
+        if game_tick != self.game_tick:
+            self.game_tick = game_tick
+            self.callback('game_tick', self.game_tick)
+            if self.timer_lock.locked():
+                self.timer_lock.release()
+        if tick != self.tick:
+            self.tick = tick
+            self.callback('tick', self.tick)
+
+    def set_player_status(self, player_status):
+        self.player_status = player_status
+
+    def set_robo_status(self, robo_id, robo_status):
+        self.robo_status[robo_id] = robo_status
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)

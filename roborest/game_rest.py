@@ -57,7 +57,7 @@ async def player_move(game_id: str, player_id: str, specs: CommandSpec):
             "cmd": "move",
             "game_id": game_id,
             "player_id": player_id,
-            "cmd": specs.cmd
+            "move": specs.move
         }
         routing_key = f"{game_id}.game"
         body = json.dumps(request)

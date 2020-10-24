@@ -48,9 +48,9 @@ class RestClient:
         else:
             raise Exception(f"failed rest call register_player:{reply.text}")
 
-    async def issue_command(self, game_id, player_id, cmd):
+    async def issue_command(self, game_id, player_id, move):
         query = {
-            'cmd': cmd
+            'move': move
         }
         try:
             reply = await self.loop.run_in_executor(
