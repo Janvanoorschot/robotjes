@@ -4,9 +4,9 @@ from .recording import Recording
 
 LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
                   "eatUp", "paintWhite", "paintBlack", "stopPainting",
-                  "leftIsClear", "leftIsObstacle", "leftIsBeacon", "leftIsWhite", "leftIsBlack",
-                  "frontIsClear", "frontIsObstacle", "frontIsBeacon", "frontIsWhite", "frontIsBlack",
-                  "rightIsClear", "rightIsObstacle", "rightIsBeacon", "rightIsWhite", "rightIsBlack",
+                  "leftIsClear", "leftIsObstacle", "leftIsBeacon", "leftIsRobot", "leftIsWhite", "leftIsBlack",
+                  "frontIsClear", "frontIsObstacle", "frontIsBeacon", "frontIsRobot", "frontIsWhite", "frontIsBlack",
+                  "rightIsClear", "rightIsObstacle", "rightIsBeacon", "rightIsRobot", "rightIsWhite", "rightIsBlack",
                   "flipCoin", "message", "error"
                   ]
 class Engine(object):
@@ -133,6 +133,11 @@ class Engine(object):
             self.recording.see("left", "beacon")
             reply.append([success])
             self.world.inc("see")
+        elif command == "leftIsRobot":
+            success = self.world.check(robo_id, World.LEFT, World.ROBOT)
+            self.recording.see("left", "robot")
+            reply.append([success])
+            self.world.inc("see")
         elif command == "leftIsWhite":
             success = self.world.check(robo_id, World.LEFT, World.WHITE)
             self.recording.see("left", "white")
@@ -158,6 +163,11 @@ class Engine(object):
             self.recording.see("front", "beacon")
             reply.append([success])
             self.world.inc("see")
+        elif command == "frontIsRobot":
+            success = self.world.check(robo_id, World.FRONT, World.ROBOT)
+            self.recording.see("front", "robot")
+            reply.append([success])
+            self.world.inc("see")
         elif command == "frontIsWhite":
             success = self.world.check(robo_id, World.FRONT, World.WHITE)
             self.recording.see("front", "white")
@@ -181,6 +191,11 @@ class Engine(object):
         elif command == "rightIsBeacon":
             success = self.world.check(robo_id, World.RIGHT, World.BEACON)
             self.recording.see("right", "beacon")
+            reply.append([success])
+            self.world.inc("see")
+        elif command == "rightIsRobot":
+            success = self.world.check(robo_id, World.RIGHT, World.ROBOT)
+            self.recording.see("right", "robot")
             reply.append([success])
             self.world.inc("see")
         elif command == "rightIsWhite":

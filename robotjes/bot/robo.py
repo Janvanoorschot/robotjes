@@ -6,16 +6,19 @@ class Robo(object):
         'leftIsClear': ['left', 'clear'],
         'leftIsObstacle': ['left', 'obstacle'],
         'leftIsBeacon': ['left', 'beacon'],
+        'leftIsRobo': ['left', 'robot'],
         'leftIsBlack': ['left', 'black'],
         'leftIsWhite': ['left', 'white'],
         'frontIsClear': ['front', 'clear'],
         'frontIsObstacle': ['front', 'obstacle'],
         'frontIsBeacon': ['front', 'beacon'],
+        'frontIsRobo': ['front', 'robot'],
         'frontIsBlack': ['front', 'black'],
         'frontIsWhite': ['front', 'white'],
         'rightIsClear': ['right', 'clear'],
         'rightIsObstacle': ['right', 'obstacle'],
         'rightIsBeacon': ['right', 'beacon'],
+        'rightIsRobo': ['right', 'robot'],
         'rightIsBlack': ['right', 'black'],
         'rightIsWhite': ['right', 'white']
     }
@@ -86,6 +89,10 @@ class Robo(object):
         result = self.requestor.execute([self.id, 'leftIsBeacon'])
         return self.handle_boolean_result(result)
 
+    def leftIsRobot(self):
+        result = self.requestor.execute([self.id, 'leftIsRobot'])
+        return self.handle_boolean_result(result)
+
     def leftIsWhite(self):
         result = self.requestor.execute([self.id, 'leftIsWhite'])
         return self.handle_boolean_result(result)
@@ -106,6 +113,10 @@ class Robo(object):
         result = self.requestor.execute([self.id, 'frontIsBeacon'])
         return self.handle_boolean_result(result)
 
+    def frontIsRobot(self):
+        result = self.requestor.execute([self.id, 'frontIsRobot'])
+        return self.handle_boolean_result(result)
+
     def frontIsWhite(self):
         result = self.requestor.execute([self.id, 'frontIsWhite'])
         return self.handle_boolean_result(result)
@@ -124,6 +135,10 @@ class Robo(object):
 
     def rightIsBeacon(self):
         result = self.requestor.execute([self.id, 'rightIsBeacon'])
+        return self.handle_boolean_result(result)
+
+    def rightIsRobot(self):
+        result = self.requestor.execute([self.id, 'rightIsRobot'])
         return self.handle_boolean_result(result)
 
     def rightIsWhite(self):
@@ -149,17 +164,19 @@ class Robo(object):
         (selector, type) = Robo.OBSERVATIONS[cmd[2]]
         if status and selector in status:
             lst = status[selector]
-            # lst -> [tile, paint, bot]
+            # lst -> [tile, paint, robot, beacon]
             if type == 'clear':
                 return not lst[0] and not lst[2] and not lst[3]
             elif type == 'obstacle':
                 return lst[0] or lst[2] or lst[3]
             elif type == 'beacon':
+                return lst[2] is not None
+            elif type == 'robot':
                 return lst[3] is not None
             elif type == 'black':
-                return lst[2] == 'black'
+                return lst[1] == 'black'
             elif type == 'white':
-                return lst[2] == 'black'
+                return lst[1] == 'white'
             else:
                 raise Exception(f"illegal status type{type}")
         else:

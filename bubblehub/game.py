@@ -98,4 +98,4 @@ class Game:
         for player_id, player in self.players.items():
             fow = self.game.fog_of_war(player["robo_id"])
             player["status"]["fog_of_war"] = fow
-            print(f"player:{self.game_tick}/{player}")
+            # print(f"player:{self.game_tick}/{player}")
