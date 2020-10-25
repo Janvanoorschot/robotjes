@@ -276,8 +276,8 @@ class World(object):
         pos_left = self.calc_pos(bot, self.RIGHT, 1)
         pos_right = self.calc_pos(bot, self.LEFT, 1)
         return {
-            "front": self.get_content(pos_front),
             "left": self.get_content(pos_left),
+            "front": self.get_content(pos_front),
             "right": self.get_content(pos_right)
         }
 

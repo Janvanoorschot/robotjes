@@ -21,7 +21,7 @@ class RoboGame:
 
     def execute(self, robo_id, move):
         # execute the move for the given robo
-        pass
+        self.engine.execute(robo_id, move)
 
     def end_moves(self, game_tick):
         pass
