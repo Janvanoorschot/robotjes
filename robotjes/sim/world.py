@@ -259,16 +259,18 @@ class World(object):
         if tile_content:
             paint = None
             bot = None
+            beacon = None
         else:
             bots = [robo for robo in self.bots.values() if robo.pos==pos]
             bot = bots[0] if len(bots) > 0 else None
+            beacon = True if pos in self.beacons else False
             if pos in self.paints_black:
                 paint = self.BLACK
             elif pos in self.paints_white:
                 paint = self.WHITE
             else:
                 paint = None
-        return [ tile_content, paint, bot]
+        return [ tile_content, paint, bot, beacon]
 
     def fog_of_war(self, robo_id):
         bot = self.bots[robo_id]

@@ -56,7 +56,7 @@ class RestClient:
             reply = await self.loop.run_in_executor(
                 None, functools.partial(requests.put, self.create_url(f'game/{game_id}/player/{player_id}'), json=query))
         except Exception as e:
-            print("?")
+            pass
         if reply.status_code == 200:
             result = reply.json()
             return result

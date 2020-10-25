@@ -146,4 +146,22 @@ class Robo(object):
 
     @staticmethod
     def observation(status, cmd):
-        return False
+        (selector, type) = Robo.OBSERVATIONS[cmd[2]]
+        if status and selector in status:
+            lst = status[selector]
+            # lst -> [tile, paint, bot]
+            if type == 'clear':
+                return not lst[0] and not lst[2] and not lst[3]
+            elif type == 'obstacle':
+                return lst[0] or lst[2] or lst[3]
+            elif type == 'beacon':
+                return lst[3] is not None
+            elif type == 'black':
+                return lst[2] == 'black'
+            elif type == 'white':
+                return lst[2] == 'black'
+            else:
+                raise Exception(f"illegal status type{type}")
+        else:
+            return False
+

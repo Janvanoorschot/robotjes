@@ -69,7 +69,12 @@ class CLIPlayer():
         while not self.stopped:
             cmd = await self.local_requestor.get()
             if Robo.is_observation(cmd):
-                boolean = Robo.observation(self.player_status, cmd)
+                robo_id = self.robo.id
+                if robo_id in self.robo_status and 'fog_of_war' in self.robo_status[robo_id]:
+                    status = self.robo_status[robo_id]
+                    boolean = Robo.observation(status['fog_of_war']['fog_of_war'], cmd)
+                else:
+                    boolean = False
                 reply = {'result': boolean}
             else:
                 # at this point, we need to contact the server
@@ -87,7 +92,6 @@ class CLIPlayer():
             try:
                 status = await self.rest_client.status_player(self.game_id, self.player_id)
             except Exception:
-                print("?")
                 return
             if status and isinstance(status, collections.Mapping):
                 # we received a valid status (about the game, this player and all the robo's), handle it
