@@ -26,9 +26,7 @@ class RoboThread():
 
     def run(self):
         self.execute(self.robo)
-        print("stopping robo")
         self.robo.stop()
-        print("robo is stopped")
 
     def run_old(self):
         with open(self.script_file, 'r') as file:
