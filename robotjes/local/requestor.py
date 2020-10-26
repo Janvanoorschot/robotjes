@@ -20,7 +20,10 @@ class LocalRequestor(object):
 
     async def async_execute(self, cmd):
         await self.command_queue.put(cmd)
-        reply = await self.reply_queue.get()
+        if(len(cmd)>2):
+            reply = await self.reply_queue.get()
+        else:
+            reply = {'result':[]}
         # somehow, the original requestor returned something like this:
         # [[UUID('056c5f92-1457-4e45-be8e-32d6f2a18685'), 'paintWhite'], ([[True]],)]
         return [["some-uuid", cmd], [[[reply['result']]]]]
@@ -31,5 +34,5 @@ class LocalRequestor(object):
     async def put(self, reply):
         await self.reply_queue.put(reply)
 
-    async def stop(self):
+    async def close(self):
         pass

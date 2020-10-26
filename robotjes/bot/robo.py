@@ -155,6 +155,9 @@ class Robo(object):
     def error(self, message):
         self.requestor.execute([self.id, 'error', message])
 
+    def stop(self):
+        self.requestor.execute([])
+
     @staticmethod
     def is_observation(cmd):
         return cmd and isinstance(cmd, list) and len(cmd) >= 3 and cmd[2] in Robo.OBSERVATIONS

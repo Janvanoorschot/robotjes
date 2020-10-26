@@ -37,17 +37,12 @@ class CLIPlayer():
         self.robo = None
 
 
-    async def run_game(self, player_name, game_name, password, code_file):
+    async def run_game(self, player_name, game_name, password, execute):
         """ Validate the params and  join the game. """
         list = await self.rest_client.list_games()
         for id, name in list.items():
             if game_name == name:
                 self.game_id = id
-                # module  = importlib.import_module(module_name)
-                # if hasattr(module, 'player'):
-                #     player = module.player
-                # else:
-                #     raise Exception(f"invalid player module {module_name}")
                 result = await self.rest_client.register_player(player_name, self.game_id, password)
                 if not result:
                     raise Exception(f"can not join game {game_name}")
@@ -60,15 +55,13 @@ class CLIPlayer():
 
         # start the client code
         self.robo = Robo(self.local_requestor)
-        self.client_code = RoboThread(self.robo,code_file)
-        # self.robo_coroutine = self.loop.run_in_executor(
-        #     None,
-        #     functools.partial(self.client_code.run, self.robo, code_file))
-
+        self.client_code = RoboThread(self.robo, execute)
         # enter the command/reply cycle until the local_requestor is stopped
         while not self.stopped:
             cmd = await self.local_requestor.get()
-            if Robo.is_observation(cmd):
+            if len(cmd) < 2:
+                break
+            elif Robo.is_observation(cmd):
                 robo_id = self.robo.id
                 if robo_id in self.robo_status and 'fog_of_war' in self.robo_status[robo_id]:
                     status = self.robo_status[robo_id]
@@ -82,9 +75,7 @@ class CLIPlayer():
                 reply = {'result': True}
             await self.timer_lock.acquire()
             await self.local_requestor.put(reply)
-
-        # await the client code to we terminate elegantly
-        result = await self.robo_coroutine
+        self.robo_coroutine.cancel()
         return self.success
 
     async def timer(self):
