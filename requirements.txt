@@ -19,6 +19,9 @@ wheel
 pycairo
 PyGObject
 
+# client: ASCII art
+asciimatics
+
 # client: HTTP/REST
 requests
 
