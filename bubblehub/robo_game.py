@@ -16,6 +16,10 @@ class RoboGame:
         }
         return robo_id
 
+    def destroy_robo(self, robo_id):
+        self.engine.destroy_robo(robo_id)
+        del self.robos[robo_id]
+
     def start_moves(self, game_tick):
         self.game_tick = game_tick
 

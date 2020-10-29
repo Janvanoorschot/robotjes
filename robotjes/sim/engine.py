@@ -44,6 +44,10 @@ class Engine(object):
         else:
             return None
 
+    def destroy_robo(self, robo_id):
+        self.world.destroy_robo(robo_id)
+        del self.robos[robo_id]
+
     def execute(self, robo_id, cmd):
         if not robo_id in self.robos:
             reply = [[False]]

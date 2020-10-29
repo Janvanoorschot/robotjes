@@ -66,6 +66,9 @@ class World(object):
         else:
             return False
 
+    def destroy_robo(self, robo_id):
+        del self.bots[robo_id]
+
     def getLoc(self, robo_id):
         if robo_id in self.bots:
             return self.bots[robo_id].pos
@@ -262,7 +265,7 @@ class World(object):
             beacon = None
         else:
             bots = [robo for robo in self.bots.values() if robo.pos==pos]
-            bot = bots[0] if len(bots) > 0 else None
+            bot = True if len(bots) > 0 else None
             beacon = True if pos in self.beacons else False
             if pos in self.paints_black:
                 paint = self.BLACK
@@ -270,7 +273,7 @@ class World(object):
                 paint = self.WHITE
             else:
                 paint = None
-        return [ tile_content, paint, bot, beacon]
+        return [tile_content, paint, bot, beacon]
 
     def fog_of_war(self, robo_id):
         bot = self.bots[robo_id]

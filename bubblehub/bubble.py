@@ -209,7 +209,10 @@ class Bubble:
                 'tick': self.tick,
                 'data': data
             }
-        j = json.dumps(item)
+        try:
+            j = json.dumps(item)
+        except TypeError as te:
+            print(f"error: {te}")
         self.channel.basic_publish(
             exchange=self.games_exchange_name,
             routing_key=self.game_out_routing_key,

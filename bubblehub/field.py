@@ -46,11 +46,12 @@ class Field:
     def registered(self, player):
         self.players[player.player_id] = {
             "player": player,
-            "robo_id" : self.game.create_robo(player.player_id),
+            "robo_id": self.game.create_robo(player.player_id),
             "status": {}
         }
 
     def deregistered(self, player):
+        self.game.destroy_robo(self.players[player.player_id]["robo_id"])
         del self.players[player.player_id]
 
     def is_stopped(self):
