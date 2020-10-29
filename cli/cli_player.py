@@ -75,6 +75,7 @@ class CLIPlayer():
                 reply = {'result': True}
             await self.timer_lock.acquire()
             await self.local_requestor.put(reply)
+        await self.rest_client.deregister_player(self.game_id, self.player_id)
         self.robo_coroutine.cancel()
         return self.success
 

@@ -2,7 +2,7 @@ import json
 import config
 import logging
 from bubblehub.model import GameState, GameSpec
-from . import Game, Player, GameStatus
+from . import Field, Game, Player, GameStatus
 logger = logging.getLogger(__name__)
 
 
@@ -65,44 +65,8 @@ class Bubble:
             logger.warning(f"message error: {str(e)}")
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
-    def on_game_message(self, channel, method_frame, header_frame, body):
-        try:
-            request = json.loads(body)
-            cmd = request.get("cmd", "unknown")
-            player_id = request.get("player_id", "")
-            if self.game_state == GameStatus.CREATED:
-                if cmd == "register":
-                    player_name = request.get("player_name", "unknown")
-                    password = request.get("password", "unknown")
-                    if password == self.game_password and not self.valid_player(player_id):
-                        self.register_player(player_id, player_name)
-                    else:
-                        self.disqualify_player(player_id)
-                else:
-                    self.disqualify_player(player_id)
-            elif self.game_state == GameStatus.STARTED:
-                if cmd == "move":
-                    player_id = request.get("player_id", "unknown")
-                    move = request.get("move", {})
-                    if player_id in self.players:
-                        self.moves[player_id] = move
-                else:
-                    self.disqualify_player(player_id)
-            elif self.game_state == GameStatus.STOPPED:
-                if cmd == "move":
-                    # to little, to late
-                    pass
-                else:
-                    self.disqualify_player(player_id)
-            else:
-                self.disqualify_player(player_id)
-        except json.decoder.JSONDecodeError as jsonerror:
-            logger.warning(f"json error: {str(jsonerror)}")
-        except Exception as e:
-            logger.warning(f"message error: {str(e)}")
-
     def create_game(self, game_id: str , spec: GameSpec):
-        logger.warning("start_game")
+        logger.warning("create_game")
         if self.game_state == GameStatus.IDLE:
             # put ourselfs in the correct state
             self.tick = 0
@@ -111,9 +75,9 @@ class Bubble:
             self.spec = spec
             self.game_out_routing_key = f"{self.game_id}.status"
             # create a Game instance
-            self.game = Game(self, spec)
+            self.game = Field(self, spec)
             # initialise the player store for this game in this Bubble
-            self.start_players(self.game)
+            self.start_players()
             # start listening to messages for this game
             result = self.channel.queue_declare('', exclusive=True)
             self.game_queue_name = result.method.queue
@@ -126,16 +90,15 @@ class Bubble:
             self.channel.basic_consume(queue=self.game_queue_name, on_message_callback=self.on_game_message, auto_ack=True)
             self.game_state = GameStatus.CREATED
             self.starttime = self.now
-            self.players.clear()
             self.game.created()
             return True
         else:
             return False
 
     def start_game(self):
-        self.game.started(self.players)
+        logger.warning("start_game")
+        self.game.started()
         self.game_state = GameStatus.STARTED
-
 
     def stop_game(self):
         if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
@@ -153,11 +116,11 @@ class Bubble:
         else:
             return False
 
-    def start_players(self, game):
+    def start_players(self):
         self.players = {}
         self.invalid_players = {}
 
-    def valid_player(self, player_id):
+    def is_valid_player(self, player_id):
         return player_id in self.players and not player_id in self.invalid_players
 
     def register_player(self, player_id, player_name):
@@ -167,14 +130,54 @@ class Bubble:
             # we can handle a new player
             player = Player(player_id, player_name)
             self.players[player_id] = player
-            if len(self.players) == self.game.player_count():
-                self.start_game()
+            self.game.registered(player)
+
+    def deregister_player(self, player_id):
+        if player_id in self.players:
+            player = self.players[player_id]
+            del self.players[player_id]
+            self.game.deregistered(player)
 
     def disqualify_player(self, player_id):
         if player_id in self.players:
             self.invalid_players[player_id] = self.players[player_id]
         else:
             self.invalid_players[player_id] = None
+
+    def on_game_message(self, channel, method_frame, header_frame, body):
+        try:
+            request = json.loads(body)
+            cmd = request.get("cmd", "unknown")
+            player_id = request.get("player_id", "")
+            if self.game_state == GameStatus.CREATED:
+                pass
+            elif self.game_state == GameStatus.STARTED:
+                if cmd == "register":
+                    player_name = request.get("player_name", "unknown")
+                    password = request.get("password", "unknown")
+                    if password == self.game_password and not self.is_valid_player(player_id):
+                        self.register_player(player_id, player_name)
+                    else:
+                        self.disqualify_player(player_id)
+                elif cmd == "deregister":
+                    player_id = request.get("player_id", "unknown")
+                    if player_id in self.players:
+                        self.deregister_player(player_id)
+                elif cmd == "move":
+                    player_id = request.get("player_id", "unknown")
+                    move = request.get("move", {})
+                    if player_id in self.players:
+                        self.moves[player_id] = move
+                else:
+                    self.disqualify_player(player_id)
+            elif self.game_state == GameStatus.STOPPED:
+                pass
+            else:
+                self.disqualify_player(player_id)
+        except json.decoder.JSONDecodeError as jsonerror:
+            logger.warning(f"json error: {str(jsonerror)}")
+        except Exception as e:
+            logger.warning(f"message error: {str(e)}")
 
     def publish(self, msg: GameStatus, data: dict):
         if not self.game:
@@ -215,7 +218,6 @@ class Bubble:
     def timer(self, now):
         self.now = now
         if self.now and self.starttime:
-            # self.tick = (self.now - self.starttime).total_seconds()
             self.tick = self.tick + 1
         else:
             self.tick = 0

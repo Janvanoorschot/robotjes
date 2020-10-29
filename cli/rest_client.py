@@ -48,6 +48,17 @@ class RestClient:
         else:
             raise Exception(f"failed rest call register_player:{reply.text}")
 
+    async def deregister_player(self, game_id, player_id):
+        spec = {
+        }
+        reply = await self.loop.run_in_executor(
+            None, functools.partial(requests.delete, self.create_url(f'game/{game_id}/player/{player_id}'), json=spec))
+        if reply.status_code == 200:
+            result = reply.json()
+            return result
+        else:
+            raise Exception(f"failed rest call deregister_player:{reply.text}")
+
     async def issue_command(self, game_id, player_id, move):
         query = {
             'move': move

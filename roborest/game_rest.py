@@ -34,6 +34,29 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
             "player_id": player_id
         }
 
+@app.delete("/game/{game_id}/player/{player_id}")
+async def deregister_with_game(game_id: str, player_id: str):
+    """Deregister from a game"""
+    async with get_monitor():
+        request = {
+            "cmd": "deregister",
+            "game_id": game_id,
+            "player_id": player_id,
+        }
+        routing_key = f"{game_id}.game"
+        body = json.dumps(request)
+        message = Message(
+            body.encode(),
+            content_type="application/json"
+        )
+        await roborest.games_exchange.publish(
+            message,
+            routing_key=routing_key
+        )
+        return {
+            "player_id": player_id
+        }
+
 
 @app.get("/game/{game_id}")
 async def get_game_status(game_id: str):
