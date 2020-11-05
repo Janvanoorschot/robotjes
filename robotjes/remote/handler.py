@@ -12,16 +12,20 @@ class RemoteHandler(object):
         self.authkey = authkey
         self.address = (host, port)
         self.runscript = runscript
+        self.game_tick = -1
 
     def run(self, engine, robo_id):
         """ Feed the Engine (read/exec/write)"""
         listener = Listener(self.address)
         con = listener.accept()
+        self.game_tick = 0
         while not con.closed:
             try:
                 cmd = con.recv()
             except:
                 break
+            self.game_tick += 1
+            engine.game_timer(self.game_tick)
             result = engine.execute(robo_id, cmd)
             if result:
                 try:

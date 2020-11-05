@@ -16,6 +16,7 @@ class Engine(object):
         self.world = World(self.map)
         self.recording = Recording()
         self.robos = {}
+        self.game_time = 0
 
     def get_recording(self):
         return self.recording
@@ -48,6 +49,9 @@ class Engine(object):
         self.world.destroy_robo(robo_id)
         del self.robos[robo_id]
 
+    def game_timer(self, game_time):
+        self.game_time = game_time
+
     def execute(self, robo_id, cmd):
         if not robo_id in self.robos:
             reply = [[False]]
@@ -58,6 +62,8 @@ class Engine(object):
         self.world.inc("scriptCalls")
         self.world.inc("scriptBasicCommands")
         self.recording.lineno(lineno)
+        self.recording.game_timer(self.game_time)
+        self.recording.robo(robo_id)
         if command == "forward":
             expected = 1 if len(args) < 1 else int(args[0])
             actual = 0

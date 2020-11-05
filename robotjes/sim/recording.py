@@ -7,13 +7,21 @@ class Recording(object):
         self.active = True
         self.keyframes = []
         self.linenumber = 1
+        self.game_time = 0
+        self.robo_id = None
 
     def lineno(self, ln):
         self.linenumber = ln
 
+    def game_timer(self, game_time):
+        self.game_time = game_time
+
+    def robo(self, robo_id):
+        self.robo_id = robo_id
+
     def finalize(self, keyframe):
-        keyframe['sprite'] = 'r'
-        # keyframe['src'] = len(self.keyframes)
+        keyframe['tick'] = self.game_time
+        keyframe['sprite'] = self.robo_id
         keyframe['src'] = self.linenumber
         keyframe['score'] = len(self.keyframes)
         if self.active and len(self.keyframes) < self.maxsize:
@@ -22,7 +30,8 @@ class Recording(object):
             if self.active:
                 keyframe = {}
                 keyframe['action'] = ['message', 'recording overflow']
-                keyframe['sprite'] = 'r'
+                keyframe['tick'] = self.game_time
+                keyframe['sprite'] = self.robo_id
                 keyframe['src'] = self.linenumber
                 keyframe['score'] = len(self.keyframes)
                 self.keyframes.append(keyframe)

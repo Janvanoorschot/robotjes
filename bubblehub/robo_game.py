@@ -8,6 +8,7 @@ class RoboGame:
         self.robos = {}
         self.map = map
         self.engine = Engine(map)
+        self.game_tick = 0
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
@@ -22,6 +23,7 @@ class RoboGame:
 
     def start_moves(self, game_tick):
         self.game_tick = game_tick
+        self.engine.game_timer(game_tick)
 
     def execute(self, robo_id, move):
         # execute the move for the given robo
