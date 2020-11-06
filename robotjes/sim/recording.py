@@ -3,12 +3,18 @@ import json
 class Recording(object):
 
     def __init__(self):
-        self.maxsize = 1000
-        self.active = True
+        # the real keyframe
         self.keyframes = []
+        # state of the recording
+        self.maxsize = 10000
+        self.active = True
+        # variables used during the next keyfram
         self.linenumber = 1
         self.game_time = 0
         self.robo_id = None
+
+    def len(self):
+        return len(self.keyframes)
 
     def lineno(self, ln):
         self.linenumber = ln
@@ -19,7 +25,7 @@ class Recording(object):
     def robo(self, robo_id):
         self.robo_id = robo_id
 
-    def finalize(self, keyframe):
+    def finalize_keyframe(self, keyframe):
         keyframe['tick'] = self.game_time
         keyframe['sprite'] = self.robo_id
         keyframe['src'] = self.linenumber
@@ -28,20 +34,23 @@ class Recording(object):
             self.keyframes.append(keyframe)
         else:
             if self.active:
+                # record a 'recording overflow' keyframe (only once)
                 keyframe = {}
                 keyframe['action'] = ['message', 'recording overflow']
-                keyframe['tick'] = self.game_time
-                keyframe['sprite'] = self.robo_id
-                keyframe['src'] = self.linenumber
-                keyframe['score'] = len(self.keyframes)
                 self.keyframes.append(keyframe)
-            self.active = False
+                self.active = False
         return self.active
 
     def toMap(self):
         result = []
         for item in self.keyframes:
             result.append(item)
+        return result
+
+    def toMapFrom(self, start):
+        result = []
+        for ix in range(start, len(self.keyframes)):
+            result.append(self.keyframes[ix])
         return result
 
     def isSuccess(self):
@@ -66,29 +75,29 @@ class Recording(object):
     def forward(self, actual , expected):
         keyframe = {}
         keyframe['action'] = ['f', actual, expected]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def backward(self, actual, expected):
         keyframe = {}
         keyframe['action'] = ['b', actual, expected]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def left(self, actual):
         keyframe = {}
         keyframe['action'] = ['l', actual]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def right(self, actual):
         keyframe = {}
         keyframe['action'] = ['r', actual]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def see(self, direction, subject):
         # direction ["left"|"front"|right"]
         # subject ["obstacle"|"clear"|"beacon"|"white"|"black"]
         keyframe = {}
         keyframe['action'] = ['s', direction, subject]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def pickUp(self, success):
         keyframe = {}
@@ -96,7 +105,7 @@ class Recording(object):
             keyframe['action'] = ['gg', "success"]
         else:
             keyframe['action'] = ['gg', "failure"]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def eatUp(self, success):
         keyframe = {}
@@ -104,7 +113,7 @@ class Recording(object):
             keyframe['action'] = ['ge', "success"]
         else:
             keyframe['action'] = ['ge', "failure"]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def putDown(self, success):
         keyframe = {}
@@ -112,7 +121,7 @@ class Recording(object):
             keyframe['action'] = ['gp', "success"]
         else:
             keyframe['action'] = ['gp', "failure"]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def paintWhite(self, start):
         # msg ["success"|"again"]
@@ -121,7 +130,7 @@ class Recording(object):
             keyframe['action'] = ['pw', "success"]
         else:
             keyframe['action'] = ['pw', "again"]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def paintBlack(self, start):
         keyframe = {}
@@ -129,39 +138,39 @@ class Recording(object):
             keyframe['action'] = ['pb', "success"]
         else:
             keyframe['action'] = ['pb', "again"]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def stopPainting(self):
         keyframe = {}
         keyframe['action'] = ['sp', "success"]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def flipCoin(self):
         keyframe = {}
         keyframe['action'] = ['fp']
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def happy(self):
         keyframe = {}
         keyframe['action'] = ['happy']
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def nonono(self):
         keyframe = {}
         keyframe['action'] = ['nonono']
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def message(self, message):
         keyframe = {}
         keyframe['action'] = ['sht', message]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def error(self, message):
         keyframe = {}
         keyframe['action'] = ['message', message]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
 
     def boom(self, cmd):
         keyframe = {}
         keyframe['action'] = ['boom', json.dumps(cmd, default=str)]
-        return self.finalize(keyframe)
+        return self.finalize_keyframe(keyframe)
