@@ -149,6 +149,7 @@ class GameStatus(object):
                 'isStopped': self.isStopped,
                 'isSuccess': self.isSuccess
             },
+            'recording': self.recording,
             'tick': self.tick,
             'players': list(self.players.keys())
         }
