@@ -89,9 +89,11 @@ class GameStatus(object):
         self.starttime = now
         self.stoptime = None
         self.tick = 0.0
+        self.game_tick = 0
         self.isStarted = False
         self.isStopped = False
         self.isSuccess = False
+        self.recording = []
         self.players = {}
         self.data = {}
 
@@ -113,7 +115,7 @@ class GameStatus(object):
         #   'bubble_id': 'd0f90888-bd84-48b3-b56e-523433a1e7aa',
         #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
         #   'game_name': 'game2',
-        #   'status': {'isStarted': False, 'isStopped': False, 'isSuccess': False},
+        #   'status': {'game_tick': 1,'recording_delta':[], 'isStarted': False, 'isStopped': False, 'isSuccess': False},
         #   'players': [
         #         {
         #             'player_id': 'ba8e8d5c-50e8-4591-9076-aae3d5e40942',
@@ -132,6 +134,7 @@ class GameStatus(object):
         self.isStarted = request['status']['isStarted']
         self.isStopped = request['status']['isStopped']
         self.isSuccess = request['status']['isSuccess']
+        self.recording = self.recording + request['status']['recording_delta']
         self.players.clear()
         for player in request['players']:
             self.players[player['player_id']] = player

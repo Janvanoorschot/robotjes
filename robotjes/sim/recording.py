@@ -8,7 +8,7 @@ class Recording(object):
         # state of the recording
         self.maxsize = 10000
         self.active = True
-        # variables used during the next keyfram
+        # variables used during the next keyframe
         self.linenumber = 1
         self.game_time = 0
         self.robo_id = None
@@ -26,6 +26,7 @@ class Recording(object):
         self.robo_id = robo_id
 
     def finalize_keyframe(self, keyframe):
+        keyframe['ix'] = len(self.keyframes)
         keyframe['tick'] = self.game_time
         keyframe['sprite'] = self.robo_id
         keyframe['src'] = self.linenumber

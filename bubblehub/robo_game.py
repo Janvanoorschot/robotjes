@@ -41,7 +41,7 @@ class RoboGame:
             "fog_of_war": self.engine.fog_of_war(robo_id)
         }
 
-    def recording_delta (self):
+    def recording_delta(self):
         # get the recording-delta valid since the last time this function was called
         delta = self.engine.get_recording().toMapFrom(self.last_recording_delta)
         self.last_recording_delta = self.last_recording_delta + len(delta)

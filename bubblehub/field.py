@@ -66,6 +66,7 @@ class Field:
     def get_status(self):
         return {
             "game_tick": self.game_tick,
+            "recording_delta": self.game.recording_delta(),
             "isStarted": self.isStarted,
             "isStopped": self.isStopped,
             "isSuccess": self.isSuccess
