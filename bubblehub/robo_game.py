@@ -4,10 +4,9 @@ from robotjes.sim import Engine, Map, Success
 class RoboGame:
     """ Robotjes specific game behaviour. """
     def __init__(self, mapstr):
-        map = Map.fromstring(mapstr)
         self.robos = {}
-        self.map = map
-        self.engine = Engine(map)
+        self.map = Map.fromstring(mapstr)
+        self.engine = Engine(self.map)
         self.game_tick = 0
         self.last_recording_delta = 0
 
@@ -46,3 +45,6 @@ class RoboGame:
         delta = self.engine.get_recording().toMapFrom(self.last_recording_delta)
         self.last_recording_delta = self.last_recording_delta + len(delta)
         return delta
+
+    def maze_map(self):
+        return self.map.toMazeMap()

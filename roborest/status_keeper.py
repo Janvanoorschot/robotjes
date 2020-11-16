@@ -86,6 +86,7 @@ class GameStatus(object):
         self.bubble_id = request['bubble_id']
         self.game_id = request['game_id']
         self.game_name = request['game_name']
+        self.maze_map = request['data']['maze_map']
         self.starttime = now
         self.stoptime = None
         self.tick = 0.0
@@ -151,7 +152,8 @@ class GameStatus(object):
             },
             'recording': self.recording,
             'tick': self.tick,
-            'players': list(self.players.keys())
+            'players': list(self.players.keys()),
+            'maze_map': self.maze_map
         }
 
     def player_map(self, player_id):

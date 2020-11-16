@@ -29,7 +29,9 @@ class Field:
 
     def created(self):
         # send a status change to the games exchange
-        self.owner.publish(GameStatus.CREATED, {})
+        self.owner.publish(GameStatus.CREATED, {
+            "maze_map": self.game.maze_map()
+        })
         # we start the game immediatly after it is created
         self.owner.start_game()
 

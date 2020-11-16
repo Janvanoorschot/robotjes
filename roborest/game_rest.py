@@ -60,7 +60,7 @@ async def deregister_with_game(game_id: str, player_id: str):
 
 @app.get("/game/{game_id}")
 async def get_game_status(game_id: str):
-    """Get the current player status"""
+    """Get the current game status"""
     result = roborest.status_keeper.get_game_status(game_id)
     return result
 
