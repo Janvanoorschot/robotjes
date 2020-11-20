@@ -52,6 +52,12 @@ class StatusKeeper(object):
         else:
             return {}
 
+    def get_game_recording(self, game_id):
+        if game_id in self.games:
+            return self.games[game_id].game_recording()
+        else:
+            return {}
+
     def get_player_status(self, game_id, player_id):
         if game_id in self.games:
             if player_id in self.games[game_id].players:
@@ -154,6 +160,21 @@ class GameStatus(object):
             'tick': self.tick,
             'players': list(self.players.keys()),
             'maze_map': self.maze_map
+        }
+
+    def game_recording(self):
+        return {
+            'game_id': self.game_id,
+            'game_name': self.game_name,
+            'status': {
+                'game_tick': self.game_tick,
+                'isStarted': self.isStarted,
+                'isStopped': self.isStopped,
+                'isSuccess': self.isSuccess
+            },
+            'recording': self.recording,
+            'tick': self.tick,
+            'players': list(self.players.keys()),
         }
 
     def player_map(self, player_id):

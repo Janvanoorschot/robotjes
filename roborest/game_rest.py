@@ -65,6 +65,13 @@ async def get_game_status(game_id: str):
     return result
 
 
+@app.get("/game/{game_id}/recording")
+async def get_game_status(game_id: str):
+    """Get the current game recording"""
+    result = roborest.status_keeper.get_game_recording(game_id)
+    return result
+
+
 @app.get("/game/{game_id}/player/{player_id}")
 async def get_player_status(game_id: str, player_id: str):
     """Get the current player status"""
