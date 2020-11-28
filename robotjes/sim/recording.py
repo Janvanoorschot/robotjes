@@ -73,6 +73,16 @@ class Recording(object):
         return result
 
 
+    def create_robo(self, robo_id):
+        keyframe = {}
+        keyframe['action'] = ['crt', robo_id]
+        return self.finalize_keyframe(keyframe)
+
+    def destroy_robo(self, robo_id):
+        keyframe = {}
+        keyframe['action'] = ['des', robo_id]
+        return self.finalize_keyframe(keyframe)
+
     def forward(self, actual , expected):
         keyframe = {}
         keyframe['action'] = ['f', actual, expected]

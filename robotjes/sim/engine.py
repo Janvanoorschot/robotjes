@@ -41,6 +41,10 @@ class Engine(object):
         robo_id = str(uuid.uuid4())
         if self.world.create_robo(robo_id):
             self.robos[robo_id] = {}
+            self.recording.lineno(0)
+            self.recording.game_timer(self.game_time)
+            self.recording.robo(robo_id)
+            self.recording.create_robo(robo_id)
             return robo_id
         else:
             return None
@@ -48,6 +52,10 @@ class Engine(object):
     def destroy_robo(self, robo_id):
         self.world.destroy_robo(robo_id)
         del self.robos[robo_id]
+        self.recording.lineno(0)
+        self.recording.game_timer(self.game_time)
+        self.recording.robo(robo_id)
+        self.recording.destroy_robo(robo_id)
 
     def game_timer(self, game_time):
         self.game_time = game_time
