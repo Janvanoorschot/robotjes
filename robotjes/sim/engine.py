@@ -40,11 +40,13 @@ class Engine(object):
     def create_robo(self):
         robo_id = str(uuid.uuid4())
         if self.world.create_robo(robo_id):
+            loc = self.world.getLoc(robo_id)
+            dir = self.world.getDir(robo_id)
             self.robos[robo_id] = {}
             self.recording.lineno(0)
             self.recording.game_timer(self.game_time)
             self.recording.robo(robo_id)
-            self.recording.create_robo(robo_id)
+            self.recording.create_robo(robo_id, "normal", loc[0], loc[1], dir)
             return robo_id
         else:
             return None

@@ -73,9 +73,9 @@ class Recording(object):
         return result
 
 
-    def create_robo(self, robo_id):
+    def create_robo(self, robo_id, type, x, y, dir):
         keyframe = {}
-        keyframe['action'] = ['crt', robo_id]
+        keyframe['action'] = ['crt', robo_id, type, x, y, dir]
         return self.finalize_keyframe(keyframe)
 
     def destroy_robo(self, robo_id):

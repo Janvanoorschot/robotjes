@@ -75,6 +75,12 @@ class World(object):
         else:
             raise Exception(f"unknown robo: {robo_id}")
 
+    def getDir(self, robo_id):
+        if robo_id in self.bots:
+            return self.bots[robo_id].dir
+        else:
+            raise Exception(f"unknown robo: {robo_id}")
+
     def getCargo(self, robo_id):
         if robo_id in self.bots:
             return len(self.bots[robo_id].beacons)
