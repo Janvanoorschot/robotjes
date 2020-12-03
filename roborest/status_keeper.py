@@ -147,6 +147,7 @@ class GameStatus(object):
             self.players[player['player_id']] = player
 
     def game_map(self):
+        # the extended version of the recording, includes map
         return {
             'game_id': self.game_id,
             'game_name': self.game_name,
@@ -163,6 +164,7 @@ class GameStatus(object):
         }
 
     def game_recording(self):
+        #  this should be the delta.
         return {
             'game_id': self.game_id,
             'game_name': self.game_name,
