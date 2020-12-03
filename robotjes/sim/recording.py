@@ -75,7 +75,17 @@ class Recording(object):
 
     def create_robo(self, robo_id, type, x, y, dir):
         keyframe = {}
-        keyframe['action'] = ['crt', robo_id, type, x, y, dir]
+        if dir == 0:
+            rdir = "right"
+        elif dir == 90:
+            rdir = "up"
+        elif dir == 180:
+            rdir = "left"
+        elif dir == 270:
+            rdir = "down"
+        else:
+            rdir = "up"
+        keyframe['action'] = ['crt', robo_id, type, x, y, rdir]
         return self.finalize_keyframe(keyframe)
 
     def destroy_robo(self, robo_id):

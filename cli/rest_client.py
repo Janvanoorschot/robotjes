@@ -75,7 +75,7 @@ class RestClient:
             raise Exception(f"failed rest call issue_command:{reply.text}")
 
     async def status_game(self, game_id):
-        reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}"))
+        reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}/status"))
         if reply.status_code == 200:
             result = reply.json()
             return result
@@ -83,7 +83,7 @@ class RestClient:
             raise Exception(f"failed rest call status_game:{reply.reason}")
 
     async def status_player(self, game_id, player_id):
-        reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}/player/{player_id}"))
+        reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}/player/{player_id}/status"))
         if reply.status_code == 200:
             result = reply.json()
             return result

@@ -121,7 +121,7 @@ class World(object):
             x = x + dist
         elif dir == 90:
             y = y - dist
-        elif dir == 180 :
+        elif dir == 180:
             x = x - dist
         elif dir == 270:
             y = y + dist

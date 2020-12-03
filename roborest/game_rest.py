@@ -58,7 +58,7 @@ async def deregister_with_game(game_id: str, player_id: str):
         }
 
 
-@app.get("/game/{game_id}")
+@app.get("/game/{game_id}/status")
 async def get_game_status(game_id: str):
     """Get the current game status"""
     result = roborest.status_keeper.get_game_status(game_id)
@@ -66,13 +66,13 @@ async def get_game_status(game_id: str):
 
 
 @app.get("/game/{game_id}/recording")
-async def get_game_status(game_id: str):
+async def get_game_recording(game_id: str):
     """Get the current game recording"""
     result = roborest.status_keeper.get_game_recording(game_id)
     return result
 
 
-@app.get("/game/{game_id}/player/{player_id}")
+@app.get("/game/{game_id}/player/{player_id}/status")
 async def get_player_status(game_id: str, player_id: str):
     """Get the current player status"""
     result = roborest.status_keeper.get_player_status(game_id, player_id)
