@@ -81,13 +81,10 @@ class Field:
             }
         }
 
-    def status_update(self):
-        self.owner.publish(GameStatus.UPDATE, {})
-
     def timer(self, tick):
         self.tick = tick
         if not self.isStopped:
-            self.status_update()
+            self.owner.publish(GameStatus.UPDATE, {})
 
     def game_timer(self, tick, moves):
         self.game_tick = self.game_tick + 1
