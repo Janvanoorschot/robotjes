@@ -102,6 +102,7 @@ class GameStatus(object):
         self.isSuccess = False
         self.recording = []
         self.players = {}
+        self.mapstatus = None
         self.data = {}
 
     def is_stopped(self):
@@ -145,6 +146,7 @@ class GameStatus(object):
         self.players.clear()
         for player in request['players']:
             self.players[player['player_id']] = player
+        self.mapstatus = request['mapstatus']
 
     def game_map(self):
         # the extended version of the recording, includes map
@@ -177,6 +179,7 @@ class GameStatus(object):
             'recording': self.recording,
             'tick': self.tick,
             'players': list(self.players.keys()),
+            'mapstatus': self.mapstatus
         }
 
     def player_map(self, player_id):

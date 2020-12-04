@@ -204,6 +204,7 @@ class Bubble:
                 'game_id': self.game_id,
                 'game_name': self.game.game_name,
                 'status': self.game.get_status(),
+                'mapstatus': self.game.get_map_status(),
                 'players': players,
                 'msg': msg.name,
                 'tick': self.tick,

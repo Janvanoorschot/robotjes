@@ -20,12 +20,6 @@ class Map(object):
     def start_positions(self):
         return list(self.startposses)
 
-    def paints_blacks(self):
-        return list(self.paints_black)
-
-    def paints_whites(self):
-        return list(self.paints_white)
-
     def start_beacons(self):
         return list(self.beacons)
 

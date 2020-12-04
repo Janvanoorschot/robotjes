@@ -1,6 +1,7 @@
 from bubblehub.model import GameSpec
 from . import GameStatus, RoboGame
 
+
 class Game:
     """ Represents the Game currenlty run by the Bubble.
         Current limitations:

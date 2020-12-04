@@ -81,6 +81,9 @@ class Field:
             }
         }
 
+    def get_map_status(self):
+        return self.game.get_map_status()
+
     def status_update(self):
         self.owner.publish(GameStatus.UPDATE, {})
 

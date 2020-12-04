@@ -48,3 +48,6 @@ class RoboGame:
 
     def maze_map(self):
         return self.map.toMazeMap()
+
+    def get_map_status(self):
+        return self.engine.get_map_status()

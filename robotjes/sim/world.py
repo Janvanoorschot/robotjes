@@ -21,11 +21,12 @@ class World(object):
 
     def __init__(self, map):
         self.map = map
-        self.paints_black = set(self.map.paints_blacks())
-        self.paints_white = set(self.map.paints_whites())
+        self.paints_black = set(self.map.paints_black)
+        self.paints_black_type = self.map.paints_black_type.copy()
+        self.paints_white = set(self.map.paints_white)
+        self.paints_white_type = self.map.paints_white_type.copy()
         self.beacons = set(self.map.start_beacons())
         self.bots = {}
-        # self.bot = Bot(self.map.start_positions()[0], 90)
         self.profile = {
             "paintWhites": 0,
             "paintBlacks": 0,
@@ -135,7 +136,7 @@ class World(object):
         if robo_id in self.bots and self.available_pos(pos):
             bot = self.bots[robo_id]
             bot.pos = pos
-            self.paint(robo_id)
+            self.paint(robo_id, start=False)
             return True
         else:
             return False
@@ -217,21 +218,37 @@ class World(object):
         else:
             return False
 
-    def paint(self, robo_id):
+    def paint(self, robo_id, start=True):
         if robo_id in self.bots:
             bot = self.bots[robo_id]
             if bot.paint == self.BLACK:
                 if bot.pos in self.paints_white:
                     self.inc("paintWhites", -1)
                     self.paints_white.discard(bot.pos)
+                    del self.paints_white_type[bot.pos]
                 self.paints_black.add(bot.pos)
+                if start:
+                    self.paints_black_type[bot.pos] = '.'
+                else:
+                    if bot.dir == self.LEFT or bot.dir == self.RIGHT:
+                        self.paints_black_type[bot.pos] = '-'
+                    else:
+                        self.paints_black_type[bot.pos] = '|'
                 self.inc("blackPaintUsed")
                 self.inc("paintBlacks")
             elif bot.paint == self.WHITE:
                 if bot.pos in self.paints_black:
                     self.inc("paintBlacks", -1)
                     self.paints_black.discard(bot.pos)
+                    del self.paints_black_type[bot.pos]
                 self.paints_white.add(bot.pos)
+                if start:
+                    self.paints_white_type[bot.pos] = '.'
+                else:
+                    if bot.dir == self.LEFT or bot.dir == self.RIGHT:
+                        self.paints_white_type[bot.pos] = '-'
+                    else:
+                        self.paints_white_type[bot.pos] = '|'
                 self.inc("whitePaintUsed")
                 self.inc("paintWhites")
 
@@ -292,7 +309,48 @@ class World(object):
             "right": self.get_content(pos_right)
         }
 
+    def get_map_status(self):
+        """ return current information about paint, bot and beacon """
+        result = {}
+        paintLines = []
+        for item in self.paints_white:
+            cell = {}
+            cell["x"] = item[0]
+            cell["y"] = item[1]
+            cell["type"] =  self.paints_white_type[item]
+            cell["color"] = "w"
+            paintLines.append(cell)
+        for item in self.paints_black:
+            cell = {}
+            cell["x"] = item[0]
+            cell["y"] = item[1]
+            cell["type"] =  self.paints_black_type[item]
+            cell["color"] = "b"
+            paintLines.append(cell)
+        result["paintLines"] = paintLines
+        robotLines = []
+        for robo_id, robo in self.bots.items():
+            cell = {}
+            cell["id"] = robo_id
+            cell["x"] = robo.pos[0]
+            cell["y"] = robo.pos[1]
+            cell['beacons'] = len(robo.beacons)
+            robotLines.append(cell)
+        result["robotLines"] = robotLines
+        beaconLines = []
+        for item in self.beacons:
+            cell = {}
+            cell["x"] = item[0]
+            cell["y"] = item[1]
+            cell["type"] = "beacon"
+            cell["id"] = f"[{item[0]},{item[1]}]"
+            beaconLines.append(cell)
+        result["beaconLines"] = beaconLines
+        return result
+
+
 DIRS = [0, 90, 180, 270]
+
 
 def dir_left(dir):
     if not dir in DIRS:

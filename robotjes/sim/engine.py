@@ -251,5 +251,8 @@ class Engine(object):
     def fog_of_war(self, robo_id):
         return self.world.fog_of_war(robo_id)
 
+    def get_map_status(self):
+        return self.world.get_map_status()
+
 
 
