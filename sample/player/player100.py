@@ -1,5 +1,10 @@
 
 
 def execute(robo):
-    while not robo.frontIsObstacle():
-        robo.forward()
+    for i in range(3):
+        while not robo.frontIsObstacle():
+            robo.forward()
+        robo.right()
+        robo.right()
+        while not robo.frontIsObstacle():
+            robo.forward()
