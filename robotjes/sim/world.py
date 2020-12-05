@@ -229,18 +229,18 @@ class World(object):
                 self.paints_black.add(bot.pos)
                 if start:
                     if bot.pos in self.paints_black_type:
-                        self.paints_black_type[bot.pos].push('.')
+                        self.paints_black_type[bot.pos].append('.')
                     else:
                         self.paints_black_type[bot.pos] = ['.']
                 else:
                     if bot.dir == self.LEFT or bot.dir == self.RIGHT:
                         if bot.pos in self.paints_black_type:
-                            self.paints_black_type[bot.pos].push('-')
+                            self.paints_black_type[bot.pos].append('-')
                         else:
                             self.paints_black_type[bot.pos] = ['-']
                     else:
                         if bot.pos in self.paints_black_type:
-                            self.paints_black_type[bot.pos].push('|')
+                            self.paints_black_type[bot.pos].append('|')
                         else:
                             self.paints_black_type[bot.pos] = ['|']
                 self.inc("blackPaintUsed")
@@ -253,18 +253,18 @@ class World(object):
                 self.paints_white.add(bot.pos)
                 if start:
                     if bot.pos in self.paints_white_type:
-                        self.paints_white_type[bot.pos].push('.')
+                        self.paints_white_type[bot.pos].append('.')
                     else:
                         self.paints_white_type[bot.pos] = ['.']
                 else:
                     if bot.dir == self.LEFT or bot.dir == self.RIGHT:
                         if bot.pos in self.paints_white_type:
-                            self.paints_white_type[bot.pos].push('-')
+                            self.paints_white_type[bot.pos].append('-')
                         else:
                             self.paints_white_type[bot.pos] = ['-']
                     else:
                         if bot.pos in self.paints_white_type:
-                            self.paints_white_type[bot.pos].push('|')
+                            self.paints_white_type[bot.pos].append('|')
                         else:
                             self.paints_white_type[bot.pos] = ['|']
                 self.inc("whitePaintUsed")

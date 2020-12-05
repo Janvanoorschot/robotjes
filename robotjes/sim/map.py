@@ -138,13 +138,13 @@ class MapBuilder(object):
         if color == "b":
             self.paints_black.append(pos)
             if pos in self.paints_black_type:
-                self.paints_black_type[pos].push(type)
+                self.paints_black_type[pos].append(type)
             else:
                 self.paints_black_type[pos] = [type]
         else:
             self.paints_white.append(pos)
             if pos in self.paints_white_type:
-                self.paints_white_type[pos].push(type)
+                self.paints_white_type[pos].append(type)
             else:
                 self.paints_white_type[pos] = [type]
 
