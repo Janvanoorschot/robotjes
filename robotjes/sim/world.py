@@ -228,12 +228,21 @@ class World(object):
                     del self.paints_white_type[bot.pos]
                 self.paints_black.add(bot.pos)
                 if start:
-                    self.paints_black_type[bot.pos] = '.'
+                    if bot.pos in self.paints_black_type:
+                        self.paints_black_type[bot.pos].push('.')
+                    else:
+                        self.paints_black_type[bot.pos] = ['.']
                 else:
                     if bot.dir == self.LEFT or bot.dir == self.RIGHT:
-                        self.paints_black_type[bot.pos] = '-'
+                        if bot.pos in self.paints_black_type:
+                            self.paints_black_type[bot.pos].push('-')
+                        else:
+                            self.paints_black_type[bot.pos] = ['-']
                     else:
-                        self.paints_black_type[bot.pos] = '|'
+                        if bot.pos in self.paints_black_type:
+                            self.paints_black_type[bot.pos].push('|')
+                        else:
+                            self.paints_black_type[bot.pos] = ['|']
                 self.inc("blackPaintUsed")
                 self.inc("paintBlacks")
             elif bot.paint == self.WHITE:
@@ -243,12 +252,21 @@ class World(object):
                     del self.paints_black_type[bot.pos]
                 self.paints_white.add(bot.pos)
                 if start:
-                    self.paints_white_type[bot.pos] = '.'
+                    if bot.pos in self.paints_white_type:
+                        self.paints_white_type[bot.pos].push('.')
+                    else:
+                        self.paints_white_type[bot.pos] = ['.']
                 else:
                     if bot.dir == self.LEFT or bot.dir == self.RIGHT:
-                        self.paints_white_type[bot.pos] = '-'
+                        if bot.pos in self.paints_white_type:
+                            self.paints_white_type[bot.pos].push('-')
+                        else:
+                            self.paints_white_type[bot.pos] = ['-']
                     else:
-                        self.paints_white_type[bot.pos] = '|'
+                        if bot.pos in self.paints_white_type:
+                            self.paints_white_type[bot.pos].push('|')
+                        else:
+                            self.paints_white_type[bot.pos] = ['|']
                 self.inc("whitePaintUsed")
                 self.inc("paintWhites")
 
@@ -314,19 +332,21 @@ class World(object):
         result = {}
         paintLines = []
         for item in self.paints_white:
-            cell = {}
-            cell["x"] = item[0]
-            cell["y"] = item[1]
-            cell["type"] =  self.paints_white_type[item]
-            cell["color"] = "w"
-            paintLines.append(cell)
+            for t in self.paints_white_type[item]:
+                cell = {}
+                cell["x"] = item[0]
+                cell["y"] = item[1]
+                cell["type"] = t
+                cell["color"] = "w"
+                paintLines.append(cell)
         for item in self.paints_black:
-            cell = {}
-            cell["x"] = item[0]
-            cell["y"] = item[1]
-            cell["type"] =  self.paints_black_type[item]
-            cell["color"] = "b"
-            paintLines.append(cell)
+            for t in self.paints_black_type[item]:
+                cell = {}
+                cell["x"] = item[0]
+                cell["y"] = item[1]
+                cell["type"] = t
+                cell["color"] = "b"
+                paintLines.append(cell)
         result["paintLines"] = paintLines
         robotLines = []
         for robo_id, robo in self.bots.items():

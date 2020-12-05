@@ -50,19 +50,21 @@ class Map(object):
         result["mapLines"] = mapLines
         paintLines = []
         for item in self.paints_white:
-            cell = {}
-            cell["x"] = item[0]
-            cell["y"] = item[1]
-            cell["type"] = self.paints_white_type[item]
-            cell["color"] = "w"
-            paintLines.append(cell)
+            for t in self.paints_white_type[item]:
+                cell = {}
+                cell["x"] = item[0]
+                cell["y"] = item[1]
+                cell["type"] = t
+                cell["color"] = "w"
+                paintLines.append(cell)
         for item in self.paints_black:
-            cell = {}
-            cell["x"] = item[0]
-            cell["y"] = item[1]
-            cell["type"] = self.paints_black_type[item]
-            cell["color"] = "b"
-            paintLines.append(cell)
+            for t in self.paints_black_type[item]:
+                cell = {}
+                cell["x"] = item[0]
+                cell["y"] = item[1]
+                cell["type"] = t
+                cell["color"] = "b"
+                paintLines.append(cell)
         result["paintLines"] = paintLines
         extraLines = []
         for item in self.extras:
@@ -131,13 +133,20 @@ class MapBuilder(object):
         self.extras.append((x,y))
         self.extras_type[(x,y)] = type
 
-    def paint(self,color,type,x,y):
+    def paint(self, color, type, x, y):
+        pos = (x,y)
         if color == "b":
-            self.paints_black.append((x,y))
-            self.paints_black_type[(x,y)] = type
+            self.paints_black.append(pos)
+            if pos in self.paints_black_type:
+                self.paints_black_type[pos].push(type)
+            else:
+                self.paints_black_type[pos] = [type]
         else:
-            self.paints_white.append((x,y))
-            self.paints_white_type[(x,y)] = type
+            self.paints_white.append(pos)
+            if pos in self.paints_white_type:
+                self.paints_white_type[pos].push(type)
+            else:
+                self.paints_white_type[pos] = [type]
 
     def beacon(self, x, y):
         self.coord(x,y)
