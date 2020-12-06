@@ -17,7 +17,7 @@ class Field:
         self.isSuccess = False
         self.tick = 0
         self.game_tick = 0
-        self.max_player_count = 1
+        self.max_player_count = 10
         self.max_start_tick = 15
         self.max_tick = 30
         self.players = {}
