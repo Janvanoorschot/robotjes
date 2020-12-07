@@ -144,6 +144,8 @@ class GameStatus(object):
         #   'tick': 7,
         #   'data': {}
         # }
+        if len(delta['status']['recording_delta']) > 1:
+            print("wow")
         self.tick = delta['tick']
         self.game_tick = delta['status']['game_tick']
         self.isStarted = delta['status']['isStarted']
