@@ -87,12 +87,18 @@ class StatusKeeper(object):
 
 
 class GameStatus(object):
+    """ Contains three pieces of information about a game:
+        1. The current game status (from the latest received delta)
+        2. The current player status (from the latest received delta)
+        3. A list of deltas (a recording?)
+    """
 
-    def __init__(self, now, request):
-        self.bubble_id = request['bubble_id']
-        self.game_id = request['game_id']
-        self.game_name = request['game_name']
-        self.maze_map = request['data']['maze_map']
+    def __init__(self, now, delta):
+        """ creation with an initial delta"""
+        self.bubble_id = delta['bubble_id']
+        self.game_id = delta['game_id']
+        self.game_name = delta['game_name']
+        self.maze_map = delta['data']['maze_map']
         self.starttime = now
         self.stoptime = None
         self.tick = 0.0
@@ -104,6 +110,7 @@ class GameStatus(object):
         self.players = {}
         self.mapstatus = None
         self.data = {}
+        self.update(delta)
 
     def is_stopped(self):
         return self.stoptime is not None
@@ -118,7 +125,7 @@ class GameStatus(object):
         self.update(request)
         self.stoptime = now
 
-    def update(self, request):
+    def update(self, delta):
         # {
         #   'bubble_id': 'd0f90888-bd84-48b3-b56e-523433a1e7aa',
         #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
@@ -137,16 +144,18 @@ class GameStatus(object):
         #   'tick': 7,
         #   'data': {}
         # }
-        self.tick = request['tick']
-        self.game_tick = request['status']['game_tick']
-        self.isStarted = request['status']['isStarted']
-        self.isStopped = request['status']['isStopped']
-        self.isSuccess = request['status']['isSuccess']
-        self.recording = self.recording + request['status']['recording_delta']
+        self.tick = delta['tick']
+        self.game_tick = delta['status']['game_tick']
+        self.isStarted = delta['status']['isStarted']
+        self.isStopped = delta['status']['isStopped']
+        self.isSuccess = delta['status']['isSuccess']
+        self.recording.append(delta)
+        if len(self.recording) > 10:
+            self.recording.pop(0)
         self.players.clear()
-        for player in request['players']:
+        for player in delta['players']:
             self.players[player['player_id']] = player
-        self.mapstatus = request['mapstatus']
+        self.mapstatus = delta['mapstatus']
 
     def game_map(self):
         # the extended version of the recording, includes map

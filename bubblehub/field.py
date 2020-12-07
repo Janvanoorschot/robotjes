@@ -21,6 +21,7 @@ class Field:
         self.max_start_tick = 15
         self.max_tick = 30
         self.players = {}
+        self.resolution = 5
 
     def create_game(self, spec: GameSpec):
         # for the time being only create RoboGame's
@@ -84,13 +85,8 @@ class Field:
     def get_map_status(self):
         return self.game.get_map_status()
 
-    def status_update(self):
-        self.owner.publish(GameStatus.UPDATE, {})
-
     def timer(self, tick):
         self.tick = tick
-        if not self.isStopped:
-            self.status_update()
 
     def game_timer(self, tick, moves):
         self.game_tick = self.game_tick + 1
@@ -103,3 +99,5 @@ class Field:
         for player_id, player in self.players.items():
             fow = self.game.fog_of_war(player["robo_id"])
             player["status"]["fog_of_war"] = fow
+        if self.game_tick % self.resolution == 0:
+            self.owner.publish(GameStatus.UPDATE, {})

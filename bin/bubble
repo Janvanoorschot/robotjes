@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
 
-import sys, os, uuid, datetime
+import sys, os, uuid
+import datetime
 import argparse
-import pika, json
+import pika
 import logging.config
 import config
 
 modpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 os.chdir(modpath)
 sys.path.append(modpath)
+ticks_per_second = 10
+milliseconds_delta = datetime.timedelta(milliseconds=(1000/ticks_per_second))
 
 # get commandline parameters
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
 parser.add_argument('--pikaurl', type=str, default=config.PIKA_URL, help='rabbitmq url')
 parser.add_argument('--logconf', type=str, default=config.LOG_CONFIG_FILE, help='port')
 args = parser.parse_args()
+
+# some constants
 
 # prepare pika
 parameters = pika.URLParameters(args.pikaurl)
@@ -48,23 +53,25 @@ bubble.connect(channel)
 
 
 def timer():
-    import datetime
+    # we want to do something (the bubble.timer(now) call and then have the
+    # next timer-tick to be at the correct time.
     now = datetime.datetime.now()
-    delta = datetime.timedelta(seconds=1)
-    next_second = (now + delta).replace(microsecond=0)
+    next_ping = (now + milliseconds_delta)
     bubble.timer(now)
-    sleep_seconds = (next_second - datetime.datetime.now()).total_seconds()
+    sleep_seconds = (next_ping - datetime.datetime.now())/datetime.timedelta(seconds=1)
     if sleep_seconds > 0:
         connection.add_timeout(sleep_seconds, timer)
     else:
         connection.add_timeout(0, timer)
 
 
-# sleep until the next whole second (get close)
+# timer-handling.
+# Start at the next whole second (so first wait until the start of the next whole second)
 now = datetime.datetime.now()
 delta = datetime.timedelta(seconds=1)
 next_second = (now + delta).replace(microsecond=0)
-connection.add_timeout((next_second - now).total_seconds(), timer)
+wait_seconds = (next_second - now)
+connection.add_timeout(wait_seconds/datetime.timedelta(seconds=1), timer)
 
 try:
     channel.start_consuming()
