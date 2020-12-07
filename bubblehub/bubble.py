@@ -192,9 +192,9 @@ class Bubble:
                 'data': data
             }
         else:
-            players = []
+            players_status = []
             for player_id, player in self.players.items():
-                players.append({
+                players_status.append({
                     "player_id": player_id,
                     "player_name": player.player_name,
                     "player_status": self.game.get_player_status(player_id)
@@ -203,9 +203,9 @@ class Bubble:
                 'bubble_id': self.bubble_id,
                 'game_id': self.game_id,
                 'game_name': self.game.game_name,
-                'status': self.game.get_status(),
+                'status': self.game.get_game_status(),
                 'mapstatus': self.game.get_map_status(),
-                'players': players,
+                'players': players_status,
                 'msg': msg.name,
                 'tick': self.tick,
                 'data': data

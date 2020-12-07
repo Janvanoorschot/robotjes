@@ -65,7 +65,7 @@ class Field:
     def player_count(self):
         return self.max_player_count
 
-    def get_status(self):
+    def get_game_status(self):
         return {
             "game_tick": self.game_tick,
             "recording_delta": self.game.recording_delta(),
