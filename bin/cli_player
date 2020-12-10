@@ -20,8 +20,11 @@ class Timer:
 
     async def job(self):
         await asyncio.sleep(self.timeout)
+        print(f"<cli_player/Timer/job")
         await self.callback()
+        print(f">cli_player/Timer/job")
         if self.repeat:
+            print(f">>cli_player/Timer/job")
             self.task = asyncio.ensure_future(self.job())
 
     def cancel(self):
@@ -46,7 +49,7 @@ class Player_Client:
         print(f"player stopped: {success}")
 
     def tick(self, tick):
-        # print(f"tick: {tick}")
+        print(f"tick: {tick}")
         pass
 
     def game_tick(self, game_tick):

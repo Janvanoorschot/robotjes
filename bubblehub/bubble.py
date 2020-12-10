@@ -192,6 +192,7 @@ class Bubble:
                 'data': data
             }
         else:
+            print(f"bubble/publish/{self.now}")
             players_status = []
             for player_id, player in self.players.items():
                 players_status.append({
@@ -229,6 +230,7 @@ class Bubble:
             self.game.timer(self.tick)
             if self.game_state == GameStatus.STARTED:
                 if self.tick % self.resolution == 0:
+                    print(f"bubble/timer/{self.now}")
                     self.game.game_timer(self.tick/self.resolution, self.moves)
                     self.moves.clear()
             if self.game.is_stopped():

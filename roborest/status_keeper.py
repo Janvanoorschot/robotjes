@@ -151,6 +151,8 @@ class GameStatus(object):
         self.isStarted = delta['status']['isStarted']
         self.isStopped = delta['status']['isStopped']
         self.isSuccess = delta['status']['isSuccess']
+        recording_frames = delta['status']['recording_delta']
+        print(f"{self.tick}/{self.game_tick}/{len(recording_frames)}")
         self.recording.append(delta)
         if len(self.recording) > 10:
             self.recording.pop(0)
