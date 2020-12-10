@@ -24,13 +24,15 @@ class StatusKeeper(object):
                 return
         now = datetime.datetime.now()
         self.lastseen[game_id] = now
-        game = self.games[game_id]
+        game_status = self.games[game_id]
         if msg == 'STARTED':
-            game.started(self.now, request)
-        elif msg == 'UPDATE':
-            game.updated(self.now, request)
+            game_status.started(self.now, request)
+        elif msg == 'GAMETICK':
+            game_status.gametick(self.now, request)
+        elif msg == 'DELTAREC':
+            game_status.deltarec(self.now, request)
         elif msg == 'STOPPED':
-            game.stopped(self.now, request)
+            game_status.stopped(self.now, request)
         elif msg == 'CREATED':
             # CREATED event is already handled
             pass
@@ -46,9 +48,15 @@ class StatusKeeper(object):
             result[game_id] = game.game_name
         return result
 
-    def get_game_status(self, game_id):
+    def get_game_map(self, game_id):
         if game_id in self.games:
             return self.games[game_id].game_map()
+        else:
+            return {}
+
+    def get_game_status(self, game_id):
+        if game_id in self.games:
+            return self.games[game_id].game_status()
         else:
             return {}
 
@@ -62,8 +70,7 @@ class StatusKeeper(object):
         if game_id in self.games:
             if player_id in self.games[game_id].players:
                 return {
-                    "game_status": self.games[game_id].game_map(),
-                    "player_status": self.games[game_id].player_map(player_id)
+                    "player_status": self.games[game_id].player_status(player_id)
                 }
             else:
                 return {}
@@ -101,7 +108,6 @@ class GameStatus(object):
         self.maze_map = delta['data']['maze_map']
         self.starttime = now
         self.stoptime = None
-        self.tick = 0.0
         self.game_tick = 0
         self.isStarted = False
         self.isStopped = False
@@ -110,56 +116,91 @@ class GameStatus(object):
         self.players = {}
         self.mapstatus = None
         self.data = {}
-        self.update(delta)
+        self.gametick(now, delta)
 
     def is_stopped(self):
         return self.stoptime is not None
 
     def started(self, now, request):
-        self.update(request)
+        # self.update(request)
+        pass
 
-    def updated(self, now, request):
-        self.update(request)
+    # def updated(self, now, request):
+    #     self.update(request)
 
     def stopped(self, now, request):
-        self.update(request)
+        # self.update(request)
         self.stoptime = now
 
-    def update(self, delta):
-        # {
-        #   'bubble_id': 'd0f90888-bd84-48b3-b56e-523433a1e7aa',
-        #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
-        #   'game_name': 'game2',
-        #   'status': {'game_tick': 1,'recording_delta':[], 'isStarted': False, 'isStopped': False, 'isSuccess': False},
-        #   'players': [
-        #         {
-        #             'player_id': 'ba8e8d5c-50e8-4591-9076-aae3d5e40942',
-        #             'player_name': 'me',
-        #             'player_status': {
-        #                   'fog_of_war': {}
-        #             }
-        #         }
-        #   ],
-        #   'msg': 'UPDATE',
-        #   'tick': 7,
-        #   'data': {}
-        # }
-        if len(delta['status']['recording_delta']) > 1:
-            print("wow")
-        self.tick = delta['tick']
-        self.game_tick = delta['status']['game_tick']
-        self.isStarted = delta['status']['isStarted']
-        self.isStopped = delta['status']['isStopped']
-        self.isSuccess = delta['status']['isSuccess']
-        recording_frames = delta['status']['recording_delta']
-        print(f"{self.tick}/{self.game_tick}/{len(recording_frames)}")
-        self.recording.append(delta)
+    # General Request Layout
+    # {
+    #   'bubble_id': 'd0f90888-bd84-48b3-b56e-523433a1e7aa',
+    #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
+    #   'game_name': 'game2',
+    #   'msg': 'DELTAREC',
+    #   'game_status': {'game_tick': 1, 'isStarted': False, 'isStopped': False, 'isSuccess': False},
+    #   'players_status': {
+    #         'ba8e8d5c-50e8-4591-9076-aae3d5e40942': {
+    #             'player_id': 'ba8e8d5c-50e8-4591-9076-aae3d5e40942',
+    #             'player_name': 'me',
+    #             'player_status': {
+    #                   'fog_of_war': {}
+    #             }
+    #          }
+    #   },
+    #   'data': {
+    #       'recording_delta': {},
+    #       'map_status': {},
+    #   }
+    # }
+
+    # def update(self, delta):
+    #     self.game_tick = delta['status']['game_tick']
+    #     self.isStarted = delta['status']['isStarted']
+    #     self.isStopped = delta['status']['isStopped']
+    #     self.isSuccess = delta['status']['isSuccess']
+    #     recording_frames = delta['status']['recording_delta']
+    #     print(f"{self.tick}/{self.game_tick}/{len(recording_frames)}")
+    #     self.recording.append(delta)
+    #     if len(self.recording) > 10:
+    #         self.recording.pop(0)
+    #     self.players.clear()
+    #     for player in delta['players']:
+    #         self.players[player['player_id']] = player
+    #     self.mapstatus = delta['mapstatus']
+
+    def gametick(self, now, request):
+        self.game_tick = request['game_status']['game_tick']
+        self.isStarted = request['game_status']['isStarted']
+        self.isStopped = request['game_status']['isStopped']
+        self.isSuccess = request['game_status']['isSuccess']
+        self.players.clear()
+        for player_id, player in request['players_status'].items():
+            self.players[player_id] = player
+
+    def deltarec(self, now, request):
+        self.gametick(now, request)
+        recording_delta = request['data']['recording_delta']
+        map_status = request['data']['map_status']
+        self.recording.append(recording_delta)
         if len(self.recording) > 10:
             self.recording.pop(0)
-        self.players.clear()
-        for player in delta['players']:
-            self.players[player['player_id']] = player
-        self.mapstatus = delta['mapstatus']
+        self.mapstatus = map_status
+
+    def game_status(self):
+        # the extended version of the recording, includes map
+        return {
+            'game_id': self.game_id,
+            'game_name': self.game_name,
+            'status': {
+                'game_tick': self.game_tick,
+                'isStarted': self.isStarted,
+                'isStopped': self.isStopped,
+                'isSuccess': self.isSuccess
+            },
+            'recording': self.recording,
+            'players': self.players,
+        }
 
     def game_map(self):
         # the extended version of the recording, includes map
@@ -173,8 +214,7 @@ class GameStatus(object):
                 'isSuccess': self.isSuccess
             },
             'recording': self.recording,
-            'tick': self.tick,
-            'players': list(self.players.keys()),
+            'players': self.players,
             'maze_map': self.maze_map
         }
 
@@ -190,22 +230,25 @@ class GameStatus(object):
                 'isSuccess': self.isSuccess
             },
             'recording': self.recording,
-            'tick': self.tick,
-            'players': list(self.players.keys()),
-            'mapstatus': self.mapstatus
+            'players': self.players,
+            'map_status': self.map_status
         }
 
-    def player_map(self, player_id):
+    def player_status(self, player_id):
         if player_id in self.players:
             player = self.players[player_id]
             return {
-                'tick': self.tick,
-                'game_tick': self.game_tick,
+                'game_id': self.game_id,
+                'game_name': self.game_name,
+                'status': {
+                    'game_tick': self.game_tick,
+                    'isStarted': self.isStarted,
+                    'isStopped': self.isStopped,
+                    'isSuccess': self.isSuccess
+                },
                 'player_id': player['player_id'],
                 'player_name': player['player_name'],
-                'player_status': {
-                    'fog_of_war': player['player_status']['fog_of_war']
-                }
+                'fog_of_war': player['player_status']['fog_of_war']
             }
         else:
             return {}

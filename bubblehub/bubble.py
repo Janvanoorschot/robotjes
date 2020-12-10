@@ -185,30 +185,26 @@ class Bubble:
                 'bubble_id': self.bubble_id,
                 'game_id': "unknown",
                 'game_name': "unknown",
-                'status': {},
-                'players': [],
                 'msg': msg.name,
-                'tick': self.tick,
+                'game_status': {},
+                'players_status': {},
                 'data': data
             }
         else:
-            print(f"bubble/publish/{self.now}")
-            players_status = []
+            players_status = {}
             for player_id, player in self.players.items():
-                players_status.append({
+                players_status[player_id] = {
                     "player_id": player_id,
                     "player_name": player.player_name,
                     "player_status": self.game.get_player_status(player_id)
-                })
+                }
             item = {
                 'bubble_id': self.bubble_id,
                 'game_id': self.game_id,
                 'game_name': self.game.game_name,
-                'status': self.game.get_game_status(),
-                'mapstatus': self.game.get_map_status(),
-                'players': players_status,
                 'msg': msg.name,
-                'tick': self.tick,
+                'game_status': self.game.get_game_status(),
+                'players_status': players_status,
                 'data': data
             }
         try:
@@ -230,7 +226,6 @@ class Bubble:
             self.game.timer(self.tick)
             if self.game_state == GameStatus.STARTED:
                 if self.tick % self.resolution == 0:
-                    print(f"bubble/timer/{self.now}")
                     self.game.game_timer(self.tick/self.resolution, self.moves)
                     self.moves.clear()
             if self.game.is_stopped():

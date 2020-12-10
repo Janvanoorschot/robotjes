@@ -4,7 +4,8 @@ from enum import Enum
 class GameStatus(Enum):
     IDLE = 'idle'
     CREATED = 'created'
-    UPDATE  = 'update'
+    GAMETICK = 'gametick'
+    DELTAREC = 'deltarec'
     STARTED = 'started'
     STOPPED = 'stopped'
 

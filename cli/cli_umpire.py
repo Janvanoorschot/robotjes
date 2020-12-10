@@ -9,7 +9,6 @@ class CLIUmpire():
         self.rest_client = RestClient(loop, url)
         self.client = client
         self.game_id = None
-        self.tick = None
         self.game_tick = None
         self.discovered = False
         self.success = False
@@ -59,25 +58,20 @@ class CLIUmpire():
                         self.started = True
                         self.stopped = False
                         self.callback('started')
-                tick = status['tick']
                 game_tick = status['status']['game_tick']
-                if tick != self.tick:
-                    self.tick = tick
-                    self.callback('tick', self.tick)
                 if game_tick != self.game_tick:
                     self.game_tick = game_tick
                     self.callback('game_tick', self.game_tick)
-                if len(status) > 0:
-                    if not self.discovered:
-                        self.discovered = True
-                        self.callback('discovered', self.game_tick)
-                else:
-                    # emergency stop
-                    self.stopped = True
-                    self.success = False
-                    self.callback('stopped', self.success)
-                    self.lock.release()
-                    return
+                if not self.discovered:
+                    self.discovered = True
+                    self.callback('discovered', self.game_tick)
+            else:
+                # emergency stop
+                self.stopped = True
+                self.success = False
+                self.callback('stopped', self.success)
+                self.lock.release()
+                return
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)

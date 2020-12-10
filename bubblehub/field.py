@@ -69,7 +69,6 @@ class Field:
     def get_game_status(self):
         return {
             "game_tick": self.game_tick,
-            "recording_delta": self.game.recording_delta(),
             "isStarted": self.isStarted,
             "isStopped": self.isStopped,
             "isSuccess": self.isSuccess
@@ -99,5 +98,10 @@ class Field:
         for player_id, player in self.players.items():
             fow = self.game.fog_of_war(player["robo_id"])
             player["status"]["fog_of_war"] = fow
+        # publish info: GAMETICK AND/OR DELTAREC
+        self.owner.publish(GameStatus.GAMETICK, {})
         if self.game_tick % self.resolution == 0:
-            self.owner.publish(GameStatus.UPDATE, {})
+            self.owner.publish(GameStatus.DELTAREC, {
+                "recording_delta": self.game.recording_delta(),
+                "map_status": self.game.get_map_status()
+            })

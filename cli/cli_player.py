@@ -87,9 +87,9 @@ class CLIPlayer():
                 return
             if status and isinstance(status, collections.Mapping):
                 # we received a valid status (about the game, this player and all the robo's), handle it
-                self.set_game_status(status['game_status'])
+ # JvO               self.set_game_status(status['game_status'])
                 self.set_player_status(status['player_status'])
-                for robo_id, fog_of_war in status['player_status']['player_status']['fog_of_war'].items():
+                for robo_id, fog_of_war in status['player_status']['fog_of_war'].items():
                     self.set_robo_status(robo_id, fog_of_war)
 
     def set_game_status(self, game_status):

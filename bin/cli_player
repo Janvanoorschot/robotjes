@@ -11,6 +11,7 @@ import cli
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
+
 class Timer:
     def __init__(self, timeout, callback, repeat=False):
         self.timeout = timeout
@@ -20,11 +21,8 @@ class Timer:
 
     async def job(self):
         await asyncio.sleep(self.timeout)
-        print(f"<cli_player/Timer/job")
         await self.callback()
-        print(f">cli_player/Timer/job")
         if self.repeat:
-            print(f">>cli_player/Timer/job")
             self.task = asyncio.ensure_future(self.job())
 
     def cancel(self):
@@ -59,7 +57,7 @@ class Player_Client:
 async def main(execute, loop):
     client = Player_Client()
     player = cli.CLIPlayer(loop, args.url, client)
-    timer = Timer(1,player.timer, True)
+    timer = Timer(1, player.timer, True)
     success = await player.run_game(args.player, args.name, args.password, execute)
     timer.cancel()
 

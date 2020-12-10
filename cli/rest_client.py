@@ -74,6 +74,14 @@ class RestClient:
         else:
             raise Exception(f"failed rest call issue_command:{reply.text}")
 
+    async def map_game(self, game_id):
+        reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}/map"))
+        if reply.status_code == 200:
+            result = reply.json()
+            return result
+        else:
+            raise Exception(f"failed rest call map_game:{reply.reason}")
+
     async def status_game(self, game_id):
         reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}/status"))
         if reply.status_code == 200:
