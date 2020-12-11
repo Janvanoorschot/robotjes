@@ -9,11 +9,10 @@ class GameStatus(Enum):
     STARTED = 'started'
     STOPPED = 'stopped'
 
-
+from .player import Player
 from .robo_game import RoboGame
 from .game import Game
 from .field import Field
-from .player import Player
 from .bubble import Bubble
 from .bubble_hub import BubbleHub
 

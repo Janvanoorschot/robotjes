@@ -129,16 +129,13 @@ class Bubble:
         if player_id in self.players or player_id in self.invalid_players:
             self.disqualify_player(player_id)
         if len(self.players) < self.game.player_count():
-            # we can handle a new player
-            player = Player(player_id, player_name)
-            self.players[player_id] = player
-            self.game.registered(player)
+            self.game.registered(player_id, player_name)
+            self.players[player_id] = True
 
     def deregister_player(self, player_id):
         if player_id in self.players:
-            player = self.players[player_id]
+            self.game.deregistered(player_id)
             del self.players[player_id]
-            self.game.deregistered(player)
 
     def disqualify_player(self, player_id):
         if player_id in self.players:
@@ -196,12 +193,8 @@ class Bubble:
             }
         else:
             players_status = {}
-            for player_id, player in self.players.items():
-                players_status[player_id] = {
-                    "player_id": player_id,
-                    "player_name": player.player_name,
-                    "player_status": self.game.get_player_status(player_id)
-                }
+            for player_id, dummy in self.players.items():
+                players_status[player_id] = self.game.get_player_status(player_id)
             item = {
                 'bubble_id': self.bubble_id,
                 'game_id': self.game_id,

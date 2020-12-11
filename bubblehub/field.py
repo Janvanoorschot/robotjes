@@ -1,5 +1,5 @@
 from bubblehub.model import GameSpec
-from . import GameStatus, RoboGame
+from . import GameStatus, RoboGame, Player
 
 
 class Field:
@@ -46,16 +46,18 @@ class Field:
     def stopped(self):
         self.owner.publish(GameStatus.STOPPED, {})
 
-    def registered(self, player):
-        self.players[player.player_id] = {
-            "player": player,
-            "robo_id": self.game.create_robo(player.player_id),
-            "status": {}
-        }
+    def registered(self, player_id, player_name):
+        player = Player(player_id, player_name)
+        robo_id = self.game.create_robo(player.player_id)
+        player.robos.append(robo_id)
+        self.players[player_id] = player
 
-    def deregistered(self, player):
-        self.game.destroy_robo(self.players[player.player_id]["robo_id"])
-        del self.players[player.player_id]
+    def deregistered(self, player_id):
+        if player_id in self.players:
+            player = self.players[player_id]
+            for robo_id in player.robos:
+                self.game.destroy_robo(robo_id)
+            del self.players[player_id]
 
     def is_stopped(self):
         return self.isStopped
@@ -75,11 +77,11 @@ class Field:
         }
 
     def get_player_status(self, player_id):
-        return {
-            "fog_of_war": {
-                self.players[player_id]["robo_id"]: self.players[player_id]["status"]
-            }
-        }
+        if player_id in self.players:
+            player = self.players[player_id]
+            return player.get_status(self.game)
+        else:
+            return {}
 
     def get_map_status(self):
         return self.game.get_map_status()
@@ -95,9 +97,6 @@ class Field:
             robo_id = move[1]
             self.game.execute(robo_id, move)
         self.game.end_moves(self.game_tick)
-        for player_id, player in self.players.items():
-            fow = self.game.fog_of_war(player["robo_id"])
-            player["status"]["fog_of_war"] = fow
         # publish info: GAMETICK AND/OR DELTAREC
         self.owner.publish(GameStatus.GAMETICK, {})
         if self.game_tick % self.resolution == 0:

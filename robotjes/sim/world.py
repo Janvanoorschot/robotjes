@@ -316,16 +316,23 @@ class World(object):
                 paint = None
         return [tile_content, paint, bot, beacon]
 
-    def fog_of_war(self, robo_id):
-        bot = self.bots[robo_id]
-        pos_front = self.calc_pos(bot, self.FRONT, 1)
-        pos_left = self.calc_pos(bot, self.RIGHT, 1)
-        pos_right = self.calc_pos(bot, self.LEFT, 1)
-        return {
-            "left": self.get_content(pos_left),
-            "front": self.get_content(pos_front),
-            "right": self.get_content(pos_right)
-        }
+    def get_status(self, robo_id):
+        if robo_id in self.bots:
+            bot = self.bots[robo_id]
+            pos_front = self.calc_pos(bot, self.FRONT, 1)
+            pos_left = self.calc_pos(bot, self.RIGHT, 1)
+            pos_right = self.calc_pos(bot, self.LEFT, 1)
+            return {
+                "pos": bot.pos,
+                "load": len(bot.beacons),
+                "fog_of_war": {
+                    "left": self.get_content(pos_left),
+                    "front": self.get_content(pos_front),
+                    "right": self.get_content(pos_right)
+                }
+            }
+        else:
+            return {}
 
     def get_map_status(self):
         """ return current information about paint, bot and beacon """

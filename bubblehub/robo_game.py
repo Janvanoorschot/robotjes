@@ -32,13 +32,8 @@ class RoboGame:
     def end_moves(self, game_tick):
         pass
 
-    def fog_of_war(self, robo_id):
-        # get the current 'fog-of-war' view for the given robo
-        return {
-            "robo": robo_id,
-            "game_tick": self.game_tick,
-            "fog_of_war": self.engine.fog_of_war(robo_id)
-        }
+    def get_status(self, robo_id):
+        return self.engine.get_status(robo_id)
 
     def recording_delta(self):
         # get the recording-delta valid since the last time this function was called
