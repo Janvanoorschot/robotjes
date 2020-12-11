@@ -112,6 +112,8 @@ class Bubble:
             # send game result to anyone interested (probably the hub)
             self.game_state = GameStatus.IDLE
             self.game.stopped()
+            self.game = None
+            self.players = {}
             return True
         else:
             return False
@@ -152,7 +154,9 @@ class Bubble:
             if self.game_state == GameStatus.CREATED:
                 pass
             elif self.game_state == GameStatus.STARTED:
-                if cmd == "register":
+                if cmd == "delete":
+                    self.stop_game()
+                elif cmd == "register":
                     player_name = request.get("player_name", "unknown")
                     password = request.get("password", "unknown")
                     if password == self.game_password and not self.is_valid_player(player_id):

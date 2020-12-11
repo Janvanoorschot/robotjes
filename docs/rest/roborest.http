@@ -39,8 +39,29 @@ Content-Type: application/json
 {
 }
 ###
-# get info about a/one game
-GET http://localhost:8000/games/383a9b80-0369-4062-a8c2-f779256f81f7
+# get status of game
+GET http://localhost:8000/game/78c07210-a102-4720-bf14-d026dc169f77/status
+Content-Type: application/json
+
+{
+}
+###
+# get map of a game
+GET http://localhost:8000/game/78c07210-a102-4720-bf14-d026dc169f77/map
+Content-Type: application/json
+
+{
+}
+###
+# get delta-recording of a game
+GET http://localhost:8000/game/78c07210-a102-4720-bf14-d026dc169f77/recording
+Content-Type: application/json
+
+{
+}
+###
+# delete/stop a game
+PUT http://localhost:8000/game/4a1263ca-22dd-4b98-b31f-f27b78609a87/stop
 Content-Type: application/json
 
 {

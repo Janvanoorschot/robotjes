@@ -3,7 +3,7 @@ from . import RestClient
 import asyncio
 
 
-class CLIUmpire():
+class CLIUmpire:
 
     def __init__(self, loop, url, client):
         self.rest_client = RestClient(loop, url)
@@ -16,6 +16,14 @@ class CLIUmpire():
         self.stopped = False
         self.lock = asyncio.Lock()
         self.players = {}
+
+    async def stop_games(self, umpire):
+        """ Stop all games, freeing up the bubbles. """
+        list = await self.rest_client.list_games()
+        for id, game_name in list.items():
+            await self.rest_client.delete_game(id)
+            self.callback("stopped", id)
+        return self.success
 
     async def run_game(self, umpire, name, password, maze):
         """ Validate the params, create the game and wait for the game to finish. """

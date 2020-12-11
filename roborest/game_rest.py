@@ -34,6 +34,7 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
             "player_id": player_id
         }
 
+
 @app.delete("/game/{game_id}/player/{player_id}")
 async def deregister_with_game(game_id: str, player_id: str):
     """Deregister from a game"""
@@ -58,8 +59,31 @@ async def deregister_with_game(game_id: str, player_id: str):
         }
 
 
+@app.put("/game/{game_id}/stop")
+async def delete_game(game_id: str):
+    """Delete/Stop the game"""
+    async with get_monitor():
+        request = {
+            "cmd": "delete",
+            "game_id": game_id,
+        }
+        routing_key = f"{game_id}.game"
+        body = json.dumps(request)
+        message = Message(
+            body.encode(),
+            content_type="application/json"
+        )
+        await roborest.games_exchange.publish(
+            message,
+            routing_key=routing_key
+        )
+        return {
+            "game_id": game_id
+        }
+
+
 @app.get("/game/{game_id}/map")
-async def get_game_status(game_id: str):
+async def get_game_map(game_id: str):
     """Get the current game map"""
     result = roborest.status_keeper.get_game_map(game_id)
     return result

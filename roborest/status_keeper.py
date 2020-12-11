@@ -17,8 +17,7 @@ class StatusKeeper(object):
         msg = request['msg']
         if game_id not in self.games:
             if msg == 'CREATED':
-                game_status = GameStatus(self.now, request)
-                self.games[game_id] = game_status
+                self.add_game(game_id, request)
             else:
                 logger.warning(f"unexpected message from game: {game_id}")
                 return
@@ -33,6 +32,7 @@ class StatusKeeper(object):
             game_status.deltarec(self.now, request)
         elif msg == 'STOPPED':
             game_status.stopped(self.now, request)
+            self.remove_game(game_id)
         elif msg == 'CREATED':
             # CREATED event is already handled
             pass
@@ -41,6 +41,14 @@ class StatusKeeper(object):
             pass
         else:
             logger.warning(f"unknown msg: {msg}")
+
+    def add_game(self, game_id, request):
+        game_status = GameStatus(self.now, request)
+        self.games[game_id] = game_status
+
+    def remove_game(self, game_id):
+        del self.games[game_id]
+        del self.lastseen[game_id]
 
     def list_games(self):
         result = {}
@@ -89,8 +97,7 @@ class StatusKeeper(object):
             if game_id in self.lastseen and self.games[game_id].isStarted:
                 if (now - self.lastseen[game_id]).total_seconds() > self.inactive_limit:
                     logger.warning(f"inactive game: {game_id}")
-                    del self.games[game_id]
-                    del self.lastseen[game_id]
+                    self.remove_game(game_id)
 
 
 class GameStatus(object):
@@ -125,9 +132,6 @@ class GameStatus(object):
         # self.update(request)
         pass
 
-    # def updated(self, now, request):
-    #     self.update(request)
-
     def stopped(self, now, request):
         # self.update(request)
         self.stoptime = now
@@ -153,21 +157,6 @@ class GameStatus(object):
     #       'map_status': {},
     #   }
     # }
-
-    # def update(self, delta):
-    #     self.game_tick = delta['status']['game_tick']
-    #     self.isStarted = delta['status']['isStarted']
-    #     self.isStopped = delta['status']['isStopped']
-    #     self.isSuccess = delta['status']['isSuccess']
-    #     recording_frames = delta['status']['recording_delta']
-    #     print(f"{self.tick}/{self.game_tick}/{len(recording_frames)}")
-    #     self.recording.append(delta)
-    #     if len(self.recording) > 10:
-    #         self.recording.pop(0)
-    #     self.players.clear()
-    #     for player in delta['players']:
-    #         self.players[player['player_id']] = player
-    #     self.mapstatus = delta['mapstatus']
 
     def gametick(self, now, request):
         self.game_tick = request['game_status']['game_tick']
@@ -231,7 +220,7 @@ class GameStatus(object):
             },
             'recording': self.recording,
             'players': self.players,
-            'map_status': self.map_status
+            'map_status': self.mapstatus
         }
 
     def player_status(self, player_id):
