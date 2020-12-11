@@ -40,28 +40,28 @@ Content-Type: application/json
 }
 ###
 # get status of game
-GET http://localhost:8000/game/04288a79-a12e-4452-ba45-ffe74fc18a7f/status
+GET http://localhost:8000/game/82c7c54a-238f-4284-9f8e-410b87b06e06/status
 Content-Type: application/json
 
 {
 }
 ###
 # get map of a game
-GET http://localhost:8000/game/04288a79-a12e-4452-ba45-ffe74fc18a7f/map
+GET http://localhost:8000/game/82c7c54a-238f-4284-9f8e-410b87b06e06/map
 Content-Type: application/json
 
 {
 }
 ###
 # get delta-recording of a game
-GET http://localhost:8000/game/04288a79-a12e-4452-ba45-ffe74fc18a7f/recording
+GET http://localhost:8000/game/82c7c54a-238f-4284-9f8e-410b87b06e06/recording
 Content-Type: application/json
 
 {
 }
 ###
 # delete/stop a game
-PUT http://localhost:8000/game/04288a79-a12e-4452-ba45-ffe74fc18a7f/stop
+PUT http://localhost:8000/game/82c7c54a-238f-4284-9f8e-410b87b06e06/stop
 Content-Type: application/json
 
 {
@@ -70,7 +70,7 @@ Content-Type: application/json
 # Register
 ###############################################################
 ###
-# Modify a game, in this case register a user
+# Register a user
 PUT http://localhost:8000/games/8fab52af-8bf6-425f-9227-185fbfad11ca
 Content-Type: application/json
 
@@ -78,4 +78,11 @@ Content-Type: application/json
   "player_name": "jan",
   "player_id": "eikel",
   "password": "secret"
+}
+###
+# Get the status of a user
+GET http://localhost:8000/game/8fab52af-8bf6-425f-9227-185fbfad11ca/player/9f4b7673-3ae4-440d-9851-4a223d8eb1e1/status
+Content-Type: application/json
+
+{
 }
