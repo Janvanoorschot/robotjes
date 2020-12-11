@@ -169,15 +169,16 @@ class GameStatus(object):
 
     def deltarec(self, now, request):
         self.gametick(now, request)
-        recording_delta = request['data']['recording_delta']
-        map_status = request['data']['map_status']
-        self.recording.append(recording_delta)
+        delta = {}
+        delta['game_tick'] = request['game_status']['game_tick']
+        delta['recording_delta'] = request['data']['recording_delta']
+        delta['map_status'] = request['data']['map_status']
+        self.recording.append(delta)
         if len(self.recording) > 10:
             self.recording.pop(0)
-        self.mapstatus = map_status
 
     def game_status(self):
-        # the extended version of the recording, includes map
+        # short status of the game
         return {
             'game_id': self.game_id,
             'game_name': self.game_name,
@@ -187,41 +188,19 @@ class GameStatus(object):
                 'isStopped': self.isStopped,
                 'isSuccess': self.isSuccess
             },
-            'recording': self.recording,
             'players': self.players,
         }
 
     def game_map(self):
-        # the extended version of the recording, includes map
-        return {
-            'game_id': self.game_id,
-            'game_name': self.game_name,
-            'status': {
-                'game_tick': self.game_tick,
-                'isStarted': self.isStarted,
-                'isStopped': self.isStopped,
-                'isSuccess': self.isSuccess
-            },
-            'recording': self.recording,
-            'players': self.players,
-            'maze_map': self.maze_map
-        }
+        reply = self.game_status()
+        reply['maze_map'] = self.maze_map
+        return reply
 
     def game_recording(self):
         #  this should be the delta.
-        return {
-            'game_id': self.game_id,
-            'game_name': self.game_name,
-            'status': {
-                'game_tick': self.game_tick,
-                'isStarted': self.isStarted,
-                'isStopped': self.isStopped,
-                'isSuccess': self.isSuccess
-            },
-            'recording': self.recording,
-            'players': self.players,
-            'map_status': self.mapstatus
-        }
+        reply = self.game_status()
+        reply['recording'] = self.recording
+        return reply
 
     def player_status(self, player_id):
         if player_id in self.players:
