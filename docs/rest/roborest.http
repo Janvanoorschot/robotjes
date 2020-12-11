@@ -40,28 +40,28 @@ Content-Type: application/json
 }
 ###
 # get status of game
-GET http://localhost:8000/game/82c7c54a-238f-4284-9f8e-410b87b06e06/status
+GET http://localhost:8000/game/cefe8578-558a-4c8c-93c2-f1f40f25e419/status
 Content-Type: application/json
 
 {
 }
 ###
 # get map of a game
-GET http://localhost:8000/game/82c7c54a-238f-4284-9f8e-410b87b06e06/map
+GET http://localhost:8000/game/cefe8578-558a-4c8c-93c2-f1f40f25e419/map
 Content-Type: application/json
 
 {
 }
 ###
 # get delta-recording of a game
-GET http://localhost:8000/game/82c7c54a-238f-4284-9f8e-410b87b06e06/recording
+GET http://localhost:8000/game/cefe8578-558a-4c8c-93c2-f1f40f25e419/recording
 Content-Type: application/json
 
 {
 }
 ###
 # delete/stop a game
-PUT http://localhost:8000/game/82c7c54a-238f-4284-9f8e-410b87b06e06/stop
+PUT http://localhost:8000/game/7eb163a3-0ea1-405b-97c2-ee91a7315dd3/stop
 Content-Type: application/json
 
 {
@@ -81,7 +81,7 @@ Content-Type: application/json
 }
 ###
 # Get the status of a user
-GET http://localhost:8000/game/8fab52af-8bf6-425f-9227-185fbfad11ca/player/9f4b7673-3ae4-440d-9851-4a223d8eb1e1/status
+GET http://localhost:8000/game/36a2831a-62e1-4592-96dc-a8b6a5902d54/player/76ea0e2e-1803-4d7e-81b8-99e2f4d41433
 Content-Type: application/json
 
 {

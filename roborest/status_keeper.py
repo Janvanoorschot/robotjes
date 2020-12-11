@@ -77,7 +77,7 @@ class StatusKeeper(object):
     def get_player_status(self, game_id, player_id):
         if game_id in self.games:
             if player_id in self.games[game_id].players:
-                return self.games[game_id].players(player_id)
+                return self.games[game_id].players[player_id]
             else:
                 return {}
         else:

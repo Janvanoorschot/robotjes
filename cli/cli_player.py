@@ -83,7 +83,8 @@ class CLIPlayer():
         if not self.stopped:
             try:
                 status = await self.rest_client.status_player(self.game_id, self.player_id)
-            except Exception:
+            except Exception as e:
+                print(f"failed to get player status: {e}")
                 return
             if status and isinstance(status, collections.Mapping):
                 # we received a valid status (about the game, this player and all the robo's), handle it
