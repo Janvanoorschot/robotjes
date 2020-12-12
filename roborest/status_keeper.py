@@ -77,7 +77,7 @@ class StatusKeeper(object):
     def get_player_status(self, game_id, player_id):
         if game_id in self.games:
             if player_id in self.games[game_id].players:
-                return self.games[game_id].players[player_id]
+                return self.games[game_id].player_status(player_id)
             else:
                 return {}
         else:
@@ -204,17 +204,17 @@ class GameStatus(object):
         if player_id in self.players:
             player = self.players[player_id]
             return {
-                'game_id': self.game_id,
-                'game_name': self.game_name,
-                'status': {
-                    'game_tick': self.game_tick,
-                    'isStarted': self.isStarted,
-                    'isStopped': self.isStopped,
-                    'isSuccess': self.isSuccess
+                "game_status": {
+                    'game_id': self.game_id,
+                    'game_name': self.game_name,
+                    'status': {
+                        'game_tick': self.game_tick,
+                        'isStarted': self.isStarted,
+                        'isStopped': self.isStopped,
+                        'isSuccess': self.isSuccess
+                    }
                 },
-                'player_id': player['player_id'],
-                'player_name': player['player_name'],
-                'fog_of_war': player['player_status']['fog_of_war']
+                "player_status": player
             }
         else:
             return {}
