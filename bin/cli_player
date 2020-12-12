@@ -46,12 +46,10 @@ class Player_Client:
     def stopped(self, success):
         print(f"player stopped: {success}")
 
-    def tick(self, tick):
-        print(f"tick: {tick}")
-        pass
 
     def game_tick(self, game_tick):
-        print(f"game tick: {game_tick}")
+        # print(f"game tick: {game_tick}")
+        pass
 
 
 async def main(execute, loop):
@@ -69,7 +67,6 @@ if __name__ == "__main__":
     parser.add_argument('--name', type=str, default="the_game", help='name of the game to join')
     parser.add_argument('--password', type=str, default="secret", help='password needed to enter the game')
     parser.add_argument('--module', type=str, default="sample.player.player100", help='module containing the player logic')
-    parser.add_argument('--script', type=str, default=f"{rootdir}/sample/script/script101.py", help='user script to run')
     args = parser.parse_args()
 
     # load user module that should contain a function like: def execute(robo)

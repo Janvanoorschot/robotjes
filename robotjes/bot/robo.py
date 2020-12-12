@@ -165,8 +165,8 @@ class Robo(object):
     @staticmethod
     def observation(status, cmd):
         (selector, type) = Robo.OBSERVATIONS[cmd[2]]
-        if status and selector in status:
-            lst = status[selector]
+        if status and selector in status['fog_of_war']:
+            lst = status['fog_of_war'][selector]
             # lst -> [tile, paint, robot, beacon]
             if type == 'clear':
                 return not lst[0] and not lst[2] and not lst[3]
