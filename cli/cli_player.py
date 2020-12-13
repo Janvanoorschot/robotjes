@@ -71,9 +71,8 @@ class CLIPlayer():
                     boolean = False
                 reply = {'result': boolean}
             else:
-                # at this point, we need to contact the server
-                await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
                 reply = {'result': True}
+            await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
             await self.timer_lock.acquire()
             await self.local_requestor.put(reply)
         await self.rest_client.deregister_player(self.game_id, self.player_id)
