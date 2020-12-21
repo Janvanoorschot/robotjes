@@ -167,6 +167,7 @@ class GameStatus(object):
 
     def deltarec(self, now, request):
         self.gametick(now, request)
+        print(f">gametick[{self.game_tick}]: players[{self.players}]")
         delta = {}
         delta['game_tick'] = request['game_status']['game_tick']
         delta['recording_delta'] = request['data']['recording_delta']
