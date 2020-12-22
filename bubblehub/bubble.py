@@ -26,7 +26,7 @@ class Bubble:
         self.starttime = None
         self.mazes = None
         self.tick = 0
-        self.resolution = 5
+        self.resolution = 10
 
     def set_mazes(self, mazes):
         self.mazes = mazes
