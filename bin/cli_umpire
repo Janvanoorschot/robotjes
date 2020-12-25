@@ -61,7 +61,7 @@ class Umpire_Client:
         pass
 
     def game_tick(self, game_tick):
-        print(f"game tick: {game_tick}")
+        print(f"cli_umpire/game_timer[{game_tick}]")
 
 
 async def main(loop):

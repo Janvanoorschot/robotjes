@@ -48,8 +48,7 @@ class Player_Client:
 
 
     def game_tick(self, game_tick):
-        # print(f"game tick: {game_tick}")
-        pass
+        print(f"cli_player/game_timer[{game_tick}]")
 
 
 async def main(execute, loop):
@@ -66,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
     parser.add_argument('--name', type=str, default="the_game", help='name of the game to join')
     parser.add_argument('--password', type=str, default="secret", help='password needed to enter the game')
-    parser.add_argument('--module', type=str, default="sample.player.player100", help='module containing the player logic')
+    parser.add_argument('--module', type=str, default="sample.player.player102", help='module containing the player logic')
     args = parser.parse_args()
 
     # load user module that should contain a function like: def execute(robo)

@@ -325,6 +325,7 @@ class World(object):
             return {
                 "pos": bot.pos,
                 "load": len(bot.beacons),
+                "dir": bot.dir,
                 "fog_of_war": {
                     "left": self.get_content(pos_left),
                     "front": self.get_content(pos_front),

@@ -167,11 +167,11 @@ class GameStatus(object):
 
     def deltarec(self, now, request):
         self.gametick(now, request)
-        print(f">gametick[{self.game_tick}]: players[{self.players}]")
         delta = {}
         delta['game_tick'] = request['game_status']['game_tick']
         delta['recording_delta'] = request['data']['recording_delta']
         delta['map_status'] = request['data']['map_status']
+        print(f"status_keeper/deltarec[{delta['game_tick']}]")
         self.recording.append(delta)
         if len(self.recording) > 10:
             self.recording.pop(0)
@@ -219,4 +219,3 @@ class GameStatus(object):
             }
         else:
             return {}
-

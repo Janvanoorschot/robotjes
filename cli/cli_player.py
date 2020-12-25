@@ -59,7 +59,7 @@ class CLIPlayer():
         # enter the command/reply cycle until the local_requestor is stopped
         while not self.stopped:
             cmd = await self.local_requestor.get()
-            print(cmd)
+            # print(cmd)
             if len(cmd) < 2:
                 break
             elif Robo.is_observation(cmd):
