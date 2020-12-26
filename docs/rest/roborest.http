@@ -54,11 +54,20 @@ Content-Type: application/json
 }
 ###
 # get delta-recording of a game
-GET http://localhost:8000/game/bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d/recording/0
+GET http://localhost:8000/game/bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d/recording/670
 Content-Type: application/json
 
 {
 }
+
+###
+# get delta-recording of a game
+GET http://localhost:8080/field/gamerecording?game_id=bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d&before_game_time=0
+Content-Type: application/json
+
+{
+}
+
 ###
 # delete/stop a game
 PUT http://localhost:8000/game/7eb163a3-0ea1-405b-97c2-ee91a7315dd3/stop
