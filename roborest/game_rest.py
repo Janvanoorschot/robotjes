@@ -96,10 +96,10 @@ async def get_game_status(game_id: str):
     return result
 
 
-@app.get("/game/{game_id}/recording")
-async def get_game_recording(game_id: str):
+@app.get("/game/{game_id}/recording/{before_game_time}")
+async def get_game_recording(game_id: str, before_game_time: int):
     """Get the current game recording"""
-    result = roborest.status_keeper.get_game_recording(game_id)
+    result = roborest.status_keeper.get_game_recording(game_id, before_game_time)
     return result
 
 

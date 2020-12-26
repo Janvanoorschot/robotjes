@@ -68,11 +68,11 @@ class StatusKeeper(object):
         else:
             return {}
 
-    def get_game_recording(self, game_id):
+    def get_game_recording(self, game_id, before_game_time):
         if game_id in self.games:
-            return self.games[game_id].game_recording()
+            return self.games[game_id].game_recording(before_game_time)
         else:
-            return {}
+            return []
 
     def get_player_status(self, game_id, player_id):
         if game_id in self.games:
@@ -166,13 +166,9 @@ class GameStatus(object):
             self.players[player_id] = player
 
     def deltarec(self, now, request):
-        self.gametick(now, request)
-        delta = {}
-        delta['game_tick'] = request['game_status']['game_tick']
-        delta['recording_delta'] = request['data']['recording_delta']
-        delta['map_status'] = request['data']['map_status']
-        print(f"status_keeper/deltarec[{delta['game_tick']}]")
-        self.recording.append(delta)
+        recording_delta = request['data']
+        print(f"status_keeper/deltarec[{recording_delta['game_tick']}]")
+        self.recording.append(recording_delta)
         if len(self.recording) > 10:
             self.recording.pop(0)
 
@@ -195,11 +191,12 @@ class GameStatus(object):
         reply['maze_map'] = self.maze_map
         return reply
 
-    def game_recording(self):
-        #  this should be the delta.
-        reply = self.game_status()
-        reply['recording'] = self.recording
-        return reply
+    def game_recording(self, before_game_time):
+        result = []
+        for rec in self.recording:
+            if rec['game_tick'] > before_game_time:
+                result.append(rec)
+        return result
 
     def player_status(self, player_id):
         if player_id in self.players:

@@ -54,7 +54,7 @@ Content-Type: application/json
 }
 ###
 # get delta-recording of a game
-GET http://localhost:8000/game/afe55de3-87ff-4f39-a3a3-1a5b56e67fd9/recording
+GET http://localhost:8000/game/bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d/recording/0
 Content-Type: application/json
 
 {

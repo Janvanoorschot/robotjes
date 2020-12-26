@@ -100,7 +100,5 @@ class Field:
         # publish info: GAMETICK AND/OR DELTAREC
         self.owner.publish(GameStatus.GAMETICK, {})
         if self.game_tick % self.resolution == 0:
-            self.owner.publish(GameStatus.DELTAREC, {
-                "recording_delta": self.game.recording_delta(),
-                "map_status": self.game.get_map_status()
-            })
+            drec = self.game.recording_delta()
+            self.owner.publish(GameStatus.DELTAREC, drec)

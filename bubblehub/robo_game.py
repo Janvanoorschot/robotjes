@@ -9,6 +9,7 @@ class RoboGame:
         self.engine = Engine(self.map)
         self.game_tick = 0
         self.last_recording_delta = 0
+        self.map_status = None
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
@@ -36,10 +37,26 @@ class RoboGame:
         return self.engine.get_status(robo_id)
 
     def recording_delta(self):
-        # get the recording-delta valid since the last time this function was called
-        delta = self.engine.get_recording().toMapFrom(self.last_recording_delta)
-        self.last_recording_delta = self.last_recording_delta + len(delta)
-        return delta
+        # get the frames since the last time we asked, plus the map_status at that time
+        frames = self.engine.get_recording().toMapFrom(self.last_recording_delta)
+        map_status = self.map_status
+        self.map_status = self.get_map_status()
+        self.last_recording_delta = self.last_recording_delta + len(frames)
+        # combine the frame of one timeslot together
+        combined_frames = []
+        ix = 0
+        while ix < len(frames):
+            frame = []
+            cur_tick = frames[ix]['tick']
+            while ix < len(frames) and frames[ix]['tick'] == cur_tick:
+                frame.append(frames[ix])
+                ix = ix + 1
+            combined_frames.append(frame)
+        return {
+            "game_tick": self.game_tick,
+            "frames": combined_frames,
+            "map_status": map_status
+        }
 
     def maze_map(self):
         return self.map.toMazeMap()
