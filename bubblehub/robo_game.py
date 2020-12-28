@@ -9,7 +9,6 @@ class RoboGame:
         self.engine = Engine(self.map)
         self.game_tick = 0
         self.last_recording_delta = 0
-        self.map_status = None
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
@@ -37,11 +36,10 @@ class RoboGame:
         return self.engine.get_status(robo_id)
 
     def recording_delta(self):
-        # get the frames since the last time we asked, plus the map_status at that time
+        # get the frames since the last time we asked, plus our current map_status
         frames = self.engine.get_recording().toMapFrom(self.last_recording_delta)
-        map_status = self.map_status
-        self.map_status = self.get_map_status()
         self.last_recording_delta = self.last_recording_delta + len(frames)
+        map_status = self.get_map_status()
         # combine the frame of one timeslot together
         combined_frames = []
         ix = 0
