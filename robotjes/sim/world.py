@@ -362,6 +362,7 @@ class World(object):
             cell["id"] = robo_id
             cell["x"] = robo.pos[0]
             cell["y"] = robo.pos[1]
+            cell["dir"] = robo.dir
             cell['beacons'] = len(robo.beacons)
             robotLines.append(cell)
         result["robotLines"] = robotLines
