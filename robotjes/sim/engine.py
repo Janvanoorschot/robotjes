@@ -252,7 +252,9 @@ class Engine(object):
         return self.world.get_status(robo_id)
 
     def get_map_status(self):
-        return self.world.get_map_status()
+        result = self.world.get_map_status()
+        result['game_time'] = self.game_time
+        return result
 
 
 

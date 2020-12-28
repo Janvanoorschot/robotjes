@@ -1,4 +1,5 @@
 import json
+import datetime
 import config
 import logging
 from bubblehub.model import GameState, GameSpec
@@ -22,7 +23,7 @@ class Bubble:
         self.moves = {}
         self.channel = None
         self.delivery_tag = None
-        self.now = None
+        self.now = datetime.datetime.now()
         self.starttime = None
         self.mazes = None
         self.tick = 0

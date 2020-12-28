@@ -2,6 +2,7 @@ import uuid
 import json
 from aio_pika import IncomingMessage, Message, ExchangeType
 
+
 class AsyncRPCClient:
 
     def __init__(self,exchange_name, queue_name):
