@@ -225,7 +225,7 @@ class Bubble:
             if self.game_state == GameStatus.STARTED:
                 if self.tick % self.resolution == 0:
                     game_tick = int(self.tick/self.resolution)
-                    print(f"bubble/game_timer[{game_tick}]")
+                    # print(f"bubble/game_timer[{game_tick}]")
                     self.game.game_timer(game_tick, self.moves)
                     self.moves.clear()
             if self.game.is_stopped():

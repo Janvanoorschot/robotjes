@@ -167,7 +167,7 @@ class GameStatus(object):
 
     def deltarec(self, now, request):
         recording_delta = request['data']
-        print(f"status_keeper/deltarec[{recording_delta['game_tick']}]")
+        # print(f"status_keeper/deltarec[{recording_delta['game_tick']}]")
         self.recording.append(recording_delta)
         if len(self.recording) > 10:
             self.recording.pop(0)

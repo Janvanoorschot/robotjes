@@ -5,7 +5,7 @@ import functools
 from robotjes.bot import RoboThread, Robo
 import uuid
 
-from cli import RestClient
+from client import RestClient
 from robotjes.local import LocalRequestor
 
 

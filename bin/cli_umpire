@@ -5,7 +5,7 @@ import argparse
 import asyncio
 
 import config
-import cli
+import client
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
@@ -61,13 +61,14 @@ class Umpire_Client:
         pass
 
     def game_tick(self, game_tick):
-        print(f"cli_umpire/game_timer[{game_tick}]")
+        # print(f"cli_umpire/game_timer[{game_tick}]")
+        pass
 
 
 async def main(loop):
-    client = Umpire_Client()
-    umpire = cli.CLIUmpire(loop, args.url, client)
-    timer = Timer(0.5,umpire.timer, True)
+    clnt = Umpire_Client()
+    umpire = client.CLIUmpire(loop, args.url, clnt)
+    timer = Timer(0.5, umpire.timer, True)
     success = await umpire.run_game(args.umpire, args.name, args.password, args.maze)
 
 # run our main loop

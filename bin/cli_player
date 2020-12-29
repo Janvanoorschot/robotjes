@@ -6,7 +6,7 @@ import asyncio
 import importlib
 
 import config
-import cli
+import client
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
@@ -48,12 +48,13 @@ class Player_Client:
 
 
     def game_tick(self, game_tick):
-        print(f"cli_player/game_timer[{game_tick}]")
+        # print(f"cli_player/game_timer[{game_tick}]")
+        pass
 
 
 async def main(execute, loop):
-    client = Player_Client()
-    player = cli.CLIPlayer(loop, args.url, client)
+    clnt = Player_Client()
+    player = client.CLIPlayer(loop, args.url, clnt)
     timer = Timer(1, player.timer, True)
     success = await player.run_game(args.player, args.name, args.password, execute)
     timer.cancel()
