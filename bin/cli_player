@@ -46,9 +46,13 @@ class Player_Client:
     def stopped(self, success):
         print(f"player stopped: {success}")
 
+    def game_status(self, game_tick, game_status):
+        pass
 
-    def game_tick(self, game_tick):
-        # print(f"cli_player/game_timer[{game_tick}]")
+    def player_status(self, game_tick, player_status):
+        pass
+
+    def robo_status(self, game_tick, robo_id, robo_status):
         pass
 
 

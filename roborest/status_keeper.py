@@ -136,7 +136,6 @@ class GameStatus(object):
 
     # General Request Layout
     # {
-    #   'bubble_id': 'd0f90888-bd84-48b3-b56e-523433a1e7aa',
     #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
     #   'game_name': 'game2',
     #   'msg': 'DELTAREC',

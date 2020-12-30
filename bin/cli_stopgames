@@ -5,7 +5,7 @@ import argparse
 import asyncio
 
 import config
-import cli
+import client
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
@@ -46,8 +46,8 @@ class Umpire_Client:
 
 
 async def main(loop):
-    client = Umpire_Client()
-    umpire = cli.CLIUmpire(loop, args.url, client)
+    clnt = Umpire_Client()
+    umpire = client.CLIUmpire(loop, args.url, clnt)
     success = await umpire.stop_games(args.umpire)
 
 # run our main loop

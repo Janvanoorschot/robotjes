@@ -1,6 +1,9 @@
 import random
 import logging
+import collections
+
 logger = logging.getLogger(__name__)
+
 
 class World(object):
 
@@ -326,6 +329,7 @@ class World(object):
                 "pos": bot.pos,
                 "load": len(bot.beacons),
                 "dir": bot.dir,
+                "recording": list(bot.recording),
                 "fog_of_war": {
                     "left": self.get_content(pos_left),
                     "front": self.get_content(pos_front),
@@ -408,6 +412,7 @@ class Bot(object):
         self.dir = dir
         self.beacons = set()
         self.paint = None
+        self.recording = collections.deque()
 
     def left(self):
         self.dir = dir_left(self.dir)
@@ -416,3 +421,9 @@ class Bot(object):
     def right(self):
         self.dir = dir_right(self.dir)
         return self.dir
+
+    def record(self, game_tick, command, args, success):
+        # trivial simple bot recording. Used by 'get_status'
+        self.recording.append([game_tick, command, args, success])
+        if len(self.recording) > 3:
+            self.recording.popleft()

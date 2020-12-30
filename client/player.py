@@ -87,35 +87,37 @@ class CLIPlayer():
                 print(f"failed to get player status: {e}")
                 return
             # we received a valid status (about the game, this player and all the robo's), handle it
-            self.set_game_status(status['game_status'])
-            self.set_player_status(status['player_status'])
+            game_tick = status['game_status']['status']['game_tick']
+            self.set_game_status(game_tick, status['game_status'])
+            bots = status['player_status']['robos'].keys()
+            self.set_player_status(game_tick, status['player_status'])
+            for robo_id, robo_status in status['player_status']['robos'].items():
+                self.set_robo_status(game_tick, robo_id, robo_status)
 
-    def set_game_status(self, game_status):
+    def set_game_status(self, game_tick, game_status):
+        self.callback('game_status', game_tick, game_status)
         self.game_status = game_status
         if not self.stopped and game_status['status']['isStopped']:
             # normal stop
             self.stopped = True
             self.success = game_status['status']['isSuccess']
             self.callback('stopped', self.success)
-            # await self.local_requestor.stop()
             return
         if not self.started and game_status['status']['isStarted']:
             # normal game start
             self.started = True
             self.stopped = False
             self.callback('started')
-        game_tick = game_status['status']['game_tick']
         if game_tick != self.game_tick:
             self.game_tick = game_tick
-            self.callback('game_tick', self.game_tick)
             if self.timer_lock.locked():
                 self.timer_lock.release()
 
-    def set_player_status(self, player_status):
-        for robo_id, robo_status in player_status['robos'].items():
-            self.set_robo_status(robo_id, robo_status)
+    def set_player_status(self, game_tick, player_status):
+        self.callback('player_status', game_tick, player_status)
 
-    def set_robo_status(self, robo_id, robo_status):
+    def set_robo_status(self, game_tick, robo_id, robo_status):
+        self.callback('robo_status', game_tick, robo_id, robo_status)
         if robo_id not in self.robo_status:
             # first time we see this robo, activate its logic
             self.robo.set_id(robo_id)

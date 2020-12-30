@@ -62,12 +62,13 @@ class Engine(object):
     def game_timer(self, game_time):
         self.game_time = game_time
 
-    def execute(self, robo_id, cmd):
+    def execute(self, game_tick, robo_id, cmd):
         if not robo_id in self.robos:
             reply = [[False]]
             return self.prepare_reply(cmd, reply)
         [command, lineno, *args] = self.clean_cmd(cmd)
         bot = self.world.bots[robo_id]
+        success = False
         reply = []
         self.world.inc("scriptCalls")
         self.world.inc("scriptBasicCommands")
@@ -87,6 +88,7 @@ class Engine(object):
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
                     self.world.inc("robotHasBumped")
+            success = (expected == actual)
             self.recording.forward(actual, expected)
         elif command == "backward":
             expected = 1 if len(args) < 1 else int(args[0])
@@ -101,18 +103,21 @@ class Engine(object):
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
                     self.world.inc("robotHasBumped")
+            success = (expected == actual)
             self.recording.backward(actual, expected)
         elif command == "right":
             expected = 1 if len(args) < 1 else int(args[0])
             for i in range(expected):
                 dir = self.world.right(robo_id)
                 reply.append([True, dir])
+            success = True
             self.recording.right(expected)
         elif command == "left":
             expected = 1 if len(args) < 1 else int(args[0])
             for i in range(expected):
                 dir = self.world.left(robo_id)
                 reply.append([True, dir])
+            success = True
             self.recording.left(expected)
         elif command == "pickUp":
             success = self.world.pickUp(robo_id)
@@ -129,14 +134,17 @@ class Engine(object):
         elif command == "paintWhite":
             start = self.world.paintWhite(robo_id)
             reply.append([start])
+            success = True
             self.recording.paintWhite(start)
         elif command == "paintBlack":
             start = self.world.paintBlack(robo_id)
             reply.append([start])
+            success = True
             self.recording.paintBlack(start)
         elif command == "stopPainting":
             start = self.world.stopPainting(robo_id)
             reply.append([start])
+            success = True
             self.recording.stopPainting()
         elif command == "leftIsClear":
             success = self.world.check(robo_id, World.LEFT, World.CLEAR)
@@ -229,9 +237,9 @@ class Engine(object):
             reply.append([success])
             self.world.inc("see")
         elif command == "flipCoin":
-            result = self.world.flipCoin()
+            success = self.world.flipCoin()
             self.recording.flipCoin()
-            reply.append([result])
+            reply.append([success])
             self.world.inc("flipCoins")
         elif command == "message":
             message = "unknown" if len(args) < 1 else args[0]
@@ -240,12 +248,16 @@ class Engine(object):
             paint = self.world.getPaint(robo_id)
             message = message.format(loc=loc, cargo=cargo, paint=paint)
             self.recording.message(message)
+            success = True
         elif command == "error":
             message = "none" if len(args) < 1 else args[0]
-            if len(message)>1 and message != "none":
+            if len(message) > 1 and message != "none":
                 self.recording.error(message)
+            success = False
         else:
+            success = False
             reply.append([False])
+        bot.record(game_tick, command, args, success)
         return self.prepare_reply(cmd, reply)
 
     def get_status(self, robo_id):
