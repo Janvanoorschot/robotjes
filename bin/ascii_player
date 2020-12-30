@@ -95,6 +95,8 @@ if __name__ == "__main__":
                 execute = module.execute
     except Exception as e:
         print(f"failure to load user module: {str(e)}")
+
+    # start our run in main
     if execute:
         aloop = asyncio.get_event_loop()
         aloop.run_until_complete(main(execute, aloop))
