@@ -53,6 +53,13 @@ class CLIUmpire:
                         if player_id not in self.players:
                             self.players[player_id] = player_id
                             self.callback('player', player_id, player_id)
+                    done_players = []
+                    for player_id, player in self.players.items():
+                        if player_id not in status['players']:
+                            done_players.append(player_id)
+                            self.callback('noplayer', player_id, player_id)
+                    for player_id in done_players:
+                        del self.players[player_id]
                 if 'status' in status:
                     if not self.stopped and status['status']['isStopped']:
                         # normal stop

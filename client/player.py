@@ -1,9 +1,6 @@
-import collections
 import asyncio
-import importlib
-import functools
 from robotjes.bot import RoboThread, Robo
-import uuid
+import sys
 
 from client import RestClient
 from robotjes.local import LocalRequestor
@@ -36,6 +33,10 @@ class CLIPlayer():
         self.client_code = None
         self.robo = None
 
+    async def stop(self):
+        self.robo_coroutine.stop()
+        await self.rest_client.deregister_player(self.game_id, self.player_id)
+        self.stopped = True
 
     async def run_game(self, player_name, game_name, password, execute):
         """ Validate the params and  join the game. """
@@ -60,7 +61,7 @@ class CLIPlayer():
         while not self.stopped:
             cmd = await self.local_requestor.get()
             # print(cmd)
-            if len(cmd) < 2:
+            if len(cmd) < 2 or self.stopped:
                 break
             elif Robo.is_observation(cmd):
                 robo_id = self.robo.id

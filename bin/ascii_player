@@ -2,17 +2,19 @@
 
 import sys
 import os
+rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(rootdir)
+
 import argparse
 import importlib
 import asyncio
 import functools
+import signal
 
 import config
 import client
 import aui
 
-rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-sys.path.append(rootdir)
 
 
 class Timer:
@@ -23,12 +25,16 @@ class Timer:
         self.task = asyncio.ensure_future(self.job())
 
     async def job(self):
-        await asyncio.sleep(self.timeout)
+        try:
+            await asyncio.sleep(self.timeout)
+        except asyncio.exceptions.CancelledError:
+            return
         await self.callback()
         if self.repeat:
             self.task = asyncio.ensure_future(self.job())
 
     def cancel(self):
+        self.repeat = False
         self.task.cancel()
 
 
@@ -58,23 +64,31 @@ class PlayerClient:
     def robo_status(self, game_tick, robo_id, robo_status):
         self.player_screen.robo_status(game_tick, robo_id, robo_status)
 
+timer1 = None
+timer2 = None
 
-async def screen_timer(scrn):
+
+async def screen_timer(scrn, player, loop):
+    global timer1, timer2
+    if scrn.has_key():
+        # timer1.cancel()
+        # timer2.cancel()
+        await player.stop()
+        sys.exit("stopping")
     scrn.timer()
 
 
 async def main(execute, loop):
-
+    global timer1, timer2
     # create and start player
-    scrn = aui.PlayerScreen()
+    scrn = aui.PlayerDisplay()
     clnt = PlayerClient(scrn)
     player = client.CLIPlayer(loop, args.url, clnt)
     timer1 = Timer(1, player.timer, True)
-    timer2 = Timer(0.05, functools.partial(screen_timer, scrn), True)
+    timer2 = Timer(0.05, functools.partial(screen_timer, scrn, player, loop), True)
     success = await player.run_game(args.player, args.name, args.password, execute)
     timer1.cancel()
     timer2.cancel()
-    clnt.close()
 
 if __name__ == "__main__":
     # get commandline arguments
@@ -99,7 +113,10 @@ if __name__ == "__main__":
     # start our run in main
     if execute:
         aloop = asyncio.get_event_loop()
-        aloop.run_until_complete(main(execute, aloop))
+        try:
+            aloop.run_until_complete(main(execute, aloop))
+        except:
+            pass
         aloop.stop()
     else:
         print(f"no valid user module: {args.module if args.module else 'ABSENT'}")

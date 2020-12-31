@@ -50,6 +50,9 @@ class Umpire_Client:
     def player(self, player_id, player_name):
         print(f"player registered: {player_id}/{player_name}")
 
+    def noplayer(self, player_id, player_name):
+        print(f"player deregistered: {player_id}/{player_name}")
+
     def started(self):
         print(f"game started")
 

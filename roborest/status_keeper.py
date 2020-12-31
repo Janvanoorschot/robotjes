@@ -85,12 +85,12 @@ class StatusKeeper(object):
 
     def timer(self, now):
         self.now = now
-        for game_id, game in self.games.items():
+        for game_id, game in self.games.copy().items():
             # check for 'stopped for long enough'
             if game.is_stopped():
                 if (now - game.stoptime).total_seconds() > self.keep_alive:
-                    del self.games[game_id]
-                    del self.lastseen[game_id]
+                    logger.warning(f"old game: {game_id}")
+                    self.remove_game(game_id)
             # check for 'inactive'
             if game_id in self.lastseen and self.games[game_id].isStarted:
                 if (now - self.lastseen[game_id]).total_seconds() > self.inactive_limit:

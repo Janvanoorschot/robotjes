@@ -1,6 +1,6 @@
 import json
 from robotjes.sim import Engine, Map, Success
-from robotjes.remote import Handler
+# from robotjes.remote import Handler
 
 
 def go_robo(map_file, script_file, success_file):

@@ -1,1 +1,1 @@
-from .player_screen import PlayerScreen
+from .player_screen import PlayerDisplay
