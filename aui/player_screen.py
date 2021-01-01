@@ -94,10 +94,12 @@ class PlayerScreen:
         self.screen = screen
         self.game_view = GameView(self.screen, self.model)
         self.player_view = PlayerView(self.screen, self.model)
+        self.robo_view = RoboView(self.screen, self.model)
         self.scenes = []
         self.effects = [
             self.game_view,
-            self.player_view
+            self.player_view,
+            self.robo_view
         ]
         self.scenes.append(Scene(self.effects, -1))
         self.screen.set_scenes(self.scenes)
@@ -124,8 +126,8 @@ class GameView(Frame):
 
     def __init__(self, screen, model):
         super(GameView, self).__init__(screen,
-                                       screen.height * 1 // 6,
-                                       screen.width * 1 // 3,
+                                       screen.height * 1 // 3,
+                                       screen.width * 1 // 2,
                                        x=0,
                                        y=0,
                                        on_load=self.reload,
@@ -154,9 +156,10 @@ class PlayerView(Frame):
 
     def __init__(self, screen, model):
         super(PlayerView, self).__init__(screen,
-                                       screen.height * 1 // 6,
-                                       screen.width * 1 // 3,
-                                        y=0,
+                                       screen.height * 1 // 3,
+                                       screen.width * 1 // 2,
+                                       x=screen.width//2,
+                                       y=0,
                                        on_load=self.reload,
                                        hover_focus=True,
                                        title="Player")
@@ -191,9 +194,10 @@ class RoboView(Frame):
 
     def __init__(self, screen, model):
         super(RoboView, self).__init__(screen,
-                                       screen.height * 1 // 6,
-                                       screen.width * 1 // 3,
-                                        y=0,
+                                       screen.height * 1 // 3,
+                                       screen.width,
+                                       x=0,
+                                       y=screen.height * 1 // 3,
                                        on_load=self.reload,
                                        hover_focus=False,
                                        title="Player")

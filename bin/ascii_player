@@ -47,16 +47,20 @@ class PlayerClient:
         self.player_screen = player_screen
 
     def registered(self, game_id, player_name):
-        print(f"player registered: {game_id}/{player_name}")
+        # print(f"player registered: {game_id}/{player_name}")
+        pass
 
     def player(self, player_id, player_name):
-        print(f"player discovered: {player_id}/{player_name}")
+        # print(f"player discovered: {player_id}/{player_name}")
+        pass
 
     def started(self):
-        print(f"player started")
+        # print(f"player started")
+        pass
 
     def stopped(self, success):
-        print(f"player stopped: {success}")
+        # print(f"player stopped: {success}")
+        pass
 
     def game_status(self, game_tick, game_status):
         self.player_screen.game_status(game_tick, game_status)
