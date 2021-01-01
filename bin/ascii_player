@@ -9,12 +9,15 @@ import argparse
 import importlib
 import asyncio
 import functools
-import signal
+
+# facilitate exiting this complex asyncio/multithreaded program
+import atexit
+from concurrent.futures import thread
+atexit.unregister(thread._python_exit)
 
 import config
 import client
 import aui
-
 
 
 class Timer:
@@ -64,29 +67,23 @@ class PlayerClient:
     def robo_status(self, game_tick, robo_id, robo_status):
         self.player_screen.robo_status(game_tick, robo_id, robo_status)
 
-timer1 = None
-timer2 = None
-
 
 async def screen_timer(scrn, player, loop):
-    global timer1, timer2
     if scrn.has_key():
-        # timer1.cancel()
-        # timer2.cancel()
+        scrn.close()
         await player.stop()
-        sys.exit("stopping")
-    scrn.timer()
+    else:
+        scrn.timer()
 
 
 async def main(execute, loop):
-    global timer1, timer2
     # create and start player
     scrn = aui.PlayerDisplay()
     clnt = PlayerClient(scrn)
     player = client.CLIPlayer(loop, args.url, clnt)
     timer1 = Timer(1, player.timer, True)
     timer2 = Timer(0.05, functools.partial(screen_timer, scrn, player, loop), True)
-    success = await player.run_game(args.player, args.name, args.password, execute)
+    await player.run_game(args.player, args.name, args.password, execute)
     timer1.cancel()
     timer2.cancel()
 

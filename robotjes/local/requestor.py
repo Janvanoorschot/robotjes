@@ -35,4 +35,5 @@ class LocalRequestor(object):
         await self.reply_queue.put(reply)
 
     async def close(self):
-        pass
+        self.command_queue.task_done()
+        self.reply_queue.task_done()

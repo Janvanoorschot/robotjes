@@ -2,6 +2,8 @@ import asyncio
 from robotjes.bot import RoboThread, Robo
 import sys
 
+import concurrent
+
 from client import RestClient
 from robotjes.local import LocalRequestor
 
@@ -13,6 +15,7 @@ class CLIPlayer():
 
     def __init__(self, loop, url, client):
         self.loop = loop
+        self.executor = concurrent.futures.ThreadPoolExecutor()
         self.rest_client = RestClient(loop, url)
         self.local_requestor = LocalRequestor(self.loop)
         self.client = client
@@ -34,9 +37,12 @@ class CLIPlayer():
         self.robo = None
 
     async def stop(self):
-        self.robo_coroutine.stop()
         await self.rest_client.deregister_player(self.game_id, self.player_id)
+        await self.local_requestor.close()
+        self.robo.is_running = False
         self.stopped = True
+        self.executor.shutdown(wait=False)
+        sys.exit("player break")
 
     async def run_game(self, player_name, game_name, password, execute):
         """ Validate the params and  join the game. """
@@ -123,7 +129,7 @@ class CLIPlayer():
             # first time we see this robo, activate its logic
             self.robo.set_id(robo_id)
             self.robo_coroutine = self.loop.run_in_executor(
-               None,
+               self.executor,
                self.client_code.run)
         self.robo_status[robo_id] = robo_status
 

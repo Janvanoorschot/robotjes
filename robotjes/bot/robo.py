@@ -1,4 +1,6 @@
 import uuid
+import sys
+
 
 class Robo(object):
 
@@ -26,15 +28,20 @@ class Robo(object):
     def __init__(self, requestor, id=str(uuid.uuid4())):
         self.requestor = requestor
         self.id = id
+        self.is_running = True
 
     def set_id(self, robo_id):
         self.id = robo_id
 
     def handle_result(self, result):
+        if not self.is_running:
+            self.stop()
         return result
 
     def handle_boolean_result(self, result):
         # [[UUID('056c5f92-1457-4e45-be8e-32d6f2a18685'), 'paintWhite'], ([[True]],)]
+        if not self.is_running:
+            self.stop()
         return result[1][0][0][0]
 
     def forward(self, steps=1):
@@ -156,7 +163,8 @@ class Robo(object):
         self.requestor.execute([self.id, 'error', message])
 
     def stop(self):
-        self.requestor.execute([])
+        # self.requestor.execute([])
+        sys.exit("robo break")
 
     @staticmethod
     def is_observation(cmd):
