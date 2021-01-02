@@ -9,9 +9,6 @@ from robotjes.local import LocalRequestor
 
 
 class CLIPlayer():
-    """
-    https://docs.python.org/3/library/importlib.html#importlib.import_module
-    """
 
     def __init__(self, loop, url, client):
         self.loop = loop

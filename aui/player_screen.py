@@ -106,9 +106,11 @@ class PlayerScreen:
 
     def update(self, game_tick, type, *args):
         if type == 'game':
-            self.game_view.reload()
+            self.game_view.upd(args)
         elif type == 'player':
-            self.player_view.reload()
+            self.player_view.upd(args)
+        elif type == 'robo':
+            self.robo_view.upd(args)
         else:
             pass
 
@@ -130,7 +132,7 @@ class GameView(Frame):
                                        screen.width * 1 // 2,
                                        x=0,
                                        y=0,
-                                       on_load=self.reload,
+                                       on_load=self.upd,
                                        hover_focus=True,
                                        title="Game")
         self.model = model
@@ -145,7 +147,7 @@ class GameView(Frame):
         self.set_theme('monochrome')
         self.fix()
 
-    def reload(self):
+    def upd(self, *args):
         if self.model.cur_game_status:
             self.gameid_field.value = self.model.cur_game_status['game_id']
             self.gamename_field.value = self.model.cur_game_status['game_name']
@@ -160,7 +162,7 @@ class PlayerView(Frame):
                                        screen.width * 1 // 2,
                                        x=screen.width//2,
                                        y=0,
-                                       on_load=self.reload,
+                                       on_load=self.upd,
                                        hover_focus=True,
                                        title="Player")
         self.model = model
@@ -171,8 +173,8 @@ class PlayerView(Frame):
         self.set_theme('monochrome')
         self.fix()
 
-    def reload(self):
-        if self.model.cur_game_status:
+    def upd(self, *args):
+        if self.model.cur_player_status:
             self.playerid_field.value = self.model.cur_player_status['player_id']
 
 
@@ -198,19 +200,28 @@ class RoboView(Frame):
                                        screen.width,
                                        x=0,
                                        y=screen.height * 1 // 3,
-                                       on_load=self.reload,
+                                       on_load=self.upd,
                                        hover_focus=False,
                                        title="Player")
         self.model = model
-        self.playerid_field = Text("", "playerid")
+        self.position_field = Text("", "position")
+        self.dir_field = Text("", "direction")
+        self.load_field = Text("", "load")
         layout = Layout([1], fill_frame=True)
         self.add_layout(layout)
-        layout.add_widget(self.playerid_field)
+        layout.add_widget(self.position_field)
+        layout.add_widget(self.dir_field)
+        layout.add_widget(self.load_field)
         self.set_theme('monochrome')
         self.fix()
 
-    def reload(self):
-        if self.model.cur_game_status:
-            self.playerid_field.value = self.model.cur_player_status['player_id']
+    def upd(self, *args):
+        if self.model.cur_robo_status and len(args)>0 and len(args[0])>0:
+            robo_id = args[0][0]
+            robo_status = self.model.cur_robo_status
+            if robo_id in robo_status and len(robo_status[robo_id])>0:
+                self.position_field.value = str(self.model.cur_robo_status[robo_id]['pos'])
+                self.dir_field.value = str(self.model.cur_robo_status[robo_id]['dir'])
+                self.load_field.value = str(self.model.cur_robo_status[robo_id]['load'])
 
 
