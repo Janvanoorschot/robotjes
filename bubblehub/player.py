@@ -8,6 +8,7 @@ class Player:
     def get_status(self, game):
         result = {}
         result["player_id"] = self.player_id
+        result["player_name"] = self.player_name
         result["robos"] = {}
         for robo_id in self.robos:
             result["robos"][robo_id] = game.get_status(robo_id)

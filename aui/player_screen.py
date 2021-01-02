@@ -167,15 +167,18 @@ class PlayerView(Frame):
                                        title="Player")
         self.model = model
         self.playerid_field = Text("", "playerid")
+        self.playername_field = Text("", "playername")
         layout = Layout([1], fill_frame=True)
         self.add_layout(layout)
         layout.add_widget(self.playerid_field)
+        layout.add_widget(self.playername_field)
         self.set_theme('monochrome')
         self.fix()
 
     def upd(self, *args):
         if self.model.cur_player_status:
             self.playerid_field.value = self.model.cur_player_status['player_id']
+            self.playername_field.value = self.model.cur_player_status['player_name']
 
 
     # {
