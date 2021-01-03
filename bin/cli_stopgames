@@ -48,7 +48,7 @@ class Umpire_Client:
 async def main(loop):
     clnt = Umpire_Client()
     umpire = client.CLIUmpire(loop, args.url, clnt)
-    success = await umpire.stop(args.umpire)
+    success = await umpire.stop()
 
 # run our main loop
 aloop = asyncio.get_event_loop()

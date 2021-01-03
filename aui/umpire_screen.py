@@ -1,6 +1,6 @@
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
-from asciimatics.widgets import Frame, Text, Layout
+from asciimatics.widgets import Frame, Text, Layout, MultiColumnListBox
 
 
 class UmpireDisplay:
@@ -89,7 +89,7 @@ class UmpireScreen:
         self.scenes = []
         self.effects = [
             self.game_view,
-            self.player_view,
+            self.player_view
         ]
         self.scenes.append(Scene(self.effects, -1))
         self.screen.set_scenes(self.scenes)
@@ -154,16 +154,18 @@ class PlayerView(Frame):
                                        hover_focus=True,
                                        title="Player")
         self.model = model
-        self.playerid_field = Text("", "playerid")
-        self.playername_field = Text("", "playername")
-        layout = Layout([1,1], fill_frame=True)
+        self.players_field = MultiColumnListBox(
+            3,                              # lines
+            ["40%", "40%", "20%"],          # columns
+            None,                           # options
+            titles=["id", "name", "bots"]
+        )
+        layout = Layout([1], fill_frame=True)
         self.add_layout(layout)
-        layout.add_widget(self.playerid_field, 0)
-        layout.add_widget(self.playername_field, 1)
+        # layout.add_widget(self.players_field, 0)
         self.set_theme('monochrome')
         self.fix()
 
     def upd(self, *args):
         if self.model.cur_player_status:
-            self.playerid_field.value = self.model.cur_player_status['player_id']
-            self.playername_field.value = self.model.cur_player_status['player_name']
+            pass

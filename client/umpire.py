@@ -20,7 +20,7 @@ class CLIUmpire:
         self.lock = asyncio.Lock()
         self.players = {}
 
-    async def stop(self, umpire):
+    async def stop(self):
         """ Stop all games, freeing up the bubbles. """
         list = await self.rest_client.list_games()
         for id, game_name in list.items():
@@ -80,11 +80,11 @@ class CLIUmpire:
 
     def set_players_status(self, game_tick, players_status):
         # check for new players
+        self.callback('player_status', game_tick, players_status)
         for player_id in players_status:
             if player_id not in self.players:
                 self.players[player_id] = player_id
                 self.callback('player_registered', player_id, player_id)
-            self.callback('player_status', game_tick, players_status[player_id])
         done_players = []
         for player_id, player in self.players.items():
             if player_id not in players_status:
