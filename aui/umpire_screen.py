@@ -89,7 +89,7 @@ class UmpireScreen:
         self.scenes = []
         self.effects = [
             self.game_view,
-            self.player_view
+            # self.player_view
         ]
         self.scenes.append(Scene(self.effects, -1))
         self.screen.set_scenes(self.scenes)
@@ -155,14 +155,15 @@ class PlayerView(Frame):
                                        title="Player")
         self.model = model
         self.players_field = MultiColumnListBox(
-            3,                              # lines
-            ["40%", "40%", "20%"],          # columns
-            None,                           # options
-            titles=["id", "name", "bots"]
-        )
+            2,
+            [10, 10, 10],
+            [
+                (["One", "row", "here"], 1),
+                (["Second", "row", "here"], 2)
+            ])
         layout = Layout([1], fill_frame=True)
         self.add_layout(layout)
-        # layout.add_widget(self.players_field, 0)
+        layout.add_widget(self.players_field, 0)
         self.set_theme('monochrome')
         self.fix()
 
