@@ -77,12 +77,13 @@ class CLIUmpire:
         for player_id in players_status:
             if player_id not in self.players:
                 self.players[player_id] = player_id
-                self.callback('player', player_id, player_id)
+                self.callback('player_registered', player_id, player_id)
+            self.callback('player_status', game_tick, players_status[player_id])
         done_players = []
         for player_id, player in self.players.items():
             if player_id not in players_status:
                 done_players.append(player_id)
-                self.callback('noplayer', player_id, player_id)
+                self.callback('player_deregistered', player_id, player_id)
         for player_id in done_players:
             del self.players[player_id]
         if game_tick != self.game_tick:

@@ -47,10 +47,10 @@ class Umpire_Client:
     def discovered(self, game_id):
         print(f"game discovered: {game_id}")
 
-    def player(self, player_id, player_name):
+    def player_registered(self, player_id, player_name):
         print(f"player registered: {player_id}/{player_name}")
 
-    def noplayer(self, player_id, player_name):
+    def player_deregistered(self, player_id, player_name):
         print(f"player deregistered: {player_id}/{player_name}")
 
     def started(self):
@@ -58,6 +58,12 @@ class Umpire_Client:
 
     def stopped(self, success):
         print(f"game stopped: {success}")
+
+    def game_status(self, game_tick, game_status):
+        pass
+
+    def player_status(self, game_tick, player_status):
+        pass
 
     def tick(self, tick):
         # print(f"tick: {tick}")
