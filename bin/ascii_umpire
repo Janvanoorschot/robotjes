@@ -1,23 +1,17 @@
 #!/usr/bin/env python3
 
-import sys, os
-import argparse
-import asyncio
-
-import config
-import client
-
+import sys
+import os
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
-# get commandline arguments
-parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Umpire')
-parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
-parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
-parser.add_argument('--name', type=str, default="the_game", help='name of the game to create')
-parser.add_argument('--password', type=str, default="secret", help='password needed to enter the game')
-parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
-args = parser.parse_args()
+import argparse
+import asyncio
+import functools
+
+import config
+import client
+import aui
 
 
 class Timer:
@@ -36,7 +30,8 @@ class Timer:
     def cancel(self):
         self.task.cancel()
 
-class Umpire_Client:
+
+class UmpireClient:
 
     def __init__(self):
         pass
@@ -68,14 +63,40 @@ class Umpire_Client:
         pass
 
 
-async def main(loop):
-    clnt = Umpire_Client()
-    umpire = client.CLIUmpire(loop, args.url, clnt)
-    timer = Timer(0.5, umpire.timer, True)
-    await umpire.run_game(args.umpire, args.name, args.password, args.maze)
-    timer.cancel()
+async def screen_timer(scrn, umpire, loop):
+    if scrn.has_key():
+        scrn.close()
+        await umpire.stop()
+    else:
+        scrn.timer()
 
-# run our main loop
-aloop = asyncio.get_event_loop()
-aloop.run_until_complete(main(aloop))
-aloop.stop()
+
+async def main(loop):
+    scrn = aui.UmpireDisplay()
+    clnt = UmpireClient()
+    umpire = client.CLIUmpire(loop, args.url, clnt)
+    timer1 = Timer(0.5, umpire.timer, True)
+    timer2 = Timer(0.05, functools.partial(screen_timer, scrn, umpire, loop), True)
+    await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    timer1.cancel()
+    timer2.cancel()
+
+
+if __name__ == "__main__":
+    # get commandline arguments
+    parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Umpire')
+    parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
+    parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
+    parser.add_argument('--name', type=str, default="the_game", help='name of the game to create')
+    parser.add_argument('--password', type=str, default="secret", help='password needed to enter the game')
+    parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
+    args = parser.parse_args()
+
+    # run our main loop
+    try:
+        aloop = asyncio.get_event_loop()
+        aloop.run_until_complete(main(aloop))
+    except:
+        pass
+    finally:
+        aloop.stop()

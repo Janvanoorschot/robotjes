@@ -17,7 +17,7 @@ class CLIUmpire:
         self.lock = asyncio.Lock()
         self.players = {}
 
-    async def stop_games(self, umpire):
+    async def stop(self, umpire):
         """ Stop all games, freeing up the bubbles. """
         list = await self.rest_client.list_games()
         for id, game_name in list.items():
@@ -43,50 +43,54 @@ class CLIUmpire:
         if self.game_id and not self.stopped:
             try:
                 status = await self.rest_client.status_game(self.game_id)
-            except Exception:
-                print("?")
+            except Exception as e:
+                print(f"failed to get game status: {e}")
                 return
-            if status and isinstance(status, collections.Mapping):
-                if 'players' in status:
-                    # check for new players
-                    for player_id in status['players']:
-                        if player_id not in self.players:
-                            self.players[player_id] = player_id
-                            self.callback('player', player_id, player_id)
-                    done_players = []
-                    for player_id, player in self.players.items():
-                        if player_id not in status['players']:
-                            done_players.append(player_id)
-                            self.callback('noplayer', player_id, player_id)
-                    for player_id in done_players:
-                        del self.players[player_id]
-                if 'status' in status:
-                    if not self.stopped and status['status']['isStopped']:
-                        # normal stop
-                        self.stopped = True
-                        self.success = status['status']['isSuccess']
-                        self.callback('stopped', self.success)
-                        self.lock.release()
-                        return
-                    if not self.started and status['status']['isStarted']:
-                        # normal game start
-                        self.started = True
-                        self.stopped = False
-                        self.callback('started')
+            game_tick = 0
+            if 'status' in status:
                 game_tick = status['status']['game_tick']
-                if game_tick != self.game_tick:
-                    self.game_tick = game_tick
-                    self.callback('game_tick', self.game_tick)
-                if not self.discovered:
-                    self.discovered = True
-                    self.callback('discovered', self.game_tick)
-            else:
-                # emergency stop
-                self.stopped = True
-                self.success = False
-                self.callback('stopped', self.success)
-                self.lock.release()
-                return
+                self.set_game_status(game_tick, status['status'])
+                if self.stopped:
+                    await self.lock.release()
+            if 'players' in status:
+                self.set_players_status(game_tick, status['players'])
+
+    def set_game_status(self, game_tick, game_status):
+        self.callback('game_status', game_tick, game_status)
+        self.game_status = game_status
+        if not self.stopped and game_status['isStopped']:
+            # normal stop
+            self.stopped = True
+            self.success = game_status['isSuccess']
+            self.callback('stopped', self.success)
+            return
+        if not self.started and game_status['isStarted']:
+            # normal game start
+            self.started = True
+            self.stopped = False
+            self.callback('started')
+        if game_tick != self.game_tick:
+            self.game_tick = game_tick
+
+    def set_players_status(self, game_tick, players_status):
+        # check for new players
+        for player_id in players_status:
+            if player_id not in self.players:
+                self.players[player_id] = player_id
+                self.callback('player', player_id, player_id)
+        done_players = []
+        for player_id, player in self.players.items():
+            if player_id not in players_status:
+                done_players.append(player_id)
+                self.callback('noplayer', player_id, player_id)
+        for player_id in done_players:
+            del self.players[player_id]
+        if game_tick != self.game_tick:
+            self.game_tick = game_tick
+            self.callback('game_tick', self.game_tick)
+        if not self.discovered:
+            self.discovered = True
+            self.callback('discovered', self.game_tick)
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)
