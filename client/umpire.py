@@ -10,6 +10,9 @@ class CLIUmpire:
         self.client = client
         self.game_id = None
         self.game_tick = None
+        self.game_name = None
+        self.game_password = None
+        self.maze = None
         self.discovered = False
         self.success = False
         self.started = False
@@ -28,12 +31,15 @@ class CLIUmpire:
     async def run_game(self, umpire, name, password, maze):
         """ Validate the params, create the game and wait for the game to finish. """
         await self.lock.acquire()
+        self.game_name = name
+        self.game_password = password
+        self.maze = maze
         list = await self.rest_client.list_games()
         for id, game_name in list.items():
             if name == game_name:
                 raise Exception(f"game {game_name}/{id} already running")
         self.game_id = await self.rest_client.create_game(umpire, name, password, maze)
-        self.callback("registered", self.game_id)
+        self.callback("registered", self.game_id, self.game_name)
         if not self.game_id:
             raise Exception(f"create game failed")
         await self.lock.acquire()

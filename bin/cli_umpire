@@ -41,7 +41,7 @@ class Umpire_Client:
     def __init__(self):
         pass
 
-    def registered(self, game_id):
+    def registered(self, game_id, game_name):
         print(f"game registered: {game_id}")
 
     def discovered(self, game_id):

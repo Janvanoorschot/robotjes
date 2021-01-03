@@ -33,33 +33,41 @@ class Timer:
 
 class UmpireClient:
 
-    def __init__(self):
-        pass
+    def __init__(self, umpire_screen):
+        self.umpire_screen = umpire_screen
 
-    def registered(self, game_id):
-        print(f"game registered: {game_id}")
+    def registered(self, game_id, game_name):
+        # print(f"game registered: {game_id}")
+        self.umpire_screen.game_started(game_id, game_name)
 
     def discovered(self, game_id):
-        print(f"game discovered: {game_id}")
+        # print(f"game discovered: {game_id}")
+        pass
 
-    def player(self, player_id, player_name):
-        print(f"player registered: {player_id}/{player_name}")
+    def player_registered(self, player_id, player_name):
+        self.umpire_screen.player_registered(player_id, player_name)
 
-    def noplayer(self, player_id, player_name):
-        print(f"player deregistered: {player_id}/{player_name}")
+    def player_deregistered(self, player_id, player_name):
+        self.umpire_screen.player_deregistered(player_id)
 
     def started(self):
-        print(f"game started")
+        # print(f"game started")
+        pass
 
     def stopped(self, success):
-        print(f"game stopped: {success}")
+        # print(f"game stopped: {success}")
+        pass
+
+    def game_status(self, game_tick, game_status):
+        self.umpire_screen.game_status(game_tick, game_status)
+
+    def player_status(self, game_tick, player_status):
+        self.umpire_screen.player_status(game_tick, player_status)
 
     def tick(self, tick):
-        # print(f"tick: {tick}")
         pass
 
     def game_tick(self, game_tick):
-        # print(f"cli_umpire/game_timer[{game_tick}]")
         pass
 
 
@@ -73,7 +81,7 @@ async def screen_timer(scrn, umpire, loop):
 
 async def main(loop):
     scrn = aui.UmpireDisplay()
-    clnt = UmpireClient()
+    clnt = UmpireClient(scrn)
     umpire = client.CLIUmpire(loop, args.url, clnt)
     timer1 = Timer(0.5, umpire.timer, True)
     timer2 = Timer(0.05, functools.partial(screen_timer, scrn, umpire, loop), True)
