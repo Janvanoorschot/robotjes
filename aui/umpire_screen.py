@@ -57,6 +57,7 @@ class UmpireModel:
         self.prev_player_status = {}
         self.cur_player_status = {}
         self.cur_robo_status = {}
+        self.history = {}
 
     def game_started(self, game_id, game_name):
         self.game_id = game_id
@@ -100,6 +101,17 @@ class UmpireModel:
         self.game_tick = game_tick
         self.prev_player_status = self.cur_player_status
         self.cur_player_status = player_status
+        # feed the history
+        for player_id, player in player_status.items():
+            if player_id not in self.history:
+                self.history[player_id] = {}
+            for robo_id, robo in player['robos'].items():
+                if robo_id not in self.history[player_id]:
+                    self.history[player_id][robo_id] = []
+                history = self.history[player_id][robo_id]
+                if len(history) < 8:
+                    history.append(f"{robo['pos']}/{robo['dir']}")
+                    # history.pop(0)
 
     def players_updated(self):
         if len(self.prev_player_status) == 0 and len(self.cur_player_status) == 0:
@@ -160,8 +172,8 @@ class GameView(Frame):
 
     def __init__(self, screen, model):
         super(GameView, self).__init__(screen,
-                                       screen.height * 1 // 3,
-                                       screen.width * 1 // 2,
+                                       screen.height * 1 // 2,
+                                       screen.width * 1 // 3,
                                        x=0,
                                        y=0,
                                        on_load=self.upd,
@@ -190,9 +202,9 @@ class PlayerView(Frame):
 
     def __init__(self, screen, model):
         super(PlayerView, self).__init__(screen,
-                                       screen.height * 1 // 3,
-                                       screen.width * 1 // 2,
-                                       x=screen.width//2,
+                                       screen.height * 1 // 2,
+                                       screen.width * 2 // 3,
+                                       x=screen.width//3,
                                        y=0,
                                        on_load=self.upd,
                                        hover_focus=True,
@@ -215,17 +227,22 @@ class PlayerView(Frame):
                     robo_name = f"robo_{robo_ix}"
                     robo_details = f"robo_details_{robo_ix}"
                     robo_recording = f"robo_recording_{robo_ix}"
+                    robo_history = f"robo_history_{robo_ix}"
                     robo_ix = robo_ix + 1
                     robo_layout1 = Layout([2, 2, 6])
                     robo_layout2 = Layout([2, 8])
+                    robo_layout3 = Layout([2, 8])
                     self.add_layout(robo_layout1)
                     self.add_layout(robo_layout2)
+                    self.add_layout(robo_layout3)
                     robo_layout1.add_widget(Text(label="Robo:", name=robo_name), 0)
                     robo_layout1.add_widget(Text(name=robo_details), 1)
                     robo_layout2.add_widget(Text(name=robo_recording), 1)
+                    robo_layout3.add_widget(Text(name=robo_history), 1)
         else:
             dummy_layout = Layout([1])
-            self.add_layout(dummy_layout) 
+            self.add_layout(dummy_layout)
+            dummy_layout.add_widget(Text(label="Player:", name="dummy"))
 
     def upd(self, *args):
         if self.model.cur_player_status:
@@ -238,9 +255,14 @@ class PlayerView(Frame):
                     robo_name = f"robo_{robo_ix}"
                     robo_details = f"robo_details_{robo_ix}"
                     robo_recording = f"robo_recording_{robo_ix}"
+                    robo_history = f"robo_history_{robo_ix}"
                     self.cur_data[robo_name] = robo_name
                     self.cur_data[robo_details] = f"pos[{str(robo['pos'])}]"
                     self.cur_data[robo_recording] = json.dumps(robo['recording'])
+                    self.cur_data[robo_history] = ""
+                    if player_id in self.model.history:
+                        if robo_id in self.model.history[player_id]:
+                            self.cur_data[robo_history] = json.dumps(self.model.history[player_id][robo_id])
             self.data = self.cur_data
         else:
-            self.data = {}
+            self.data = {"dummy": "empty"}

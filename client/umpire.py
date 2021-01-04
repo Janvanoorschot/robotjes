@@ -8,11 +8,10 @@ class CLIUmpire:
         self.rest_client = RestClient(loop, url)
         self.client = client
         self.game_id = None
-        self.game_tick = None
+        self.game_tick = -1
         self.game_name = None
         self.game_password = None
         self.maze = None
-        self.discovered = False
         self.success = False
         self.started = False
         self.stopped = False
@@ -45,14 +44,15 @@ class CLIUmpire:
         if self.game_id and not self.stopped:
             try:
                 status = await self.rest_client.status_game(self.game_id)
-                game_tick = 0
-                if 'status' in status:
+                if 'status' in status and status['status']['game_tick'] > self.game_tick:
                     game_tick = status['status']['game_tick']
                     self.set_game_status(game_tick, status['status'])
-                    if self.stopped:
+                    if 'players' in status:
+                        self.set_players_status(game_tick, status['players'])
+                    self.game_tick = game_tick
+                    self.callback('game_tick', self.game_tick)
+                if self.stopped:
                         self.lock.release()
-                if 'players' in status:
-                    self.set_players_status(game_tick, status['players'])
             except Exception as e:
                 print("Exception: {e}")
 
@@ -70,8 +70,6 @@ class CLIUmpire:
             self.started = True
             self.stopped = False
             self.callback('started')
-        if game_tick != self.game_tick:
-            self.game_tick = game_tick
 
     def set_players_status(self, game_tick, players_status):
         # check for new players
@@ -87,12 +85,6 @@ class CLIUmpire:
                 self.callback('player_deregistered', player_id, player_id)
         for player_id in done_players:
             del self.players[player_id]
-        if game_tick != self.game_tick:
-            self.game_tick = game_tick
-            self.callback('game_tick', self.game_tick)
-        if not self.discovered:
-            self.discovered = True
-            self.callback('discovered', self.game_tick)
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)
