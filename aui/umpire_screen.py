@@ -1,6 +1,7 @@
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
-from asciimatics.widgets import Frame, Text, Layout, MultiColumnListBox
+from asciimatics.widgets import Frame, Text, Layout
+import json
 
 
 class UmpireDisplay:
@@ -38,7 +39,12 @@ class UmpireDisplay:
 
     def player_status(self, game_tick, player_status):
         self.model.set_player_status(game_tick, player_status)
-        self.view.update(game_tick, 'player')
+        if self.model.players_updated():
+            self.view.close()
+            self.view = UmpireScreen(self.model)
+        else:
+            self.view.update(game_tick, 'player')
+
 
 
 class UmpireModel:
@@ -47,8 +53,9 @@ class UmpireModel:
         self.game_id = None
         self.game_name = None
         self.game_tick = -1
-        self.cur_game_status = None
-        self.cur_player_status = None
+        self.cur_game_status = {}
+        self.prev_player_status = {}
+        self.cur_player_status = {}
         self.cur_robo_status = {}
 
     def game_started(self, game_id, game_name):
@@ -66,12 +73,49 @@ class UmpireModel:
         self.cur_game_status = game_status
 
     # {
-    #   'player_id': 'd6e023e8-8adb-4482-a07e-8f8e1328a3da',
-    #   'robos': ...
+    #   '4f290bc5-cc43-4b4b-9b85-66d5396bf921': {
+    #       'player_id': '4f290bc5-cc43-4b4b-9b85-66d5396bf921',
+    #       'player_name': 'me',
+    #       'robos': {
+    #           '43f5eaf0-110d-448b-9ab5-aaa62914f67b':
+    #               {
+    #                   'pos': [8, 11],
+    #                   'load': 0,
+    #                   'dir': 270,
+    #                   'recording': [
+    #                       [32, 'left', [1], True],
+    #                       [33, 'left', [1], True],
+    #                       [34, 'forward', [1], True]
+    #                   ],
+    #                   'fog_of_war': {
+    #                       'left': [None, None, None, False],
+    #                       'front': [None, None, None, False],
+    #                       'right': [None, None, None, False]
+    #                   }
+    #               }
+    #           }
+    #       }
     # }
     def set_player_status(self, game_tick, player_status):
         self.game_tick = game_tick
+        self.prev_player_status = self.cur_player_status
         self.cur_player_status = player_status
+
+    def players_updated(self):
+        if len(self.prev_player_status) == 0 and len(self.cur_player_status) == 0:
+            return False
+        if len(self.prev_player_status) != len(self.cur_player_status):
+            return True
+        for player_id, player in self.cur_player_status.items():
+            if player_id not in self.prev_player_status:
+                return True
+            robos = player['robos']
+            if len(self.prev_player_status[player_id]['robos']) != len(robos):
+                return True
+            for robo_id, robo in robos.items():
+                if robo_id not in self.prev_player_status[player_id]['robos']:
+                    return True
+        return False
 
 
 class UmpireScreen:
@@ -89,7 +133,7 @@ class UmpireScreen:
         self.scenes = []
         self.effects = [
             self.game_view,
-            # self.player_view
+            self.player_view
         ]
         self.scenes.append(Scene(self.effects, -1))
         self.screen.set_scenes(self.scenes)
@@ -121,8 +165,8 @@ class GameView(Frame):
                                        x=0,
                                        y=0,
                                        on_load=self.upd,
-                                       hover_focus=True,
-                                       title="Game")
+                                       title="Game",
+                                       name="Game")
         self.model = model
         self.gameid_field = Text("", "gameid")
         self.gamename_field = Text("", "gamename")
@@ -154,19 +198,49 @@ class PlayerView(Frame):
                                        hover_focus=True,
                                        title="Player")
         self.model = model
-        self.players_field = MultiColumnListBox(
-            2,
-            [10, 10, 10],
-            [
-                (["One", "row", "here"], 1),
-                (["Second", "row", "here"], 2)
-            ])
-        layout = Layout([1], fill_frame=True)
-        self.add_layout(layout)
-        layout.add_widget(self.players_field, 0)
+        self.cur_data = {}
+        self.populate()
         self.set_theme('monochrome')
         self.fix()
 
+    def populate(self):
+        if self.model.cur_player_status:
+            for player_id, player in self.model.cur_player_status.items():
+                player_name = f"player_{player_id}"
+                player_layout = Layout([1, 1, 1], fill_frame=True)
+                self.add_layout(player_layout)
+                player_layout.add_widget(Text(label="Player:", name=player_name))
+                robo_ix = 0
+                for robo_id, robo in player['robos'].items():
+                    robo_name = f"robo_{robo_ix}"
+                    robo_details = f"robo_details_{robo_ix}"
+                    robo_recording = f"robo_recording_{robo_ix}"
+                    robo_ix = robo_ix + 1
+                    robo_layout1 = Layout([2, 2, 6])
+                    robo_layout2 = Layout([2, 8])
+                    self.add_layout(robo_layout1)
+                    self.add_layout(robo_layout2)
+                    robo_layout1.add_widget(Text(label="Robo:", name=robo_name), 0)
+                    robo_layout1.add_widget(Text(name=robo_details), 1)
+                    robo_layout2.add_widget(Text(name=robo_recording), 1)
+        else:
+            dummy_layout = Layout([1])
+            self.add_layout(dummy_layout) 
+
     def upd(self, *args):
         if self.model.cur_player_status:
-            pass
+            self.cur_data = {}
+            for player_id, player in self.model.cur_player_status.items():
+                player_name = f"player_{player_id}"
+                self.cur_data[player_name] = player['player_name']
+                robo_ix = 0
+                for robo_id, robo in player['robos'].items():
+                    robo_name = f"robo_{robo_ix}"
+                    robo_details = f"robo_details_{robo_ix}"
+                    robo_recording = f"robo_recording_{robo_ix}"
+                    self.cur_data[robo_name] = robo_name
+                    self.cur_data[robo_details] = f"pos[{str(robo['pos'])}]"
+                    self.cur_data[robo_recording] = json.dumps(robo['recording'])
+            self.data = self.cur_data
+        else:
+            self.data = {}

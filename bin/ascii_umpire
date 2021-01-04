@@ -13,6 +13,7 @@ import config
 import client
 import aui
 
+sys.stderr = open("stderr.txt", "w")
 
 class Timer:
     def __init__(self, timeout, callback, repeat=False):
@@ -85,7 +86,10 @@ async def main(loop):
     umpire = client.CLIUmpire(loop, args.url, clnt)
     timer1 = Timer(0.5, umpire.timer, True)
     timer2 = Timer(0.05, functools.partial(screen_timer, scrn, umpire, loop), True)
-    await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    try:
+        await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    except Exception as e:
+        print(f"Exception: {str(e)}")
     timer1.cancel()
     timer2.cancel()
 

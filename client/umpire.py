@@ -1,4 +1,3 @@
-import collections
 from . import RestClient
 import asyncio
 
@@ -21,12 +20,9 @@ class CLIUmpire:
         self.players = {}
 
     async def stop(self):
-        """ Stop all games, freeing up the bubbles. """
-        list = await self.rest_client.list_games()
-        for id, game_name in list.items():
-            await self.rest_client.delete_game(id)
-            self.callback("stopped", id)
-        return self.success
+        await self.rest_client.delete_game(self.game_id)
+        if self.lock and self.lock.locked():
+            self.lock.release()
 
     async def run_game(self, umpire, name, password, maze):
         """ Validate the params, create the game and wait for the game to finish. """
@@ -49,17 +45,16 @@ class CLIUmpire:
         if self.game_id and not self.stopped:
             try:
                 status = await self.rest_client.status_game(self.game_id)
+                game_tick = 0
+                if 'status' in status:
+                    game_tick = status['status']['game_tick']
+                    self.set_game_status(game_tick, status['status'])
+                    if self.stopped:
+                        self.lock.release()
+                if 'players' in status:
+                    self.set_players_status(game_tick, status['players'])
             except Exception as e:
-                print(f"failed to get game status: {e}")
-                return
-            game_tick = 0
-            if 'status' in status:
-                game_tick = status['status']['game_tick']
-                self.set_game_status(game_tick, status['status'])
-                if self.stopped:
-                    await self.lock.release()
-            if 'players' in status:
-                self.set_players_status(game_tick, status['players'])
+                print("Exception: {e}")
 
     def set_game_status(self, game_tick, game_status):
         self.callback('game_status', game_tick, game_status)
