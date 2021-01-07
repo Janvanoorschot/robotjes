@@ -9,7 +9,7 @@ The simulation in Robomind Academy has two aspects, the Client side and the Serv
 The client side consists of a script being execute which triggers calls the Robo (forward, pickup, etc).
 The server side contains the simulation of the world where Robo lives. 
 
-![Components](images/components.png "Logo Title Text 1")
+![Components](img/components.png "Logo Title Text 1")
 
 In the final setup there will be more distance between client-side and and server-side. During
 development they are glued together using RevRunner/DevRequestor/DevHandler.

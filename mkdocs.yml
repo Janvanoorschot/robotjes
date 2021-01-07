@@ -1,4 +1,9 @@
 site_name: Robotjes
 
-theme:
-  name: bootstrap
+nav:
+  - Home: index.md
+  - Devops: devops
+  - Attic: attic
+
+#theme:
+#  name: bootstrap
