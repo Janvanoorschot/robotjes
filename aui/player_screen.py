@@ -139,11 +139,11 @@ class GameView(Frame):
         self.gameid_field = Text("", "gameid")
         self.gamename_field = Text("", "gamename")
         self.gametick_field = Text("", "gametick")
-        layout = Layout([1,1], fill_frame=True)
+        layout = Layout([4,1,1], fill_frame=True)
         self.add_layout(layout)
-        layout.add_widget(self.gameid_field)
-        layout.add_widget(self.gamename_field)
-        layout.add_widget(self.gametick_field)
+        layout.add_widget(self.gameid_field, 0)
+        layout.add_widget(self.gamename_field, 1)
+        layout.add_widget(self.gametick_field, 2)
         self.set_theme('monochrome')
         self.fix()
 
@@ -168,10 +168,10 @@ class PlayerView(Frame):
         self.model = model
         self.playerid_field = Text("", "playerid")
         self.playername_field = Text("", "playername")
-        layout = Layout([1], fill_frame=True)
+        layout = Layout([1,1], fill_frame=True)
         self.add_layout(layout)
-        layout.add_widget(self.playerid_field)
-        layout.add_widget(self.playername_field)
+        layout.add_widget(self.playerid_field, 0)
+        layout.add_widget(self.playername_field, 1)
         self.set_theme('monochrome')
         self.fix()
 
@@ -205,16 +205,16 @@ class RoboView(Frame):
                                        y=screen.height * 1 // 3,
                                        on_load=self.upd,
                                        hover_focus=False,
-                                       title="Player")
+                                       title="Robos")
         self.model = model
         self.position_field = Text("", "position")
         self.dir_field = Text("", "direction")
         self.load_field = Text("", "load")
-        layout = Layout([1], fill_frame=True)
+        layout = Layout([1, 1, 1], fill_frame=True)
         self.add_layout(layout)
-        layout.add_widget(self.position_field)
-        layout.add_widget(self.dir_field)
-        layout.add_widget(self.load_field)
+        layout.add_widget(self.position_field, 0)
+        layout.add_widget(self.dir_field, 1)
+        layout.add_widget(self.load_field, 2)
         self.set_theme('monochrome')
         self.fix()
 

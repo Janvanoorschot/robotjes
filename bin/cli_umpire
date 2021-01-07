@@ -41,16 +41,16 @@ class Umpire_Client:
     def __init__(self):
         pass
 
-    def registered(self, game_id):
+    def registered(self, game_id, game_name):
         print(f"game registered: {game_id}")
 
     def discovered(self, game_id):
         print(f"game discovered: {game_id}")
 
-    def player(self, player_id, player_name):
+    def player_registered(self, player_id, player_name):
         print(f"player registered: {player_id}/{player_name}")
 
-    def noplayer(self, player_id, player_name):
+    def player_deregistered(self, player_id, player_name):
         print(f"player deregistered: {player_id}/{player_name}")
 
     def started(self):
@@ -58,6 +58,12 @@ class Umpire_Client:
 
     def stopped(self, success):
         print(f"game stopped: {success}")
+
+    def game_status(self, game_tick, game_status):
+        pass
+
+    def player_status(self, game_tick, player_status):
+        pass
 
     def tick(self, tick):
         # print(f"tick: {tick}")
@@ -72,8 +78,10 @@ async def main(loop):
     clnt = Umpire_Client()
     umpire = client.CLIUmpire(loop, args.url, clnt)
     timer = Timer(0.5, umpire.timer, True)
-    success = await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    timer.cancel()
 
 # run our main loop
 aloop = asyncio.get_event_loop()
 aloop.run_until_complete(main(aloop))
+aloop.stop()

@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(rootdir)
+
+import argparse
+import asyncio
+import functools
+
+import config
+import client
+import aui
+
+sys.stderr = open("stderr.txt", "w")
+
+class Timer:
+    def __init__(self, timeout, callback, repeat=False):
+        self.timeout = timeout
+        self.callback = callback
+        self.repeat = repeat
+        self.task = asyncio.ensure_future(self.job())
+
+    async def job(self):
+        await asyncio.sleep(self.timeout)
+        await self.callback()
+        if self.repeat:
+            self.task = asyncio.ensure_future(self.job())
+
+    def cancel(self):
+        self.task.cancel()
+
+
+class UmpireClient:
+
+    def __init__(self, umpire_screen):
+        self.umpire_screen = umpire_screen
+
+    def registered(self, game_id, game_name):
+        # print(f"game registered: {game_id}")
+        self.umpire_screen.game_started(game_id, game_name)
+
+    def player_registered(self, player_id, player_name):
+        self.umpire_screen.player_registered(player_id, player_name)
+
+    def player_deregistered(self, player_id, player_name):
+        self.umpire_screen.player_deregistered(player_id)
+
+    def started(self):
+        # print(f"game started")
+        pass
+
+    def stopped(self, success):
+        # print(f"game stopped: {success}")
+        pass
+
+    def game_status(self, game_tick, game_status):
+        self.umpire_screen.game_status(game_tick, game_status)
+
+    def player_status(self, game_tick, player_status):
+        self.umpire_screen.player_status(game_tick, player_status)
+
+    def tick(self, tick):
+        pass
+
+    def game_tick(self, game_tick):
+        pass
+
+
+async def screen_timer(scrn, umpire, loop):
+    if scrn.has_key():
+        scrn.close()
+        await umpire.stop()
+    else:
+        scrn.timer()
+
+
+async def main(loop):
+    scrn = aui.UmpireDisplay()
+    clnt = UmpireClient(scrn)
+    umpire = client.CLIUmpire(loop, args.url, clnt)
+    timer1 = Timer(0.5, umpire.timer, True)
+    timer2 = Timer(0.05, functools.partial(screen_timer, scrn, umpire, loop), True)
+    try:
+        await umpire.run_game(args.umpire, args.name, args.password, args.maze)
+    except Exception as e:
+        print(f"Exception: {str(e)}")
+    timer1.cancel()
+    timer2.cancel()
+
+
+if __name__ == "__main__":
+    # get commandline arguments
+    parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Umpire')
+    parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
+    parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
+    parser.add_argument('--name', type=str, default="the_game", help='name of the game to create')
+    parser.add_argument('--password', type=str, default="secret", help='password needed to enter the game')
+    parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
+    args = parser.parse_args()
+
+    # run our main loop
+    try:
+        aloop = asyncio.get_event_loop()
+        aloop.run_until_complete(main(aloop))
+    except:
+        pass
+    finally:
+        aloop.stop()

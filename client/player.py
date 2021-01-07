@@ -8,7 +8,7 @@ from client import RestClient
 from robotjes.local import LocalRequestor
 
 
-class CLIPlayer():
+class CLIPlayer:
 
     def __init__(self, loop, url, client):
         self.loop = loop
