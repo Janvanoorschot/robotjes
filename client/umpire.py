@@ -23,6 +23,12 @@ class CLIUmpire:
         if self.lock and self.lock.locked():
             self.lock.release()
 
+    async def stopall(self):
+        lst = await self.rest_client.list_games()
+        for game_id, game_name in lst.items():
+            await self.rest_client.delete_game(game_id)
+            print(f"stopped[{game_name}]")
+
     async def run_game(self, umpire, name, password, maze):
         """ Validate the params, create the game and wait for the game to finish. """
         await self.lock.acquire()

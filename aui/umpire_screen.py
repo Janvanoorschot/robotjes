@@ -110,7 +110,8 @@ class UmpireModel:
                     self.history[player_id][robo_id] = []
                 history = self.history[player_id][robo_id]
                 if len(history) < 8:
-                    history.append(f"{robo['pos']}/{robo['dir']}")
+                    if robo:
+                        history.append(f"{robo['pos']}/{robo['dir']}")
                     # history.pop(0)
 
     def players_updated(self):

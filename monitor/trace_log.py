@@ -6,28 +6,26 @@ class TraceLog(object):
 
     __instance = None
 
-    def __new__(cls, path="/data/dev/robotjes/tracelog"):
-        if TraceLog.__instance is None:
-            TraceLog.__instance = object.__new__(cls)
+    def __init__(self, path="/data/dev/robotjes/tracelog"):
         occurance = str(to_integer(datetime.datetime.now()))
-        TraceLog.__instance.__path = os.path.join(path, occurance)
+        self.__path = os.path.join(path, occurance)
         if not os.path.isdir(path):
             raise Exception(f"not a tracelog directory: {path}")
         if os.path.isdir(os.path.join(path, occurance)):
-            raise Exception(f"tracelog directory already exists: {TraceLog.__instance.__path}")
-        os.mkdir(TraceLog.__instance.__path)
-        return TraceLog.__instance
+            raise Exception(f"tracelog directory already exists: {self.__path}")
+        os.mkdir(self.__path)
 
-    def trace(self, type, *args):
-        filename = os.path.join(self.__path, f"{type}.log")
+    def trace(self, t, *args):
+        filename = os.path.join(self.__path, f"{t}.log")
         with open(filename, "a") as f:
             line = str(to_integer(datetime.datetime.now())) + ',' + ','.join([str(x) for x in args]) + '\n'
             f.write(line)
 
-
     @staticmethod
     def default_logger():
-        return TraceLog()
+        if TraceLog.__instance == None:
+            TraceLog.__instance = TraceLog()
+        return TraceLog.__instance
 
 
 def to_integer(dt_time: datetime.datetime):
@@ -35,3 +33,6 @@ def to_integer(dt_time: datetime.datetime):
 
 
 
+if __name__ == "__main__":
+
+    TraceLog.default_logger().trace("eikel",4,5,6,[1,2])
