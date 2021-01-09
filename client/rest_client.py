@@ -11,6 +11,7 @@ class RestClient:
         self.url = url
         self.last_player_status_tick = {}
         self.last_recording_tick = {}
+        self.last_gamestatus_tick = {}
         self.last_move = {}
 
     async def list_games(self):
@@ -103,6 +104,13 @@ class RestClient:
         reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}/status"))
         if reply.status_code == 200:
             result = reply.json()
+            game_tick = result['status']['game_tick']
+            for player_id, player in result['players'].items():
+                robos = player['robos']
+                for robo_id, robo in robos.items():
+                    if (robo_id not in self.last_gamestatus_tick) or (game_tick > self.last_gamestatus_tick[robo_id]):
+                        TraceLog.default_logger().trace('umpire.gamestatus', game_tick, robo['pos'], robo['load'], robo['dir'])
+                    self.last_gamestatus_tick[robo_id] = game_tick
             return result
         else:
             raise Exception(f"failed rest call status_game:{reply.reason}")
