@@ -7,13 +7,14 @@ class TraceLog(object):
     __instance = None
 
     def __init__(self, path="/data/dev/robotjes/tracelog"):
-        occurance = str(to_integer(datetime.datetime.now()))
-        self.__path = os.path.join(path, occurance)
+        # occurance = str(to_integer(datetime.datetime.now()))
+        # self.__path = os.path.join(path, occurance)
+        self.__path = path
         if not os.path.isdir(path):
             raise Exception(f"not a tracelog directory: {path}")
-        if os.path.isdir(os.path.join(path, occurance)):
-            raise Exception(f"tracelog directory already exists: {self.__path}")
-        os.mkdir(self.__path)
+        # if os.path.isdir(os.path.join(path, occurance)):
+        #     raise Exception(f"tracelog directory already exists: {self.__path}")
+        # os.mkdir(self.__path)
 
     def trace(self, t, *args):
         filename = os.path.join(self.__path, f"{t}.log")

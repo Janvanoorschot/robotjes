@@ -32,6 +32,26 @@ sudo usermod -aG sudo jan
 The other three Raspberry Pi 4/8Gb will be slave nodes. They will boot from SD card. 
 Install the following software:
 
+# Install Docker
+
+```script
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   "deb [arch=arm64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo docker run hello-world
+```
+
 * Ubuntu Server for Raspberry Pi 20.10
 ## References
 

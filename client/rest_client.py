@@ -9,7 +9,9 @@ class RestClient:
     def __init__(self, loop, url):
         self.loop = loop
         self.url = url
-        self.last_ticks = {}
+        self.last_player_status_tick = {}
+        self.last_recording_tick = {}
+        self.last_move = {}
 
     async def list_games(self):
         reply = await self.loop.run_in_executor(None, requests.get, self.create_url('games'))
@@ -71,8 +73,8 @@ class RestClient:
             raise Exception(f"failed rest call deregister_player:{reply.text}")
 
     async def issue_command(self, game_id, player_id, move):
-        if game_id in self.last_ticks:
-            TraceLog.default_logger().trace('player.issue_command', self.last_ticks[game_id], game_id, player_id, move)
+        if game_id in self.last_player_status_tick:
+            TraceLog.default_logger().trace('player.issue_command', self.last_player_status_tick[game_id], game_id, player_id, move)
         else:
             TraceLog.default_logger().trace('player.issue_command', -1, game_id, player_id, move)
         query = {
@@ -101,9 +103,6 @@ class RestClient:
         reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}/status"))
         if reply.status_code == 200:
             result = reply.json()
-            game_id = result['game_id']
-            game_tick = result['status']['game_tick']
-            self.last_ticks[game_id] = game_tick
             return result
         else:
             raise Exception(f"failed rest call status_game:{reply.reason}")
@@ -112,9 +111,17 @@ class RestClient:
         reply = await self.loop.run_in_executor(None, requests.get, self.create_url(f"game/{game_id}/player/{player_id}/status"))
         if reply.status_code == 200:
             result = reply.json()
-            game_id = result['game_status']['game_id']
-            game_tick = result['game_status']['status']['game_tick']
-            self.last_ticks[game_id] = game_tick
+            if result:
+                game_id = result['game_status']['game_id']
+                game_tick = result['game_status']['status']['game_tick']
+                robos = result['player_status']['robos']
+                for robo_id, robo in robos.items():
+                    recording = robo['recording']
+                    for rec in recording:
+                        if (robo_id not in self.last_recording_tick) or (rec[0] > self.last_recording_tick[robo_id]):
+                            TraceLog.default_logger().trace('player.recorded_command', rec[0], game_id, player_id, [0, robo_id, rec[1]]+rec[2], rec[3])
+                            self.last_recording_tick[robo_id] = rec[0]
+                self.last_player_status_tick[game_id] = game_tick
             return result
         else:
             raise Exception(f"failed rest call status_player:{reply.reason}")
