@@ -61,7 +61,9 @@ class CLIPlayer:
         self.robo = Robo(self.local_requestor)
         self.client_code = RoboThread(self.robo, execute)
         # enter the command/reply cycle until the local_requestor is stopped
+        await self.timer_lock.acquire()
         while not self.stopped:
+            await self.timer_lock.acquire()
             cmd = await self.local_requestor.get()
             # print(cmd)
             if len(cmd) < 2 or self.stopped:
@@ -77,7 +79,7 @@ class CLIPlayer:
             else:
                 reply = {'result': True}
             await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
-            await self.timer_lock.acquire()
+            # await self.timer_lock.acquire()
             await self.local_requestor.put(reply)
         await self.rest_client.deregister_player(self.game_id, self.player_id)
         self.robo_coroutine.cancel()
