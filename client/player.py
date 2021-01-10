@@ -93,12 +93,13 @@ class CLIPlayer:
                 print(f"failed to get player status: {e}")
                 return
             # we received a valid status (about the game, this player and all the robo's), handle it
-            game_tick = status['game_status']['status']['game_tick']
-            self.set_game_status(game_tick, status['game_status'])
-            bots = status['player_status']['robos'].keys()
-            self.set_player_status(game_tick, status['player_status'])
-            for robo_id, robo_status in status['player_status']['robos'].items():
-                self.set_robo_status(game_tick, robo_id, robo_status)
+            if status:
+                game_tick = status['game_status']['status']['game_tick']
+                self.set_game_status(game_tick, status['game_status'])
+                bots = status['player_status']['robos'].keys()
+                self.set_player_status(game_tick, status['player_status'])
+                for robo_id, robo_status in status['player_status']['robos'].items():
+                    self.set_robo_status(game_tick, robo_id, robo_status)
 
     def set_game_status(self, game_tick, game_status):
         self.callback('game_status', game_tick, game_status)

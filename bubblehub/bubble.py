@@ -18,16 +18,20 @@ class Bubble:
         self.game_password = None
         self.game_state = GameStatus.IDLE
         self.game_out_routing_key = ''
-        self.game = None
-        self.players = {}
-        self.moves = {}
         self.channel = None
         self.delivery_tag = None
         self.now = datetime.datetime.now()
         self.starttime = None
         self.mazes = None
+        self.game = None
+        self.players = {}
+        self.invalid_players = {}
+        self.moves = {}
+        self.lastseen = {}
         self.tick = 0
+        self.game_tick = 0
         self.resolution = 10
+        self.inactive_limit = 10
 
     def set_mazes(self, mazes):
         self.mazes = mazes
@@ -120,8 +124,9 @@ class Bubble:
             return False
 
     def start_players(self):
-        self.players = {}
-        self.invalid_players = {}
+        self.players.clear()
+        self.invalid_players.clear()
+        self.lastseen.clear()
 
     def is_valid_player(self, player_id):
         return player_id in self.players and not player_id in self.invalid_players
@@ -167,6 +172,7 @@ class Bubble:
                         self.deregister_player(player_id)
                 elif cmd == "move":
                     player_id = request.get("player_id", "unknown")
+                    self.lastseen[player_id] = self.game_tick
                     move = request.get("move", {})
                     if player_id in self.players:
                         self.moves[player_id] = move
@@ -224,9 +230,18 @@ class Bubble:
             self.game.timer(self.tick)
             if self.game_state == GameStatus.STARTED:
                 if self.tick % self.resolution == 0:
-                    game_tick = int(self.tick/self.resolution)
-                    # print(f"bubble/game_timer[{game_tick}]")
-                    self.game.game_timer(game_tick, self.moves)
+                    self.game_tick = int(self.tick/self.resolution)
+                    # do moves
+                    self.game.game_timer(self.game_tick, self.moves)
                     self.moves.clear()
+                    # kill inactive players
+                    inactive_players = []
+                    for player_id, last_seen_tick in self.lastseen.items():
+                        if self.game_tick - last_seen_tick > self.inactive_limit:
+                            inactive_players.append(player_id)
+                    for player_id in inactive_players:
+                        self.deregister_player(player_id)
+                        del self.lastseen[player_id]
             if self.game.is_stopped():
                 self.stop_game()
+
