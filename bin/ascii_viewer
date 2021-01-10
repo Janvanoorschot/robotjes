@@ -40,16 +40,7 @@ class ViewerClient:
     def __init__(self, player_screen):
         self.player_screen = player_screen
 
-    def registered(self, game_id, player_name):
-        # print(f"player registered: {game_id}/{player_name}")
-        pass
-
-    def player(self, player_id, player_name):
-        # print(f"player discovered: {player_id}/{player_name}")
-        pass
-
-    def started(self):
-        # print(f"player started")
+    def started(self, game_id, game_name):
         pass
 
     def stopped(self, success):

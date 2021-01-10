@@ -20,18 +20,6 @@ class CLIViewer:
         self.before_game_time = 0
         self.lock = asyncio.Lock()
 
-        self.running = False
-        self.started = False
-        self.stopped = False
-        self.success = False
-        self.robo_coroutine = None
-        self.players = {}
-        self.player_status = None
-        self.game_status = None
-        self.robo_status = {}
-        self.client_code = None
-        self.robo = None
-
     async def stop(self):
         sys.exit("viewer break")
 
@@ -44,55 +32,33 @@ class CLIViewer:
                 break
         else:
             raise Exception(f"no such game {game_name}")
+        self.callback('started', self.game_id, game_name)
         await self.lock.acquire()
 
-
     async def timer(self):
-        if not self.stopped:
-            try:
-                status = await self.rest_client.recording_game(self.game_id, self.before_game_time)
-            except Exception as e:
-                print(f"failed to get player status: {e}")
-                return
-            if status:
-                # we received a valid delta-recording, handle it
-                for delta in status:
-                    game_tick = delta['game_tick']
-                    frames = delta['frames']
-                    map_status = delta['map_status']
-                    self.before_game_time = game_tick
-
-    def set_game_status(self, game_tick, game_status):
-        self.callback('game_status', game_tick, game_status)
-        self.game_status = game_status
-        if not self.stopped and game_status['status']['isStopped']:
-            # normal stop
-            self.stopped = True
-            self.success = game_status['status']['isSuccess']
-            self.callback('stopped', self.success)
+        try:
+            status = await self.rest_client.recording_game(self.game_id, self.before_game_time)
+        except Exception as e:
+            print(f"failed to get player status: {e}")
             return
-        if not self.started and game_status['status']['isStarted']:
-            # normal game start
-            self.started = True
-            self.stopped = False
-            self.callback('started')
-        if game_tick != self.game_tick:
-            self.game_tick = game_tick
+        if status:
+            # we received a valid delta-recording, handle it
+            for delta in status:
+                game_tick = delta['game_tick']
+                frames = delta['frames']
+                map_status = delta['map_status']
+                self.set_frames(game_tick, frames)
+                self.set_map_status(game_tick, map_status)
+                self.before_game_time = game_tick
+
+    def set_frames(self, game_tick, frames):
+        pass
+
+    def set_map_status(self, game_tick, map_status):
+        pass
+        if False:
             if self.timer_lock.locked():
                 self.timer_lock.release()
-
-    def set_player_status(self, game_tick, player_status):
-        self.callback('player_status', game_tick, player_status)
-
-    def set_robo_status(self, game_tick, robo_id, robo_status):
-        self.callback('robo_status', game_tick, robo_id, robo_status)
-        if robo_id not in self.robo_status:
-            # first time we see this robo, activate its logic
-            self.robo.set_id(robo_id)
-            self.robo_coroutine = self.loop.run_in_executor(
-               self.executor,
-               self.client_code.run)
-        self.robo_status[robo_id] = robo_status
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)
