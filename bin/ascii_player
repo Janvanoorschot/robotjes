@@ -71,6 +71,9 @@ class PlayerClient:
     def robo_status(self, game_tick, robo_id, robo_status):
         self.player_screen.robo_status(game_tick, robo_id, robo_status)
 
+    def issue_command(self, game_tick, move):
+        pass
+
 
 async def screen_timer(scrn, player, loop):
     if scrn.has_key():

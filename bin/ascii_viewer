@@ -13,8 +13,11 @@ import config
 import client
 import aui
 
+from monitor.trace_log import TraceLog
+
 
 class Timer:
+
     def __init__(self, timeout, callback, repeat=False):
         self.timeout = timeout
         self.callback = callback
@@ -36,25 +39,40 @@ class Timer:
 
 
 class ViewerClient:
+    cmd_translate = {
+        "f": "forward",
+        "r": "right",
+        "l": "left",
+    }
 
-    def __init__(self, player_screen):
-        self.player_screen = player_screen
+    def __init__(self, viewer_screen):
+        self.viewer_screen = viewer_screen
+        self.game_id = None
+        self.game_name = None
 
     def started(self, game_id, game_name):
-        pass
+        self.game_id = game_id
+        self.game_name = game_name
+        # self.viewer_screen.started(game_id, game_name)
 
-    def stopped(self, success):
-        # print(f"player stopped: {success}")
-        pass
+    def frames(self, game_tick, frames):
+        for frame in frames:
+            for action in frame:
+                # {'action': ['f', 1, 1], 'ix': 176, 'tick': 186, 'sprite': 'd64d9bdb-778e-4ce7-b108-b3c590225b0c', 'src': 12, 'score': 176}
+                TraceLog.default_logger().trace(
+                    'viewer.frames',
+                    action['tick'],
+                    [0, action['sprite'], ViewerClient.cmd_translate.get(action['action'][0],'unknown'), action['action'][1]]
+                )
+        # self.viewer_screen.game_status(game_tick, frames)
 
-    def game_status(self, game_tick, game_status):
-        self.player_screen.game_status(game_tick, game_status)
-
-    def player_status(self, game_tick, player_status):
-        self.player_screen.player_status(game_tick, player_status)
-
-    def robo_status(self, game_tick, robo_id, robo_status):
-        self.player_screen.robo_status(game_tick, robo_id, robo_status)
+    def map_status(self, game_tick, map_status):
+        game_time = map_status['game_time']
+        robos = map_status['robotLines']
+        for robo in robos:
+            # {'id': '73c71d53-bb1c-43f0-97e4-a20e2d2862be', 'x': 8, 'y': 10, 'dir': 90, 'beacons': 0}
+            TraceLog.default_logger().trace('viewer.mapstatus', game_tick, [robo['x'],robo['y']], robo['beacons'], robo['dir'])
+        # self.viewer_screen.game_status(game_tick, game_status)
 
 
 async def screen_timer(scrn, player, loop):

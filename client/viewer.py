@@ -34,6 +34,7 @@ class CLIViewer:
             raise Exception(f"no such game {game_name}")
         self.callback('started', self.game_id, game_name)
         await self.lock.acquire()
+        print('done')
 
     async def timer(self):
         try:
@@ -52,10 +53,10 @@ class CLIViewer:
                 self.before_game_time = game_tick
 
     def set_frames(self, game_tick, frames):
-        pass
+        self.callback('frames', game_tick, frames)
 
     def set_map_status(self, game_tick, map_status):
-        pass
+        self.callback('map_status', game_tick, map_status)
         if False:
             if self.timer_lock.locked():
                 self.timer_lock.release()
