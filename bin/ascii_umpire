@@ -37,12 +37,15 @@ class Timer:
 
 class UmpireClient:
 
-    def __init__(self, umpire_screen):
+    def __init__(self, args, umpire_screen):
+        if args.trace:
+            self.trace = True
+        else:
+            self.trace = False
         self.umpire_screen = umpire_screen
         self.last_gamestatus_tick = {}
 
     def registered(self, game_id, game_name):
-        # print(f"game registered: {game_id}")
         self.umpire_screen.game_started(game_id, game_name)
 
     def player_registered(self, player_id, player_name):
@@ -52,11 +55,9 @@ class UmpireClient:
         self.umpire_screen.player_deregistered(player_id)
 
     def started(self):
-        # print(f"game started")
         pass
 
     def stopped(self, success):
-        # print(f"game stopped: {success}")
         pass
 
     def game_status(self, game_tick, game_status):
@@ -67,11 +68,13 @@ class UmpireClient:
                 robos = player['robos']
                 for robo_id, robo in robos.items():
                     if (robo_id not in self.last_gamestatus_tick) or (game_tick > self.last_gamestatus_tick[robo_id]):
-                        TraceLog.default_logger().trace('umpire.gamestatus', game_tick, robo['pos'], robo['load'], robo['dir'])
+                        if self.trace:
+                            TraceLog.default_logger().trace('umpire.gamestatus', game_tick, robo['pos'], robo['load'], robo['dir'])
                     self.last_gamestatus_tick[robo_id] = game_tick
 
     def player_status(self, game_tick, player_status):
-        self.umpire_screen.player_status(game_tick, player_status)
+        if self.trace:
+            self.umpire_screen.player_status(game_tick, player_status)
 
     def tick(self, tick):
         pass
@@ -88,9 +91,9 @@ async def screen_timer(scrn, umpire, loop):
         scrn.timer()
 
 
-async def main(loop):
+async def main(args, loop):
     scrn = aui.UmpireDisplay()
-    clnt = UmpireClient(scrn)
+    clnt = UmpireClient(args, scrn)
     umpire = client.CLIUmpire(loop, args.url, clnt)
     timer1 = Timer(0.5, umpire.timer, True)
     timer2 = Timer(0.05, functools.partial(screen_timer, scrn, umpire, loop), True)
@@ -110,12 +113,13 @@ if __name__ == "__main__":
     parser.add_argument('--name', type=str, default="the_game", help='name of the game to create')
     parser.add_argument('--password', type=str, default="secret", help='password needed to enter the game')
     parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
+    parser.add_argument('--trace', default=False, action="store_true", help='name of the maze to use')
     args = parser.parse_args()
 
     # run our main loop
     try:
         aloop = asyncio.get_event_loop()
-        aloop.run_until_complete(main(aloop))
+        aloop.run_until_complete(main(args, aloop))
     except:
         pass
     finally:
