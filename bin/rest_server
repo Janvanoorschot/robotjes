@@ -9,7 +9,7 @@ import config
 # get commandline arguments
 parser = argparse.ArgumentParser(description='Start the Bubbles/Robo REST Server.')
 parser.add_argument('--host', type=str, default='0.0.0.0', help='host')
-parser.add_argument('--port', type=int, default=8000, help='port')
+parser.add_argument('--port', type=int, default=8765, help='port')
 parser.add_argument('--logconf', type=str, default=config.LOG_CONFIG_FILE, help='port')
 parser.add_argument('--pikaurl', type=str, default=config.PIKA_URL, help='rabbitmq url')
 parser.add_argument('--bubblehubsexchange', type=str, default=config.BUBBLEHUBS_EXCHANGE, help='rabbitmq queue to use for rpc calls')
