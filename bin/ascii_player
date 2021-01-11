@@ -19,6 +19,8 @@ import config
 import client
 import aui
 
+from monitor.trace_log import TraceLog
+
 
 class Timer:
     def __init__(self, timeout, callback, repeat=False):
@@ -45,13 +47,17 @@ class PlayerClient:
 
     def __init__(self, player_screen):
         self.player_screen = player_screen
+        self.game_id = ""
+        self.player_id = ""
+        self.player_name = ""
+        self.last_recording_tick = {}
 
     def registered(self, game_id, player_name):
-        # print(f"player registered: {game_id}/{player_name}")
-        pass
+        self.game_id = game_id
 
     def player(self, player_id, player_name):
-        # print(f"player discovered: {player_id}/{player_name}")
+        self.player_id = player_id
+        self.player_name = player_name
         pass
 
     def started(self):
@@ -67,12 +73,22 @@ class PlayerClient:
 
     def player_status(self, game_tick, player_status):
         self.player_screen.player_status(game_tick, player_status)
+        if player_status:
+            game_id = player_status['game_status']['game_id']
+            game_tick = player_status['game_status']['status']['game_tick']
+            robos = player_status['player_status']['robos']
+            for robo_id, robo in robos.items():
+                recording = robo['recording']
+                for rec in recording:
+                    if (robo_id not in self.last_recording_tick) or (rec[0] > self.last_recording_tick[robo_id]):
+                        TraceLog.default_logger().trace('player.recorded_command', rec[0], self.game_id, self.player_id, [0, robo_id, rec[1]]+rec[2], rec[3])
+                        self.last_recording_tick[robo_id] = rec[0]
 
     def robo_status(self, game_tick, robo_id, robo_status):
         self.player_screen.robo_status(game_tick, robo_id, robo_status)
 
     def issue_command(self, game_tick, move):
-        pass
+        TraceLog.default_logger().trace('player.issue_command', game_tick, self.game_id, self.player_id, move)
 
 
 async def screen_timer(scrn, player, loop):

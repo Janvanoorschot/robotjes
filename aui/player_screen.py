@@ -177,8 +177,8 @@ class PlayerView(Frame):
 
     def upd(self, *args):
         if self.model.cur_player_status:
-            self.playerid_field.value = self.model.cur_player_status['player_id']
-            self.playername_field.value = self.model.cur_player_status['player_name']
+            self.playerid_field.value = self.model.cur_player_status['player_status']['player_id']
+            self.playername_field.value = self.model.cur_player_status['player_status']['player_name']
 
 
     # {

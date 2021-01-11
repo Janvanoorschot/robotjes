@@ -13,6 +13,9 @@ import config
 import client
 import aui
 
+from monitor.trace_log import TraceLog
+
+
 sys.stderr = open("stderr.txt", "w")
 
 class Timer:
@@ -36,6 +39,7 @@ class UmpireClient:
 
     def __init__(self, umpire_screen):
         self.umpire_screen = umpire_screen
+        self.last_gamestatus_tick = {}
 
     def registered(self, game_id, game_name):
         # print(f"game registered: {game_id}")
@@ -56,7 +60,15 @@ class UmpireClient:
         pass
 
     def game_status(self, game_tick, game_status):
-        self.umpire_screen.game_status(game_tick, game_status)
+        if game_status:
+            self.umpire_screen.game_status(game_tick, game_status['status'])
+            game_tick = game_status['status']['game_tick']
+            for player_id, player in game_status['players'].items():
+                robos = player['robos']
+                for robo_id, robo in robos.items():
+                    if (robo_id not in self.last_gamestatus_tick) or (game_tick > self.last_gamestatus_tick[robo_id]):
+                        TraceLog.default_logger().trace('umpire.gamestatus', game_tick, robo['pos'], robo['load'], robo['dir'])
+                    self.last_gamestatus_tick[robo_id] = game_tick
 
     def player_status(self, game_tick, player_status):
         self.umpire_screen.player_status(game_tick, player_status)

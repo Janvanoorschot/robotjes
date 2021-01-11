@@ -79,6 +79,7 @@ class CLIPlayer:
             else:
                 reply = {'result': True}
             await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
+            self.callback('issue_command', self.game_tick, cmd)
             # await self.timer_lock.acquire()
             await self.local_requestor.put(reply)
         await self.rest_client.deregister_player(self.game_id, self.player_id)
@@ -89,17 +90,16 @@ class CLIPlayer:
         if not self.stopped:
             try:
                 status = await self.rest_client.status_player(self.game_id, self.player_id)
+                if status:
+                    self.callback('player_status', self.game_tick, status)
+                    game_tick = status['game_status']['status']['game_tick']
+                    self.set_game_status(game_tick, status['game_status'])
+                    bots = status['player_status']['robos'].keys()
+                    self.set_player_status(game_tick, status['player_status'])
+                    for robo_id, robo_status in status['player_status']['robos'].items():
+                        self.set_robo_status(game_tick, robo_id, robo_status)
             except Exception as e:
-                print(f"failed to get player status: {e}")
-                return
-            # we received a valid status (about the game, this player and all the robo's), handle it
-            if status:
-                game_tick = status['game_status']['status']['game_tick']
-                self.set_game_status(game_tick, status['game_status'])
-                bots = status['player_status']['robos'].keys()
-                self.set_player_status(game_tick, status['player_status'])
-                for robo_id, robo_status in status['player_status']['robos'].items():
-                    self.set_robo_status(game_tick, robo_id, robo_status)
+                print("Exception: {e}")
 
     def set_game_status(self, game_tick, game_status):
         self.callback('game_status', game_tick, game_status)
@@ -121,7 +121,8 @@ class CLIPlayer:
                 self.timer_lock.release()
 
     def set_player_status(self, game_tick, player_status):
-        self.callback('player_status', game_tick, player_status)
+        # self.callback('player_status', game_tick, player_status)
+        pass
 
     def set_robo_status(self, game_tick, robo_id, robo_status):
         self.callback('robo_status', game_tick, robo_id, robo_status)

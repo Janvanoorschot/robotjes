@@ -50,20 +50,20 @@ class CLIUmpire:
         if self.game_id and not self.stopped:
             try:
                 status = await self.rest_client.status_game(self.game_id)
-                if 'status' in status and status['status']['game_tick'] > self.game_tick:
+                if status:
+                    self.callback('game_status', self.game_tick, status)
                     game_tick = status['status']['game_tick']
                     self.set_game_status(game_tick, status['status'])
                     if 'players' in status:
                         self.set_players_status(game_tick, status['players'])
                     self.game_tick = game_tick
                     self.callback('game_tick', self.game_tick)
-                if self.stopped:
+                    if self.stopped:
                         self.lock.release()
             except Exception as e:
                 print("Exception: {e}")
 
     def set_game_status(self, game_tick, game_status):
-        self.callback('game_status', game_tick, game_status)
         self.game_status = game_status
         if not self.stopped and game_status['isStopped']:
             # normal stop
