@@ -49,8 +49,12 @@ class Field:
     def registered(self, player_id, player_name):
         player = Player(player_id, player_name)
         robo_id = self.game.create_robo(player.player_id)
-        player.robos.append(robo_id)
-        self.players[player_id] = player
+        if robo_id:
+            player.robos.append(robo_id)
+            self.players[player_id] = player
+            return True
+        else:
+            return False
 
     def deregistered(self, player_id):
         if player_id in self.players:

@@ -12,10 +12,13 @@ class RoboGame:
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
-        self.robos[robo_id] = {
-            'player': player_id
-        }
-        return robo_id
+        if robo_id:
+            self.robos[robo_id] = {
+                'player': player_id
+            }
+            return robo_id
+        else:
+            return None
 
     def destroy_robo(self, robo_id):
         self.engine.destroy_robo(robo_id)

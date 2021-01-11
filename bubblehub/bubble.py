@@ -135,8 +135,11 @@ class Bubble:
         if player_id in self.players or player_id in self.invalid_players:
             self.disqualify_player(player_id)
         if len(self.players) < self.game.player_count():
-            self.game.registered(player_id, player_name)
-            self.players[player_id] = True
+            if self.game.registered(player_id, player_name):
+                self.players[player_id] = True
+                return True
+            else:
+                return False
 
     def deregister_player(self, player_id):
         if player_id in self.players:
