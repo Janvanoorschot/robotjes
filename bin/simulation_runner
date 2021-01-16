@@ -33,7 +33,7 @@ def run_simulation(mapstr, successjson, scriptstr):
     script = scriptstr.split('\n')
     engine = Engine(map)
     player_id = str(uuid.uuid4())
-    robo_id = engine.create_robo(player_id)
+    robo_id = engine.create_robo()
     success = Success.from_json(successjson, engine)
     handler = RemoteHandler(args.simhost, args.simport, args.authkey)
 
