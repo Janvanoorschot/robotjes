@@ -16,8 +16,6 @@ import aui
 from monitor.trace_log import TraceLog
 
 
-sys.stderr = open("stderr.txt", "w")
-
 class Timer:
     def __init__(self, timeout, callback, repeat=False):
         self.timeout = timeout
