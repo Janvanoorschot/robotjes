@@ -3,7 +3,7 @@
 ###############################################################
 ###
 # get all mazes
-GET http://localhost:8000/mazes
+GET http://localhost:8765/mazes
 Content-Type: application/json
 
 {
@@ -11,7 +11,7 @@ Content-Type: application/json
 
 ###
 # get one maze
-GET http://localhost:8000/mazes/maze_id1
+GET http://localhost:8765/mazes/maze_id1
 Content-Type: application/json
 
 {
@@ -21,7 +21,7 @@ Content-Type: application/json
 ###############################################################
 ###
 # create a game
-POST http://localhost:8000/games
+POST http://localhost:8765/games
 Content-Type: application/json
 
 {
@@ -33,28 +33,28 @@ Content-Type: application/json
 
 ###
 # get all games
-GET http://localhost:8000/games
+GET http://localhost:8765/games
 Content-Type: application/json
 
 {
 }
 ###
 # get status of game
-GET http://localhost:8000/game/cefe8578-558a-4c8c-93c2-f1f40f25e419/status
+GET http://localhost:8765/game/8a417174-35db-4144-91f3-bfebdc4a62fa/status
 Content-Type: application/json
 
 {
 }
 ###
 # get map of a game
-GET http://localhost:8000/game/cefe8578-558a-4c8c-93c2-f1f40f25e419/map
+GET http://localhost:8765/game/8a417174-35db-4144-91f3-bfebdc4a62fa/map
 Content-Type: application/json
 
 {
 }
 ###
 # get delta-recording of a game
-GET http://localhost:8000/game/bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d/recording/670
+GET http://localhost:8765/game/bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d/recording/670
 Content-Type: application/json
 
 {
@@ -62,7 +62,7 @@ Content-Type: application/json
 
 ###
 # get delta-recording of a game
-GET http://localhost:8080/field/gamerecording?game_id=bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d&before_game_time=0
+GET http://localhost:8765/field/gamerecording?game_id=bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d&before_game_time=0
 Content-Type: application/json
 
 {
@@ -70,7 +70,7 @@ Content-Type: application/json
 
 ###
 # delete/stop a game
-PUT http://localhost:8000/game/7eb163a3-0ea1-405b-97c2-ee91a7315dd3/stop
+PUT http://localhost:8765/game/7eb163a3-0ea1-405b-97c2-ee91a7315dd3/stop
 Content-Type: application/json
 
 {
@@ -80,7 +80,7 @@ Content-Type: application/json
 ###############################################################
 ###
 # Register a user
-PUT http://localhost:8000/games/8fab52af-8bf6-425f-9227-185fbfad11ca
+PUT http://localhost:8765/games/8fab52af-8bf6-425f-9227-185fbfad11ca
 Content-Type: application/json
 
 {
@@ -90,7 +90,7 @@ Content-Type: application/json
 }
 ###
 # Get the status of a user
-GET http://localhost:8000/game/36a2831a-62e1-4592-96dc-a8b6a5902d54/player/76ea0e2e-1803-4d7e-81b8-99e2f4d41433
+GET http://localhost:8765/game/36a2831a-62e1-4592-96dc-a8b6a5902d54/player/76ea0e2e-1803-4d7e-81b8-99e2f4d41433
 Content-Type: application/json
 
 {
