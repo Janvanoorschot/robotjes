@@ -1,4 +1,4 @@
-import config
+from robotjes import config
 
 # pika var
 pikaurl = None

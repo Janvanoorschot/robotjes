@@ -5,7 +5,8 @@ import datetime
 import argparse
 import pika
 import logging.config
-import config
+import robotjes
+from robotjes import config
 
 modpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 os.chdir(modpath)
@@ -29,8 +30,9 @@ channel.basic_qos(prefetch_count=1)
 
 
 # prepare monitoring environment (including synchronous loghandler)
-import monitor
-monitor.mon = monitor.monitor_client.MonitorClient(connection, config.MONITOR_EXCHANGE)
+from robotjes.server import monitor
+
+monitor.mon = robotjes.server.monitor.monitor_client.MonitorClient(connection, config.MONITOR_EXCHANGE)
 monitor.mon.connect()
 
 # prepare logging
@@ -39,7 +41,7 @@ logger = logging.getLogger(__name__)
 logger.warning("starting bubble")
 
 # create the Bubble instance.
-from bubblehub import Bubble
+from robotjes.server.bubblehub import Bubble
 bubble_id = str(uuid.uuid4())
 bubble = Bubble(bubble_id)
 

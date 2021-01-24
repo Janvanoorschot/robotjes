@@ -15,11 +15,10 @@ import atexit
 from concurrent.futures import thread
 atexit.unregister(thread._python_exit)
 
-import config
-import client
-import aui
+from robotjes import config, client
+from robotjes.client import aui
 
-from monitor.trace_log import TraceLog
+from robotjes.server.monitor import TraceLog
 
 
 class Timer:

@@ -3,7 +3,7 @@ rootdir = os.path.abspath(os.path.dirname(__file__))
 
 REST_URL = 'http://localhost:8765'
 PIKA_URL = 'amqp://guest:guest@localhost:5672/%2F'
-LOG_CONFIG_FILE = os.path.join(rootdir, "bin/log.conf")
+LOG_CONFIG_FILE = os.path.join(rootdir, "../bin/log.conf")
 
 MONITOR_EXCHANGE = "monitor_exchange"
 BUBBLEHUBS_EXCHANGE = 'bubblehubs_exchange'

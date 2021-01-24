@@ -1,12 +1,9 @@
-import json
-from aio_pika import IncomingMessage, Message, ExchangeType
 from starlette.responses import RedirectResponse
-from pydantic import BaseModel
 import roborest
 from roborest import app
-from monitor import get_monitor
-from bubblehub.model import GameSpec, RegistrationSpec
-from . import async_rpc_client, games_exchange_name, channel
+from robotjes.server.monitor import get_monitor
+from robotjes.server.bubblehub.model import GameSpec
+from . import async_rpc_client
 
 
 @app.get("/")

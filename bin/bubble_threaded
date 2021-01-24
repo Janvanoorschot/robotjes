@@ -27,8 +27,9 @@ connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
 
 # prepare monitoring environment (including synchronous loghandler)
-import monitor
-monitor.mon = monitor.monitor_client.MonitorClient(connection, MONITOR_EXCHANGE)
+from robotjes.server import monitor
+
+monitor.mon = robotjes.server.monitor.monitor_client.MonitorClient(connection, MONITOR_EXCHANGE)
 monitor.mon.connect()
 
 # prepare logging
@@ -37,7 +38,7 @@ logger = logging.getLogger(__name__)
 logger.warning("starting logger")
 
 # create the Bubble intance. It's main operation will run on a seperate thread.
-from bubblehub import Bubble
+from robotjes.server.bubblehub import Bubble
 bubble_id = str(uuid.uuid4())
 bubble = Bubble(bubble_id, channel)
 

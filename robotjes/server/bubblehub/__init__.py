@@ -9,6 +9,7 @@ class GameStatus(Enum):
     STARTED = 'started'
     STOPPED = 'stopped'
 
+
 from .player import Player
 from .robo_game import RoboGame
 from .game import Game

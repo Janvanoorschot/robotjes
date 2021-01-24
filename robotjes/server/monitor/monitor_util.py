@@ -1,7 +1,7 @@
 import time
 import contextlib
 import inspect
-import monitor
+from robotjes.server import monitor
 from functools import wraps
 
 

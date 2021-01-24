@@ -3,7 +3,7 @@ import asyncio
 from fastapi_utils.tasks import repeat_every
 import roborest
 from roborest import app, pikaurl, status_keeper
-from monitor import mon
+from robotjes.server.monitor import mon
 from aio_pika import connect, ExchangeType
 from . import async_rpc_client, games_exchange_name, async_topic_listener
 

@@ -1,6 +1,6 @@
 import datetime
 import time
-from monitor.model import ResponseTime, ErrorMessage, LogMessage
+from robotjes.server.monitor.model import ResponseTime, ErrorMessage, LogMessage
 
 class MonitorServer:
     def __init__(self, session):

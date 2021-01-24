@@ -1,9 +1,8 @@
 import json
 import uuid
-import roborest
 from aio_pika import Message
-from monitor import get_monitor
-from bubblehub.model import RegistrationSpec, CommandSpec
+from robotjes.server.monitor import get_monitor
+from robotjes.server.bubblehub.model import RegistrationSpec, CommandSpec
 import roborest
 from roborest import app
 

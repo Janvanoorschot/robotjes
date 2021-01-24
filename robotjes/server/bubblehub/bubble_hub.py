@@ -3,8 +3,8 @@ import pika
 import uuid
 import logging
 logger = logging.getLogger(__name__)
-import config
-from bubblehub.model import GameSpec
+from robotjes import config
+from robotjes.server.bubblehub.model import GameSpec
 
 
 class BubbleHub:

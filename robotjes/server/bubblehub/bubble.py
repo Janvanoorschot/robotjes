@@ -1,9 +1,9 @@
 import json
 import datetime
-import config
+from robotjes import config
 import logging
-from bubblehub.model import GameState, GameSpec
-from . import Field, Game, Player, GameStatus
+from robotjes.server.bubblehub.model import GameSpec
+from . import Field, GameStatus
 logger = logging.getLogger(__name__)
 
 
