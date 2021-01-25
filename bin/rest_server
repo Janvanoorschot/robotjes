@@ -5,9 +5,7 @@ import os
 import argparse
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
-import robotjes
-import robotjes.server.roborest as roborest
-from robotjes import config
+from robotjessrv import config
 
 # get commandline arguments
 parser = argparse.ArgumentParser(description='Start the Bubbles/Robo REST Server.')
@@ -21,28 +19,38 @@ parser.add_argument('--monitorexchange', type=str, default=config.MONITOR_EXCHAN
 parser.add_argument('--gamesexchange', type=str, default=config.GAMES_EXCHANGE, help='games exchange')
 args = parser.parse_args()
 
+# import robotjessrv.server
+# import robotjessrv.client
+import robotjessrv.server.roborest as roborest
+import robotjessrv.server.monitor as monitor
 # initialise
 roborest.pikaurl = args.pikaurl
 
-# initialise the monitor module
-from robotjes.server import monitor, roborest
+monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchange)
 
-monitor.mon = robotjes.server.monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchange)
+from robotjessrv.server.roborest import StatusKeeper
 
-from robotjes.server.roborest import  StatusKeeper
 roborest.status_keeper = StatusKeeper()
+
+
 def listener(routing_key, request):
     roborest.status_keeper.game_status_event(request)
 
 # initialise the roborest module
 import fastapi
-from robotjes.server.roborest.async_rpc_client import AsyncRPCClient
+
+from robotjessrv.server.roborest.async_rpc_client import AsyncRPCClient
 roborest.async_rpc_client = AsyncRPCClient(args.bubblehubsexchange, args.bubblehubsqueue)
-from robotjes.server.roborest.async_topic_listener import AsyncTopicListener
+
+from robotjessrv.server.roborest.async_topic_listener import AsyncTopicListener
 roborest.async_topic_listener = AsyncTopicListener(args.gamesexchange, "*.status", listener)
 roborest.app = fastapi.FastAPI()
 
 # import the files with REST calls (do not remove!!!)
+import robotjessrv.server.roborest.sys_rest
+import robotjessrv.server.roborest.bubble_hub_rest
+import robotjessrv.server.roborest.game_rest
+
 
 # do static files support
 from fastapi.staticfiles import StaticFiles

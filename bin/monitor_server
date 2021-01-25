@@ -5,10 +5,10 @@ import json
 import sys, os
 import argparse
 from sqlalchemy import create_engine
-from robotjes.server.monitor import MonitorServer
+from robotjessrv.server.monitor import MonitorServer
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
-from robotjes import config
+from robotjessrv import config
 
 # get commandline arguments
 parser = argparse.ArgumentParser(description='Start the Monitor Server.')
@@ -27,7 +27,7 @@ args = parser.parse_args()
 # connection string: postgresql+psycopg2://user:password@host:port/dbname[?key=value&key=value...]
 dbconstr = f"postgresql+psycopg2://{args.dbuser}:{args.dbpwd}@{args.dbhost}:{args.dbport}/{args.dbname}"
 engine = create_engine(dbconstr, echo=False)
-from robotjes.server.monitor.model import Base
+from robotjessrv.server.monitor.model import Base
 
 # recreate the database tables ... not for production
 Base.metadata.drop_all(engine)

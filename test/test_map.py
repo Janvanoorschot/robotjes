@@ -1,6 +1,6 @@
 import unittest
 import os
-from robotjes.sim import map
+from robotjessrv.sim import map
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 

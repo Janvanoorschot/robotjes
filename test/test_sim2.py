@@ -2,7 +2,7 @@ import unittest
 import os
 
 # from robotjes.remote import Handler
-from robotjes.sim import Engine, Map
+from robotjessrv.sim import Engine, Map
 
 TESTDIR = os.path.dirname(os.path.abspath(__file__))
 ROOTDIR = os.path.abspath(os.path.join(TESTDIR, os.pardir))

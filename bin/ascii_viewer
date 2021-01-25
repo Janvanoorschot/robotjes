@@ -9,10 +9,10 @@ import argparse
 import asyncio
 import functools
 
-from robotjes import config, client
-from robotjes.client import aui
+from robotjessrv import config, client
+from robotjessrv.client import aui
 
-from robotjes.server.monitor import TraceLog
+from robotjessrv.server.monitor import TraceLog
 
 
 class Timer:

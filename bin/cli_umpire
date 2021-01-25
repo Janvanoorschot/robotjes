@@ -4,7 +4,8 @@ import sys, os
 import argparse
 import asyncio
 
-from robotjes import config, client
+from robotjessrv.client import CLIUmpire
+from robotjes.client import config
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
@@ -75,7 +76,7 @@ class Umpire_Client:
 
 async def main(loop):
     clnt = Umpire_Client()
-    umpire = client.CLIUmpire(loop, args.url, clnt)
+    umpire = CLIUmpire(loop, args.url, clnt)
     timer = Timer(0.5, umpire.timer, True)
     await umpire.run_game(args.umpire, args.name, args.password, args.maze)
     timer.cancel()

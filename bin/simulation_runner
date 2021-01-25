@@ -8,7 +8,7 @@ import pika, json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
-from robotjes.remote import RemoteHandler
+from robotjessrv.remote import RemoteHandler
 from robotjes.sim import Engine, Map, Success
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')

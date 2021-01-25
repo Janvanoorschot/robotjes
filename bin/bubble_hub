@@ -4,8 +4,8 @@ import sys, os
 import argparse
 import pika
 import logging.config
-import robotjes
-from robotjes import config
+import robotjessrv
+from robotjessrv import config
 
 modpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 os.chdir(modpath)
@@ -24,9 +24,9 @@ channel.basic_qos(prefetch_count=1)
 
 
 # prepare monitoring environment (including synchronous loghandler)
-from robotjes.server import monitor
+from robotjessrv.server import monitor
 
-monitor.mon = robotjes.server.monitor.monitor_client.MonitorClient(connection, config.MONITOR_EXCHANGE)
+monitor.mon = robotjessrv.server.monitor.monitor_client.MonitorClient(connection, config.MONITOR_EXCHANGE)
 monitor.mon.connect()
 
 # prepare logging
@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 logger.warning("starting bubble_hub")
 
 # create the BubbleHub class that will handle the requests
-from robotjes.server.bubblehub import BubbleHub
+from robotjessrv.server.bubblehub import BubbleHub
 bubble_hub = BubbleHub()
 
 # feed the BubbleHub with a Mazes object
