@@ -3,8 +3,8 @@ import uuid
 from aio_pika import Message
 from robotjes.server.monitor import get_monitor
 from robotjes.server.bubblehub.model import RegistrationSpec, CommandSpec
-import roborest
-from roborest import app
+from robotjes.server import roborest
+from robotjes.server.roborest import app
 
 
 @app.post("/game/{game_id}/player")

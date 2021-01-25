@@ -6,6 +6,7 @@ import argparse
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 import robotjes
+import robotjes.server.roborest as roborest
 from robotjes import config
 
 # get commandline arguments
@@ -21,31 +22,27 @@ parser.add_argument('--gamesexchange', type=str, default=config.GAMES_EXCHANGE, 
 args = parser.parse_args()
 
 # initialise
-import roborest
 roborest.pikaurl = args.pikaurl
 
 # initialise the monitor module
-from robotjes.server import monitor
+from robotjes.server import monitor, roborest
 
 monitor.mon = robotjes.server.monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchange)
 
-from roborest.status_keeper import  StatusKeeper
+from robotjes.server.roborest import  StatusKeeper
 roborest.status_keeper = StatusKeeper()
 def listener(routing_key, request):
     roborest.status_keeper.game_status_event(request)
 
 # initialise the roborest module
 import fastapi
-from roborest.async_rpc_client import AsyncRPCClient
+from robotjes.server.roborest.async_rpc_client import AsyncRPCClient
 roborest.async_rpc_client = AsyncRPCClient(args.bubblehubsexchange, args.bubblehubsqueue)
-from roborest.async_topic_listener import AsyncTopicListener
+from robotjes.server.roborest.async_topic_listener import AsyncTopicListener
 roborest.async_topic_listener = AsyncTopicListener(args.gamesexchange, "*.status", listener)
 roborest.app = fastapi.FastAPI()
 
 # import the files with REST calls (do not remove!!!)
-import roborest.sys_rest
-import roborest.bubble_hub_rest
-import roborest.game_rest
 
 # do static files support
 from fastapi.staticfiles import StaticFiles

@@ -1,6 +1,6 @@
 from starlette.responses import RedirectResponse
-import roborest
-from roborest import app
+from .. import roborest
+from robotjes.server.roborest import app
 from robotjes.server.monitor import get_monitor
 from robotjes.server.bubblehub.model import GameSpec
 from . import async_rpc_client

@@ -40,7 +40,7 @@ bubble_hub = BubbleHub()
 
 # feed the BubbleHub with a Mazes object
 from robotjes.sim import Mazes
-mazesdir = os.path.join(modpath, "datafiles/mazes")
+mazesdir = os.path.join(modpath, "sample/mazes")
 mazes = Mazes(mazesdir)
 bubble_hub.set_mazes(mazes)
 
