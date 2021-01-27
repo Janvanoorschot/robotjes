@@ -5,12 +5,15 @@ class RemoteRequestor(object):
 
     def __init__(self, host, port, authkey):
         address = (host, port)
-        self.conn = Client(address)
-        print(f">>RemoteRequestor!!!!!!!!!!!!!!{self.conn}")
+        self.conn = None
+        while self.conn is None:
+            try:
+                self.conn = Client(address)
+            except BaseException as e:
+                print(f"Client failed: {e}")
 
 
     def execute(self, cmd):
-        print(f">>execute!!!!!!!!!!!!!!{cmd}")
         caller = getframeinfo(stack()[2][0])
         lineno = caller.lineno
         cmd.insert(0, lineno)
@@ -18,9 +21,7 @@ class RemoteRequestor(object):
             self.conn.send(cmd)
             reply = self.conn.recv()
         except Exception as e:
-            print(f"!!execute!!!!!!!!!!!!!!{e}")
             reply = None
-        print(f"<<execute!!!!!!!!!!!!!!{reply}")
         return reply
 
     def close(self):

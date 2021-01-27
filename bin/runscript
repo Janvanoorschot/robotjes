@@ -17,7 +17,6 @@ parser.add_argument('authkey', type=str, help='shared secret')
 parser.add_argument('script', type=str, help='an integer for the accumulator')
 args = parser.parse_args()
 
-print(f">>runscript!!!!!!!!!!!!!!{args.host}/{args.port}/{args.authkey.encode()}")
 requestor = RemoteRequestor(args.host, args.port, args.authkey.encode())
 robo = Robo(requestor)
 shell = RoboShell()

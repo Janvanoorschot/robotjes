@@ -26,7 +26,7 @@ class RemoteHandler(object):
                 break
             self.game_tick += 1
             engine.game_timer(self.game_tick)
-            result = engine.execute(robo_id, cmd)
+            result = engine.execute(self.game_tick, robo_id, cmd)
             if result:
                 try:
                     con.send(result)
@@ -47,7 +47,7 @@ class RemoteHandler(object):
             for line in script:
                 fp.write(line)
                 fp.write("\n")
-        command =  f"{self.runscript} {self.host} {self.port} {self.authkey} {path} &"
+        command = f"{self.runscript} {self.host} {self.port} {self.authkey} {path} &"
         try:
             call(command, shell=True)
         except Exception:
