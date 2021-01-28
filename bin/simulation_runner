@@ -45,7 +45,7 @@ def run_simulation(mapstr, successjson, scriptstr):
     handler.run(engine, robo_id)
     success.afterRun()
     bot = engine.world.bots[robo_id]
-    engine.world.inc("robotHasBeacon", len(bot.beacons)>0)
+    engine.world.inc("robotHasBeacon", len(bot.beacons) > 0)
     engine.world.inc("robotOrientation", bot.dir)
     engine.world.inc("robotX", bot.pos[0])
     engine.world.inc("robotY", bot.pos[1])

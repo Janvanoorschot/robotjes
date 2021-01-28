@@ -24,7 +24,7 @@ def exec_on_steroid(queue):
     try:
         exec(object, globals, locals)
         queue.put(None) # no exception
-    except Exception as e:
+    except BaseException as e:
         queue.put(e)
     finally:
         sys.stdout = stdout_old
@@ -61,6 +61,7 @@ def run_with_limited_time(args, time):
 
     return [timeout, exception, stderr, stdout]
 
+
 class RoboShell(object):
 
     def __init__(self):
@@ -71,7 +72,7 @@ class RoboShell(object):
             data = file.read()
             globalsParameter = {'__builtins__' : None, 'robo': robo, 'print': print, 'range': range, 'quit': quit, 'str': str}
             localsParameter = {}
-            (timeout, exception, stderr, stdout) =  run_with_limited_time((data, globalsParameter, localsParameter), TIMEOUT)
+            (timeout, exception, stderr, stdout) = run_with_limited_time((data, globalsParameter, localsParameter), TIMEOUT)
             if timeout:
                 robo.error(f"program took longer then {TIMEOUT} secconds, failed by time out.")
             if exception:
