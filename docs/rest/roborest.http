@@ -40,7 +40,7 @@ Content-Type: application/json
 }
 ###
 # get status of game
-GET http://localhost:8765/game/8a417174-35db-4144-91f3-bfebdc4a62fa/status
+GET http://localhost:8765/game/6680b7aa-b923-4e3d-bc02-90079c68b424/status
 Content-Type: application/json
 
 {

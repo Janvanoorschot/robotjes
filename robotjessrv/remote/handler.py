@@ -1,6 +1,6 @@
 import tempfile, os
 from multiprocessing.connection import Listener
-from subprocess import call
+from subprocess import run
 
 class RemoteHandler(object):
 
@@ -49,7 +49,7 @@ class RemoteHandler(object):
                 fp.write("\n")
         command = f"{self.runscript} {self.host} {self.port} {self.authkey} {path} &"
         try:
-            call(command, shell=True)
+            run(command, capture_output=False, shell=True)
         except Exception:
             pass
 
