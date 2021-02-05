@@ -10,7 +10,7 @@ import asyncio
 import functools
 
 from robotjessrv import config, client
-from robotjessrv.client import aui
+from robotjes.client import aui
 
 from robotjessrv.server.monitor import TraceLog
 

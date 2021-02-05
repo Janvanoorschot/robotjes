@@ -99,7 +99,7 @@ class Field:
         for player_id, move in moves.items():
             line_no = move[0]
             robo_id = move[1]
-            self.game.execute(robo_id, move)
+            self.game.execute(self.game_tick, robo_id, move)
         self.game.end_moves(self.game_tick)
         # publish info: GAMETICK AND/OR DELTAREC
         self.owner.publish(GameStatus.GAMETICK, {})
