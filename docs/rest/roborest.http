@@ -40,21 +40,21 @@ Content-Type: application/json
 }
 ###
 # get status of game
-GET http://localhost:8765/game/6680b7aa-b923-4e3d-bc02-90079c68b424/status
+GET http://localhost:8765/game/7c79ce74-5def-43cc-a52c-5233e39dad86/status
 Content-Type: application/json
 
 {
 }
 ###
 # get map of a game
-GET http://localhost:8765/game/8a417174-35db-4144-91f3-bfebdc4a62fa/map
+GET http://localhost:8765/game/7c79ce74-5def-43cc-a52c-5233e39dad86/map
 Content-Type: application/json
 
 {
 }
 ###
 # get delta-recording of a game
-GET http://localhost:8765/game/bfc1d095-4052-4eaa-8b6e-0a67c6cd2d4d/recording/670
+GET http://localhost:8765/game/7c79ce74-5def-43cc-a52c-5233e39dad86/recording/1
 Content-Type: application/json
 
 {
