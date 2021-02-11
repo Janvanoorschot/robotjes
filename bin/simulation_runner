@@ -76,7 +76,7 @@ def failure_reply(mapstr, msg):
     content["profile"] = {
         "profile": {}
     }
-    content["map"] =  Map.fromstring(mapstr).toMazeMap()
+    content["map"] = Map.fromstring(mapstr).toMazeMap()
     content["recording"] = { "keyFrames": []}
     reply.append(content)
     return reply
@@ -85,6 +85,7 @@ def on_request(ch, method, props, body):
     """ do the request/run/reply cycle"""
     try:
         request = json.loads(body)
+        reply = {}
         # do some work
         if "map" in request and "success" in request and "script" in request:
             map = request["map"]
@@ -97,14 +98,13 @@ def on_request(ch, method, props, body):
         reply = failure_reply(map, str(jsonerror))
     except Exception as e:
         reply = failure_reply(map, str(e))
-
-    # send back reply over 'reply_to' queue
-    j = json.dumps(reply)
-    ch.basic_publish(exchange='',
-                     routing_key=props.reply_to,
-                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                     body=j)
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+    finally:
+        j = json.dumps(reply, default=str)
+        ch.basic_publish(exchange='',
+                         routing_key=props.reply_to,
+                         properties=pika.BasicProperties(correlation_id=props.correlation_id),
+                         body=j)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
 parameters = pika.URLParameters(args.pikaurl)
