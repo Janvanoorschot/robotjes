@@ -1,4 +1,4 @@
---extra-index-url https://test.pypi.org/simple/
+--extra-index-url https://testpypi.python.org/pypi
 
 # server: FastAPI async REST platformplus webserver
 fastapi[all]
@@ -18,21 +18,21 @@ psycopg2-binary
 
 # client: GTK client side UI
 wheel
-pycairo
-PyGObject
+#pycairo
+#PyGObject
 
 # client: ASCII art
-asciimatics
+#asciimatics
 
 # client: HTTP/REST
 requests
 
 # util
-pylint
-mkdocs
-mkdocs-bootstrap
-pyparsing
+#pylint
+#mkdocs
+#mkdocs-bootstrap
+#pyparsing
 
 #
-robotjes-client
+robotjes-client==0.0.2
 

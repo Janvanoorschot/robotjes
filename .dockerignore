@@ -1,0 +1,6 @@
+venv
+.idea
+*.iml
+site
+__pycache__/
+tracelog
