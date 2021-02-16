@@ -10,9 +10,14 @@ BUBBLEHUBS_EXCHANGE = 'bubblehubs_exchange'
 BUBBLES_EXCHANGE = "bubbles_exchange"
 GAMES_EXCHANGE = 'games_exchange'
 
+SIMULATION_QUEUE = 'simulation_queue'
 BUBBLEHUBS_QUEUE = "bubblehub_queue"
 BUBBLES_QUEUE = "bubbles_queue"
 GAME_STATUS_QUEUE = 'status'
+
+SIMULATION_HOST = "localhost"
+SIMULATION_PORT = 9876
+SIMULATION_AUTHKEY = 'myownsecret'
 
 DBASE_USER = "rmprod"
 DBASE_PWD = "rmprodsecret"

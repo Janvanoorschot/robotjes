@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 
-import sys, os
+import sys
+import os
 import resource
 import uuid
 import argparse
-import pika, json
+import pika
+import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
+from robotjessrv import config
 from robotjessrv.remote import RemoteHandler
 from robotjes.sim import Engine, Map, Success
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
-parser.add_argument('--pikaurl', type=str, default='amqp://guest:guest@localhost:5672/%2F', help='rabbitmq url')
-parser.add_argument('--rmqqueue', type=str, default='simulation_queue', help='rabbitmq queue to use for rpc calls')
-parser.add_argument('--simhost', type=str, default='localhost', help='host used to connect simulation server and client')
-parser.add_argument('--simport', type=int, default=9876, help='port on simulation server')
-parser.add_argument('--authkey', type=str, default='myownsecret', help='shared secret')
+parser.add_argument('--pikaurl', type=str, default=os.environ('PIKA_URL', config.PIKA_URL), help='rabbitmq url')
+parser.add_argument('--rmqqueue', type=str, default=os.environ('SIMULATION_QUEUE', config.SIMULATION_QUEUE), help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--simhost', type=str, default=os.environ('SIMULATION_HOST', config.SIMULATION_HOST), help='host used to connect simulation server and client')
+parser.add_argument('--simport', type=int, default=os.environ('SIMULATION_PORT', config.SIMULATION_PORT), help='port on simulation server')
+parser.add_argument('--authkey', type=str, default=os.environ('SIMULATION_AUTHKEY', config.SIMULATION_AUTHKEY), help='shared secret')
 args = parser.parse_args()
 
 
