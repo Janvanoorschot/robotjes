@@ -1,4 +1,5 @@
-FROM python:3.8-slim-buster
+FROM python:3.8
+#FROM python:3.8-slim-buster
 ARG PIKA_URL
 ENV PIKA_URL=$PIKA_URL
 

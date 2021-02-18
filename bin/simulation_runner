@@ -15,11 +15,11 @@ from robotjessrv.remote import RemoteHandler
 from robotjes.sim import Engine, Map, Success
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
-parser.add_argument('--pikaurl', type=str, default=os.environ('PIKA_URL', config.PIKA_URL), help='rabbitmq url')
-parser.add_argument('--rmqqueue', type=str, default=os.environ('SIMULATION_QUEUE', config.SIMULATION_QUEUE), help='rabbitmq queue to use for rpc calls')
-parser.add_argument('--simhost', type=str, default=os.environ('SIMULATION_HOST', config.SIMULATION_HOST), help='host used to connect simulation server and client')
-parser.add_argument('--simport', type=int, default=os.environ('SIMULATION_PORT', config.SIMULATION_PORT), help='port on simulation server')
-parser.add_argument('--authkey', type=str, default=os.environ('SIMULATION_AUTHKEY', config.SIMULATION_AUTHKEY), help='shared secret')
+parser.add_argument('--pikaurl', type=str, default=os.environ.get('PIKA_URL', config.PIKA_URL), help='rabbitmq url')
+parser.add_argument('--rmqqueue', type=str, default=os.environ.get('SIMULATION_QUEUE', config.SIMULATION_QUEUE), help='rabbitmq queue to use for rpc calls')
+parser.add_argument('--simhost', type=str, default=os.environ.get('SIMULATION_HOST', config.SIMULATION_HOST), help='host used to connect simulation server and client')
+parser.add_argument('--simport', type=int, default=os.environ.get('SIMULATION_PORT', config.SIMULATION_PORT), help='port on simulation server')
+parser.add_argument('--authkey', type=str, default=os.environ.get('SIMULATION_AUTHKEY', config.SIMULATION_AUTHKEY), help='shared secret')
 args = parser.parse_args()
 
 
@@ -110,15 +110,23 @@ def on_request(ch, method, props, body):
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
-parameters = pika.URLParameters(args.pikaurl)
-connection = pika.BlockingConnection(parameters)
-channel = connection.channel()
-channel.queue_declare(queue=args.rmqqueue)
+try:
+    print(f"!!before BlockingConnection {args.pikaurl}")
+    parameters = pika.URLParameters(args.pikaurl)
+    connection = pika.BlockingConnection(parameters)
+    channel = connection.channel()
+    channel.queue_declare(queue=args.rmqqueue)
 
-# limit memory usage
-set_max_memory(400000000)
+    # limit memory usage
+    set_max_memory(400000000)
 
-# start listening for work
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue=args.rmqqueue, on_message_callback=on_request)
-channel.start_consuming()
+    # start listening for work
+    channel.basic_qos(prefetch_count=1)
+    channel.basic_consume(queue=args.rmqqueue, on_message_callback=on_request)
+    channel.start_consuming()
+except pika.exceptions.AMQPConnectionError as pika_e:
+    print(f"!!pika error: {pika_e}")
+except Exception as e:
+    print(f"!!other error: {e}")
+finally:
+    print(f"!!after consuming")
