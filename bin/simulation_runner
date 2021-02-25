@@ -111,7 +111,6 @@ def on_request(ch, method, props, body):
 
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
 try:
-    print(f"!!before BlockingConnection [{args.pikaurl}]")
     parameters = pika.URLParameters(args.pikaurl)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
@@ -129,4 +128,4 @@ except pika.exceptions.AMQPConnectionError as pika_e:
 except Exception as e:
     print(f"!!other error: {e}")
 finally:
-    print(f"!!after consuming")
+    pass
