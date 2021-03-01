@@ -4,6 +4,7 @@ ARG PIKA_URL
 ENV PIKA_URL=$PIKA_URL
 
 RUN apt update && apt install -y --no-install-recommends \
+        libpq-dev \
 	    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./

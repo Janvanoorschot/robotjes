@@ -18,20 +18,9 @@ psycopg2-binary
 
 # client: GTK client side UI
 wheel
-#pycairo
-#PyGObject
-
-# client: ASCII art
-#asciimatics
 
 # client: HTTP/REST
 requests
-
-# util
-#pylint
-#mkdocs
-#mkdocs-bootstrap
-#pyparsing
 
 #
 robotjes-client==0.0.2
