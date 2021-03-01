@@ -19,6 +19,7 @@ psycopg2-binary
 # client: GTK client side UI
 wheel
 
+clear
 # client: HTTP/REST
 requests
 

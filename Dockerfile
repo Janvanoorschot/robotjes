@@ -5,6 +5,7 @@ ENV PIKA_URL=$PIKA_URL
 
 RUN apt update && apt install -y --no-install-recommends \
         libpq-dev \
+        build-essential \
 	    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
