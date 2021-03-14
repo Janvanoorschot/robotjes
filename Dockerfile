@@ -8,6 +8,10 @@ RUN apt update && apt install -y --no-install-recommends \
         build-essential \
 	    && rm -rf /var/lib/apt/lists/*
 
+RUN addgroup   --system --gid 6161 robo
+RUN adduser  --system --uid  6161  --group robo
+USER robo
+
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 

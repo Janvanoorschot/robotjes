@@ -1,9 +1,23 @@
 # labs.robomindacademy.com Installation
 
+## General Install
+
+```
+    sudo addgroup --gid 6161 robo
+    sudo adduser --disabled-password --uid 6161 --gid 6161 robo 
+    sudo usermod -aG docker robo
+```
+
+```bash
+sudo adduser username
+
+```
 ### Docker Registry Server
 
 The docker swarm requires it own Docker Registry Server from which the images for robomind/robo and
 robomind/robotjes are served.
+
+
 
 So first we create the images and the registry in which we will store them:
 
