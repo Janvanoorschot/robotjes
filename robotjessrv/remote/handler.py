@@ -1,4 +1,5 @@
-import tempfile, os
+import tempfile
+import os
 from multiprocessing.connection import Listener
 from subprocess import run
 
@@ -30,7 +31,7 @@ class RemoteHandler(object):
             if result:
                 try:
                     con.send(result)
-                except Exception:
+                except Exception as e:
                     break
             else:
                 break

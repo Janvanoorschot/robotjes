@@ -26,5 +26,5 @@ requests
 pyparsing
 
 #
-# robotjes-client
+robotjes-client
 
