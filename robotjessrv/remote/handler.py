@@ -27,10 +27,12 @@ class RemoteHandler(object):
                 break
             self.game_tick += 1
             engine.game_timer(self.game_tick)
-            result = engine.execute(self.game_tick, robo_id, cmd)
-            if result:
+            reply = engine.execute(self.game_tick, robo_id, cmd)
+            if reply:
                 try:
-                    con.send(result)
+                    b = reply[1][0][0][0]
+                    status = reply[1][0][1]
+                    con.send([b, status])
                 except Exception as e:
                     break
             else:
