@@ -32,7 +32,7 @@ class RemoteHandler(object):
                 try:
                     b = reply[1][0][0][0]
                     status = reply[1][0][1]
-                    con.send([b, status])
+                    con.send([b, status, {'active': True}])
                 except Exception as e:
                     break
             else:
