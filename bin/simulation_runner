@@ -13,6 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardi
 from robotjessrv import config
 from robotjessrv.remote import RemoteHandler
 from robotjes.sim import Engine, Map, Success
+from importlib.metadata import version
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
 parser.add_argument('--pikaurl', type=str, default=os.environ.get('PIKA_URL', config.PIKA_URL), help='rabbitmq url')
@@ -111,6 +112,8 @@ def on_request(ch, method, props, body):
 
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
 try:
+    print(f"running robotjes.simulation_runner")
+    print(f"  robotjes-client: {version('robotjes-client')}")
     parameters = pika.URLParameters(args.pikaurl)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()

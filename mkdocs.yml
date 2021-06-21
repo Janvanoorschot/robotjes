@@ -2,8 +2,10 @@ site_name: Robotjes
 
 nav:
   - Home: index.md
-  - Devops: devops
-  - Attic: attic
+  - Labs: labs/index.md
+  - Build: build/index.md
+  - Client: client/client.md
+  - Attic: attic/index.md
 
 #theme:
 #  name: bootstrap

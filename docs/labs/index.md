@@ -1,26 +1,40 @@
-# Setup Labs.robomindacademy.com
+# Setup Labs
 
-## Layout
+## Hardware
 
 The Robomind Academy development environment 'labs.robomindacadem.com' consists of a
-headend server with a stack of Raspberry Pi 4's behind it. The headend server runs:
+headend server with a stack of Raspberry Pi 4's behind it. 
 
-* Ubuntu server
-* Docker
-* Postgresql SQL server (iron)
-* RabbitMQ messaging server (iron)
-* The RMG robomind academy Grails software (container)
+### labs: Headend server
 
-The stack of Raspberry Pi 4's behind it run:
+This Ubuntu server acts as headend for web traffic and runs the following software:
 
-* Ubuntu server
-* Docker swarm
-* robomnind/robo container
-* robomind/robotjes container
+* A NGINX server that (amongst other duties) servers static content for labs
 
-## Content
+### rapsie0: Queen raspie
+This ubuntu server running in a Docker swarm 'roboswarm' and acts as local headend. It runs:
 
-* [Raspberry 4 servers](raspberry_install)
-* [labs_install](labs_install)
+* Postgresql Database
+* RabbitMQ server
+* RMG grails web-application
+
+### raspie1-4: Worker raspies
+This stack of ubuntu server Raspberry Pi 4's behind it run:
+  
+* n* robomnind/robo container
+* m* robomind/robotjes container
+
+## Software
+The whole of the Robomind Academy is contained in the following GIT repositories:
+
+* [The core Robomind Academy (rmg) **private**](https://github.com/Janvanoorschot/robomindacademy)
+* [The Puppeteer for the robomind workers executing scripts](https://github.com/Janvanoorschot/robotjes)
+* [The client code for Robomind scripts](https://github.com/Janvanoorschot/robotjes-client)
+* [The core Robomind courses](https://github.com/Janvanoorschot/robocontent)
+* [The Python course **private**](https://github.com/Janvanoorschot/robopython)
+* [Robomind Academy usage analysis software **private**](https://github.com/Janvanoorschot/anarobo)
+* [Selenium software to stress test Robomind Academy](https://github.com/Janvanoorschot/roboselenium)
+* [Viewer of Robomind Academy activity counters **private**](https://github.com/Janvanoorschot/viewrobo)
+
 
 
