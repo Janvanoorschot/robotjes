@@ -3,18 +3,18 @@
 import sys, os
 import argparse
 import asyncio
+from pprint import pprint
 
 from robotjessrv.client import CLIUmpire
-from robotjes.client import config
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
 # get commandline arguments
 parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Umpire')
-parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
+parser.add_argument('--url', type=str, default='http://localhost:8765', help='url of the robotjes REST entrypoint')
 parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
-parser.add_argument('--name', type=str, default="game1", help='name of the game to create')
+parser.add_argument('--name', type=str, default="eat_three", help='name of the game to create')
 parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
 parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
 args = parser.parse_args()
@@ -60,9 +60,11 @@ class Umpire_Client:
         print(f"game stopped: {success}")
 
     def game_status(self, game_tick, game_status):
+        # pprint(game_status)
         pass
 
     def player_status(self, game_tick, player_status):
+        # pprint(player_status)
         pass
 
     def tick(self, tick):
