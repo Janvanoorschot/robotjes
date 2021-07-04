@@ -21,10 +21,10 @@ class MonitorClient:
     def connect(self):
         self.channel = self.connection.channel()
         self.exchange = self.channel.exchange_declare(self.exchange_name, 'fanout')
-        # self.curtimer = self.connection.add_timeout(1.0, self.sync_timer)
+        self.curtimer = self.connection.call_later(1.0, self.sync_timer)
 
     def sync_timer(self):
-        # self.curtimer = self.connection.add_timeout(1.0, self.sync_timer)
+        self.curtimer = self.connection.call_later(1.0, self.sync_timer)
         self.timer()
 
     def measurement(self, funname, duration):
