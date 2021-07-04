@@ -73,7 +73,7 @@ now = datetime.datetime.now()
 delta = datetime.timedelta(seconds=1)
 next_second = (now + delta).replace(microsecond=0)
 wait_seconds = (next_second - now)
-connection.add_timeout(wait_seconds/datetime.timedelta(seconds=1), timer)
+# connection.add_timeout(wait_seconds/datetime.timedelta(seconds=1), timer)
 
 try:
     channel.start_consuming()

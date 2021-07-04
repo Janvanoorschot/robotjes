@@ -60,16 +60,18 @@ class Umpire_Client:
         print(f"game stopped: {success}")
 
     def game_status(self, game_tick, game_status):
+        # print("game_status")
         # pprint(game_status)
         pass
 
     def player_status(self, game_tick, player_status):
+        # print("player_status")
         # pprint(player_status)
         pass
 
     def tick(self, tick):
-        # print(f"tick: {tick}")
-        pass
+        print(f"tick: {tick}")
+        # pass
 
     def game_tick(self, game_tick):
         # print(f"cli_umpire/game_timer[{game_tick}]")
