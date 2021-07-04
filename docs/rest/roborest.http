@@ -39,6 +39,13 @@ Content-Type: application/json
 {
 }
 ###
+# get all games
+GET http://localhost/bubble/games
+Content-Type: application/json
+
+{
+}
+###
 # get status of game
 GET http://localhost:8765/game/7c79ce74-5def-43cc-a52c-5233e39dad86/status
 Content-Type: application/json
