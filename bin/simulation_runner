@@ -13,6 +13,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardi
 from robotjessrv import config
 from robotjessrv.remote import RemoteHandler
 from robotjes.sim import Engine, Map, Success
+from robotjes import version as robotjes_client_version
+from robotjes import name as robotjes_client_name
 from importlib.metadata import version
 
 parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
@@ -113,7 +115,8 @@ def on_request(ch, method, props, body):
 # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
 try:
     print(f"running robotjes.simulation_runner")
-    print(f"  robotjes-client: {version('robotjes-client')}")
+    print(f"\t{robotjes_client_name}: {robotjes_client_version}")
+    print(f"\tpika-url: {args.pikaurl}")
     parameters = pika.URLParameters(args.pikaurl)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()

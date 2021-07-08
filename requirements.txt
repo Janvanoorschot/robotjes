@@ -25,5 +25,5 @@ requests
 pyparsing
 
 # code shared with the Robotjes Client
-#robotjes-client==0.0.1a5
+robotjes-client==0.0.1a6
 
