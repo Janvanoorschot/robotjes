@@ -7,6 +7,7 @@ pikaurl = None
 app = None
 async_rpc_client = None
 async_topic_listener = None
+async_field_listener = None
 
 #
 status_keeper = None

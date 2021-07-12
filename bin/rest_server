@@ -38,6 +38,11 @@ roborest.status_keeper = StatusKeeper()
 def listener(routing_key, request):
     roborest.status_keeper.game_status_event(request)
 
+
+def field_listener(routing_key, request):
+    print(str(request))
+
+
 # initialise the roborest module
 import fastapi
 
@@ -46,6 +51,7 @@ roborest.async_rpc_client = AsyncRPCClient(args.bubblehubsexchange, args.bubbleh
 
 from robotjessrv.server.roborest.async_topic_listener import AsyncTopicListener
 roborest.async_topic_listener = AsyncTopicListener(args.gamesexchange, "*.status", listener)
+roborest.async_field_listener = AsyncTopicListener(args.gamesexchange, "*.field", field_listener)
 roborest.app = fastapi.FastAPI()
 
 # import the files with REST calls (do not remove!!!)
@@ -61,3 +67,4 @@ roborest.app.mount("/", StaticFiles(directory=os.path.join(rootdir, "www")), nam
 # start the webserver (note the logging configuration)
 import uvicorn
 uvicorn.run(roborest.app, host=args.host, port=args.port, log_config=args.logconf)
+print("done")
