@@ -36,10 +36,14 @@ roborest.status_keeper = StatusKeeper()
 
 
 def listener(routing_key, request):
+    # a game status has been received. Let the status_keeper store it.
     roborest.status_keeper.game_status_event(request)
 
 
 def field_listener(routing_key, request):
+    # received an UUID from the Field interface in Robomind Academy. Remember it and its data
+    # and use it to recognise a registering user/solution. When the solution is done the
+    # success/failure will be send back to Robomind Academy.
     print(str(request))
 
 
