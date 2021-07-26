@@ -12,6 +12,10 @@ class StatusKeeper(object):
         self.keep_alive = 10
         self.inactive_limit = 10
 
+    def pre_reservation(self, request):
+        print(str(request))
+
+
     def game_status_event(self, request):
         game_id = request['game_id']
         msg = request['msg']

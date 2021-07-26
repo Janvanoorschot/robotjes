@@ -44,7 +44,11 @@ def field_listener(routing_key, request):
     # received an UUID from the Field interface in Robomind Academy. Remember it and its data
     # and use it to recognise a registering user/solution. When the solution is done the
     # success/failure will be send back to Robomind Academy.
-    print(str(request))
+    if routing_key == 'activate.field':
+        try:
+            roborest.status_keeper.set_reservation(request)
+        except Exception as e:
+            print(f"huh: {e}")
 
 
 # initialise the roborest module
