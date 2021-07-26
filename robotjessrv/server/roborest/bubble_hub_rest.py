@@ -5,6 +5,9 @@ from robotjessrv.server.monitor import get_monitor
 from robotjessrv.server.bubblehub.model import GameSpec
 from . import async_rpc_client
 
+import uuid
+import json
+from aio_pika import Message
 
 @app.get("/")
 async def redirect():
@@ -52,5 +55,39 @@ async def list_maze(maze_id: str):
         }
         result = await async_rpc_client.call(request)
         return result
+
+@app.post("/confirm/{uid}")
+async def confirm_with_game(uid: str):
+    """Confirm registration  with a game using a UUID"""
+    async with get_monitor():
+        specs = roborest.status_keeper.get_reservation(uid)
+        if specs:
+            player_id = str(uuid.uuid4())
+            player_name = specs["player_name"]
+            game_id = specs["game_id"]
+            password = specs["password"]
+            request = {
+                "cmd": "register",
+                "game_id": game_id,
+                "player_id": player_id,
+                "player_name": player_name,
+                "password": password
+            }
+            routing_key = f"{game_id}.game"
+            body = json.dumps(request)
+            message = Message(
+                body.encode(),
+                content_type="application/json"
+            )
+            await roborest.games_exchange.publish(
+                message,
+                routing_key=routing_key
+            )
+            return {
+                "player_id": player_id
+            }
+        else:
+            raise Exception(f"unknown uuid {uid}")
+
 
 

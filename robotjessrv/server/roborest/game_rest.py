@@ -34,37 +34,6 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
         }
 
 
-@app.post("/game/{game_id}/player/{uid}")
-async def confirm_with_game(game_id: str, uid: str):
-    """Confirm registration  with a game using a UUID"""
-    async with get_monitor():
-        specs = roborest.status_keeper.get_reservation(uid)
-        if specs:
-            player_id = str(uuid.uuid4())
-            request = {
-                "cmd": "register",
-                "game_id": game_id,
-                "player_id": player_id,
-                "player_name": specs.player_name,
-                "password": specs.game_password
-            }
-            routing_key = f"{game_id}.game"
-            body = json.dumps(request)
-            message = Message(
-                body.encode(),
-                content_type="application/json"
-            )
-            await roborest.games_exchange.publish(
-                message,
-                routing_key=routing_key
-            )
-            return {
-                "player_id": player_id
-            }
-        else:
-            raise Exception(f"unknown uuid {uid}")
-
-
 @app.delete("/game/{game_id}/player/{player_id}")
 async def deregister_with_game(game_id: str, player_id: str):
     """Deregister from a game"""
