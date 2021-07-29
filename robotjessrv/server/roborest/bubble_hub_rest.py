@@ -84,10 +84,24 @@ async def confirm_with_game(uid: str):
                 routing_key=routing_key
             )
             return {
-                "player_id": player_id
+                "player_id": player_id,
+                "game_id": game_id
             }
         else:
             raise Exception(f"unknown uuid {uid}")
 
 
-
+@app.get("/info/{uid}")
+async def info_about_game(uid: str):
+    """Get information about a game given a UUID"""
+    async with get_monitor():
+        specs = roborest.status_keeper.get_reservation(uid)
+        if specs:
+            player_id = str(uuid.uuid4())
+            game_id = specs["game_id"]
+            return {
+                "player_id": player_id,
+                "game_id": game_id
+            }
+        else:
+            return {}
