@@ -62,9 +62,9 @@ async def confirm_with_game(uid: str):
     async with get_monitor():
         specs = roborest.status_keeper.get_reservation(uid)
         if specs:
-            player_id = str(uuid.uuid4())
-            player_name = specs["player_name"]
+            player_id = specs["player_id"]
             game_id = specs["game_id"]
+            player_name = specs["player_name"]
             password = specs["password"]
             request = {
                 "cmd": "register",
@@ -97,7 +97,7 @@ async def info_about_game(uid: str):
     async with get_monitor():
         specs = roborest.status_keeper.get_reservation(uid)
         if specs:
-            player_id = str(uuid.uuid4())
+            player_id = specs["player_id"]
             game_id = specs["game_id"]
             return {
                 "player_id": player_id,
