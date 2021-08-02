@@ -100,7 +100,7 @@ async def info_about_game(uid: str):
         if specs:
             player_id = specs["player_id"]
             game_id = specs["game_id"]
-            status = "running"
+            status = specs.get("status", "unknown")
             return {
                 "status": status,
                 "player_id": player_id,
