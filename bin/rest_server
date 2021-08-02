@@ -46,6 +46,7 @@ def field_listener(routing_key, request):
     # success/failure will be send back to Robomind Academy.
     if routing_key == 'activate.field':
         try:
+            # register the reservation UUID
             roborest.status_keeper.set_reservation(request)
         except Exception as e:
             print(f"huh: {e}")

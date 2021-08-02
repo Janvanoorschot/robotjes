@@ -83,6 +83,7 @@ async def confirm_with_game(uid: str):
                 message,
                 routing_key=routing_key
             )
+            roborest.status_keeper.update_reservation(uid, "confirmed")
             return {
                 "player_id": player_id,
                 "game_id": game_id
@@ -99,9 +100,13 @@ async def info_about_game(uid: str):
         if specs:
             player_id = specs["player_id"]
             game_id = specs["game_id"]
+            status = "running"
             return {
+                "status": status,
                 "player_id": player_id,
                 "game_id": game_id
             }
         else:
-            return {}
+            return {
+                "status": "unknown"
+            }
