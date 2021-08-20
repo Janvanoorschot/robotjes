@@ -2,7 +2,7 @@ import json
 import datetime
 from robotjessrv import config
 import logging
-from robotjessrv.server.bubblehub.model import GameSpec
+from robotjes.server.model import GameSpec
 from . import Field, GameStatus
 logger = logging.getLogger(__name__)
 

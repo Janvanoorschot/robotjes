@@ -2,7 +2,7 @@ import json
 import uuid
 from aio_pika import Message
 from robotjessrv.server.monitor import get_monitor
-from robotjessrv.server.bubblehub.model import RegistrationSpec, CommandSpec
+from robotjes.server.model import GameSpec, RegistrationSpec, CommandSpec
 from robotjessrv.server import roborest
 from robotjessrv.server.roborest import app
 

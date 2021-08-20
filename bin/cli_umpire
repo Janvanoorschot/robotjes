@@ -65,7 +65,7 @@ class Umpire_Client:
         pass
 
     def player_status(self, game_tick, player_status):
-        # print("player_status")
+         #print("player_status")
         # pprint(player_status)
         pass
 

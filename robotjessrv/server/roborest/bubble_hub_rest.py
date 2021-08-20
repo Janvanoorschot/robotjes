@@ -2,7 +2,7 @@ from starlette.responses import RedirectResponse
 from .. import roborest
 from . import app
 from robotjessrv.server.monitor import get_monitor
-from robotjessrv.server.bubblehub.model import GameSpec
+from robotjes.server.model import GameSpec
 from . import async_rpc_client
 
 import uuid

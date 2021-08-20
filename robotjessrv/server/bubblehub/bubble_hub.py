@@ -4,7 +4,7 @@ import uuid
 import logging
 logger = logging.getLogger(__name__)
 from robotjessrv import config
-from robotjessrv.server.bubblehub.model import GameSpec
+from robotjes.server.model import GameSpec
 
 
 class BubbleHub:
