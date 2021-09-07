@@ -15,5 +15,6 @@ status_keeper = None
 connection = None
 channel = None
 games_exchange_name = config.GAMES_EXCHANGE
+field_exchange_name = config.FIELD_EXCHANGE
 games_exchange = None
-
+field_exchange = None

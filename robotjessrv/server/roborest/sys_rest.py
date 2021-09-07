@@ -5,7 +5,7 @@ from .. import roborest
 from robotjessrv.server.roborest import app
 from robotjessrv.server.monitor import mon
 from aio_pika import connect, ExchangeType
-from . import async_rpc_client, games_exchange_name, async_topic_listener, async_field_listener
+from . import async_rpc_client, games_exchange_name, field_exchange_name, async_topic_listener, async_field_listener
 
 
 
@@ -15,6 +15,7 @@ async def startup_event():
     roborest.connection = await connect(roborest.pikaurl, loop=loop)
     roborest.channel = await roborest.connection.channel()
     roborest.games_exchange = await roborest.channel.declare_exchange(games_exchange_name, ExchangeType.TOPIC)
+    roborest.field_exchange = await roborest.channel.declare_exchange(field_exchange_name, ExchangeType.FANOUT)
     await mon.connect(loop, roborest.channel)
     await async_rpc_client.connect(loop, roborest.channel)
     await async_topic_listener.connect(loop, roborest.channel)

@@ -20,9 +20,9 @@ class AsyncTopicListener:
         await self.listen_queue.bind(self.exchange, self.routing_key)
         await self.listen_queue.consume(self.on_message)
 
-    def on_message(self, message: IncomingMessage):
+    async def on_message(self, message: IncomingMessage):
         message.ack()
         routing_key = message.routing_key
         body = message.body.decode()
-        self.listener(routing_key, json.loads(body))
+        await self.listener(routing_key, json.loads(body))
 

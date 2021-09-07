@@ -100,11 +100,15 @@ async def info_about_game(uid: str):
         if specs:
             player_id = specs["player_id"]
             game_id = specs["game_id"]
-            status = specs.get("status", "unknown")
+            game_status = roborest.status_keeper.get_game_status(game_id)
+            status = specs.get("status", {})
+            timer_tick = game_status["status"]["game_tick"]
+            player_status = roborest.status_keeper.get_player_status(game_id, player_id, timer_tick)
             return {
                 "status": status,
                 "player_id": player_id,
-                "game_id": game_id
+                "game_id": game_id,
+                "player_status": player_status
             }
         else:
             return {

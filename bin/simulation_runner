@@ -72,6 +72,7 @@ def run_simulation(mapstr, successjson, scriptstr):
     reply.append(content)
     return reply
 
+
 def failure_reply(mapstr, msg):
     reply = []
     reply.append("robo.server.ExecResult")
@@ -86,6 +87,7 @@ def failure_reply(mapstr, msg):
     content["recording"] = { "keyFrames": []}
     reply.append(content)
     return reply
+
 
 def on_request(ch, method, props, body):
     """ do the request/run/reply cycle"""

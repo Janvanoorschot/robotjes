@@ -9,6 +9,7 @@ MONITOR_EXCHANGE = "monitor_exchange"
 BUBBLEHUBS_EXCHANGE = 'bubblehubs_exchange'
 BUBBLES_EXCHANGE = "bubbles_exchange"
 GAMES_EXCHANGE = 'games_exchange'
+FIELD_EXCHANGE = 'field_exchange'
 
 SIMULATION_QUEUE = 'simulation_queue'
 BUBBLEHUBS_QUEUE = "bubblehub_queue"
