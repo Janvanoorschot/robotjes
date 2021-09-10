@@ -2,8 +2,8 @@ import json
 import datetime
 from robotjessrv import config
 import logging
-from robotjes.server.model import GameSpec
-from . import Field, GameStatus
+from robotjes.server.model import GameSpec, GameStatus
+from robotjes.server import Field
 logger = logging.getLogger(__name__)
 
 
@@ -137,6 +137,9 @@ class Bubble:
         if len(self.players) < self.game.player_count():
             if self.game.registered(player_id, player_name):
                 self.players[player_id] = True
+                self.publish(GameStatus.PLAYER_REGISTER, {
+                    "player_id": player_id
+                })
                 return True
             else:
                 return False
@@ -144,6 +147,9 @@ class Bubble:
     def deregister_player(self, player_id):
         if player_id in self.players:
             self.game.deregistered(player_id)
+            self.publish(GameStatus.PLAYER_DEREGISTER, {
+                "player_id": player_id
+            })
             del self.players[player_id]
 
     def disqualify_player(self, player_id):

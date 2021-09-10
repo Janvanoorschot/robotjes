@@ -31,7 +31,6 @@ roborest.pikaurl = args.pikaurl
 
 monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchange)
 
-# from robotjessrv.server.roborest import StatusKeeper
 from robotjes.server.status_keeper import StatusKeeper
 
 
@@ -41,14 +40,9 @@ async def listener(routing_key, request):
     events = roborest.status_keeper.game_status_event(request)
     for event in events:
         if "msg" in event:
-            if event["msg"] == "PLAYER_SUCCESS":
+            if event["msg"] in ["PLAYER_REGISTER","PLAYER_DEREGISTER","PLAYER_SUCCESS","PLAYER_FAILURE"]:
                 body = json.dumps(event, default=str)
                 message = Message(body.encode(), content_type="application/json")
-                await roborest.field_exchange.publish(message, routing_key="")
-            elif event["msg"] == "PLAYER_FAILURE":
-                body = json.dumps(event, default=str)
-                message = Message(body.encode(), content_type="application/json")
-                # await roborest.field_exchange.publish(message, routing_key="field_response_queue")
                 await roborest.field_exchange.publish(message, routing_key="")
 
 
