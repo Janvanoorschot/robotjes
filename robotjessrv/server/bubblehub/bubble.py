@@ -221,7 +221,7 @@ class Bubble:
                 'data': data
             }
         try:
-            j = json.dumps(item)
+            j = json.dumps(item, default=str)
         except TypeError as te:
             print(f"error: {te}")
         self.channel.basic_publish(
