@@ -88,6 +88,13 @@ async def get_game_map(game_id: str):
     return result
 
 
+@app.get("/game/{game_id}/player/{player_id}/status")
+async def get_player_status(game_id: str, player_id: str):
+    """Get the current player status"""
+    result = roborest.status_keeper.get_player_status(game_id, player_id)
+    return result
+
+
 @app.get("/game/{game_id}/status")
 async def get_game_status(game_id: str):
     """Get the current game status"""
@@ -99,13 +106,6 @@ async def get_game_status(game_id: str):
 async def get_game_recording(game_id: str, before_game_time: int):
     """Get the current game recording"""
     result = roborest.status_keeper.get_game_recording(game_id, before_game_time)
-    return result
-
-
-@app.get("/game/{game_id}/player/{player_id}/status/{game_tick}")
-async def get_player_status(game_id: str, player_id: str, game_tick: int):
-    """Get the current player status"""
-    result = roborest.status_keeper.get_player_status(game_id, player_id, game_tick)
     return result
 
 
