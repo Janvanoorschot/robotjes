@@ -54,11 +54,8 @@ async def field_listener(routing_key, request):
         try:
             # register the reservation UUID
             uuid = request.get('uuid', None)
-            game_name = request.get('game_name', None)
-            player_name = request.get('player_name', None)
-            password = request.get('password', None)
-            if uuid and game_name:
-                roborest.status_keeper.set_reservation(uuid, game_name, player_name, password)
+            if uuid:
+                roborest.status_keeper.set_reservation(uuid, request)
         except Exception as e:
             print(f"huh: {e}")
 
