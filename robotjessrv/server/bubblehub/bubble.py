@@ -196,6 +196,10 @@ class Bubble:
         except Exception as e:
             logger.warning(f"message error: {str(e)}")
 
+    ##############################################################################
+    # Code below is implemented in Bubble and in RobotjesEngine                  #
+    ##############################################################################
+    ######## Called by Field to publish status updates (stored by status_keeper) #
     def publish(self, msg: GameStatus, data: dict):
         if not self.game:
             item = {
@@ -229,6 +233,7 @@ class Bubble:
             routing_key=self.game_out_routing_key,
             body=j)
 
+    ########## Timer logic
     def timer(self, now):
         self.now = now
         if self.now and self.starttime:
