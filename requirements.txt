@@ -18,10 +18,10 @@ psycopg2-binary
 
 # client: GTK client side UI
 wheel
-clear
+# clear
 
 # client: HTTP/REST
-requests
+requests==2.27.1
 pyparsing
 
 # code shared with the Robotjes Client
