@@ -89,12 +89,12 @@ async def confirm_with_game(uid: str):
                 "game_id": game_id
             }
         else:
-            raise Exception(f"unknown uuid {uid}")
+            raise Exception(f"unknown field uuid {uid}")
 
 
 @app.get("/info/{uid}")
 async def info_about_game(uid: str):
-    """Get information about a game given a UUID"""
+    """Get information about a game given a field UUID"""
     async with get_monitor():
         specs = roborest.status_keeper.get_reservation(uid)
         if specs:

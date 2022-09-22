@@ -6,4 +6,4 @@ export DOCKERDIR=$DIR/docker
 VERSION=1.0
 
 cd $DOCKERDIR
-docker-compose -f $DOCKERDIR/robotjes-dev.yml up
+docker compose -f $DOCKERDIR/robotjes-dev.yml up

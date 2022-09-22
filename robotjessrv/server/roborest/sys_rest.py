@@ -1,5 +1,12 @@
+import sys
+import traceback
 import datetime
 import asyncio
+
+from fastapi import Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+
 from fastapi_utils.tasks import repeat_every
 from .. import roborest
 from robotjessrv.server.roborest import app
@@ -28,4 +35,19 @@ async def timer_task():
     now = datetime.datetime.now()
     await mon.timer(now)
     roborest.status_keeper.timer(now)
+
+@app.exception_handler(Exception)
+async def validation_exception_handler(request: Request, exc: Exception):
+    # this handles incaught exceptions in the server code.
+    # send information to the client for development purposes (only in development mode?)
+    exc_type, value, exc_traceback = sys.exc_info()
+    resp = JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content=jsonable_encoder({
+            "msg": str(exc),
+            "exception": str(exc_type),
+            "stack": traceback.format_exception(exc)
+        })
+    )
+    return resp
 
