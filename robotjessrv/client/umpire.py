@@ -1,11 +1,11 @@
-from robotjes.client import RestClient
+
 import asyncio
 
 
 class CLIUmpire:
 
-    def __init__(self, loop, url, client):
-        self.rest_client = RestClient(loop, url)
+    def __init__(self, rest_client, client):
+        self.rest_client = rest_client
         self.client = client
         self.game_id = None
         self.game_tick = -1

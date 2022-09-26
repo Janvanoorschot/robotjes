@@ -21,7 +21,8 @@ wheel
 # clear
 
 # client: HTTP/REST
-requests==2.27.1
+httpx[http2]
+requests
 pyparsing
 
 # code shared with the Robotjes Client

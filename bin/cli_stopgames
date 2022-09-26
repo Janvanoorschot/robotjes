@@ -3,17 +3,12 @@
 import sys, os
 import argparse
 import asyncio
-
-from robotjessrv import config, client
+from robotjes.client import async_rest_client
+from robotjessrv.client import CLIUmpire
+from robotjessrv import config
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
-
-# get commandline arguments
-parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Umpire')
-parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
-parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
-args = parser.parse_args()
 
 
 class Umpire_Client:
@@ -44,11 +39,20 @@ class Umpire_Client:
         print(f"game tick: {game_tick}")
 
 
-async def main(loop):
-    clnt = Umpire_Client()
-    umpire = client.CLIUmpire(loop, args.url, clnt)
-    success = await umpire.stopall()
+async def main(args):
+    uclient = Umpire_Client()
+    restclient = async_rest_client.AsyncRestClient(args.url, debug=True)
+    login_reply = await restclient.login(args.username, args.password)
+    if login_reply:
+        umpire = CLIUmpire(restclient, uclient)
+        success = await umpire.stopall()
 
-# run our main loop
-aloop = asyncio.get_event_loop()
-aloop.run_until_complete(main(aloop))
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Umpire')
+    parser.add_argument('--url', type=str, default="https://localhost:8888", help='url of the robotjes REST entrypoint')
+    parser.add_argument('--username', type=str, default='some@one.com', help='username')
+    parser.add_argument('--password', type=str, default='secret', help='password')
+    parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
+    args = parser.parse_args()
+    asyncio.run(main(args))

@@ -22,8 +22,8 @@ class AsyncRPCClient:
         await self.callback_queue.bind(self.bubblehubs_exchange)
         await self.callback_queue.consume(self.on_response)
 
-    def on_response(self, message: IncomingMessage):
-        message.ack()
+    async def on_response(self, message: IncomingMessage):
+        await message.ack()
         if message.correlation_id in self.futures:
             future = self.futures.pop(message.correlation_id)
             future.set_result(message.body)

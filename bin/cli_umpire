@@ -3,21 +3,13 @@
 import sys, os
 import argparse
 import asyncio
-from pprint import pprint
+from robotjes.client import async_rest_client
+
 
 from robotjessrv.client import CLIUmpire
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
-
-# get commandline arguments
-parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Umpire')
-parser.add_argument('--url', type=str, default='http://localhost:8765', help='url of the robotjes REST entrypoint')
-parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
-parser.add_argument('--name', type=str, default="eat_three", help='name of the game to create')
-parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
-parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
-args = parser.parse_args()
 
 
 class Timer:
@@ -78,14 +70,28 @@ class Umpire_Client:
         pass
 
 
-async def main(loop):
-    clnt = Umpire_Client()
-    umpire = CLIUmpire(loop, args.url, clnt)
-    timer = Timer(0.5, umpire.timer, True)
-    await umpire.run_game(args.umpire, args.name, args.password, args.maze)
-    timer.cancel()
+async def main(args):
+    uclient = Umpire_Client()
+    restclient = async_rest_client.AsyncRestClient(args.url, debug=True)
+    login_reply = await restclient.login(args.username, args.password)
+    if login_reply:
+        umpire = CLIUmpire(restclient, uclient)
+        timer = Timer(0.5, umpire.timer, True)
+        await umpire.run_game(args.umpire, args.gamename, args.gamepassword, args.maze)
+        timer.cancel()
 
 # run our main loop
-aloop = asyncio.get_event_loop()
-aloop.run_until_complete(main(aloop))
-aloop.stop()
+# get commandline arguments
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Umpire')
+    parser.add_argument('--url', type=str, default="https://localhost:8888", help='url of the robotjes REST entrypoint')
+    parser.add_argument('--username', type=str, default='some@one.com', help='username')
+    parser.add_argument('--password', type=str, default='secret', help='password')
+    parser.add_argument('--umpire', type=str, default="me", help='name or id of the umpire')
+    parser.add_argument('--gamename', type=str, default="eat_three", help='name of the game to create')
+    parser.add_argument('--gamepassword', type=str, default="secret1", help='password needed to enter the game')
+    parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
+    args = parser.parse_args()
+
+    asyncio.run(main(args))
