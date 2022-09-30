@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import argparse
+
+import fastapi
+from starlette.middleware.sessions import SessionMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+import bmon
+
+rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(rootdir)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Monitor Bubbles.')
+    parser.add_argument('--host', type=str, default='localhost', help='host')
+    parser.add_argument('--port', type=int, default=8887, help='port')
+    parser.add_argument('--url', type=str, default='https://localhost:8888', help='url of robomind academy')
+    parser.add_argument('--username', type=str, default='some@one.com', help='username')
+    parser.add_argument('--password', type=str, default='secret', help='password')
+    parser.add_argument('--pikaurl', type=str, default="amqp://guest:guest@localhost:5672/%2F", help='rabbitmq url')
+    parser.add_argument('-d', '--debug', action='store_true', help="Allows debugging of client code.")
+    args = parser.parse_args()
+
+    # import the files with REST calls (do not remove!!!)
+    bmon.app = fastapi.FastAPI()
+    bmon.rootdir = rootdir
+    bmon.app.add_middleware(SessionMiddleware, secret_key="eikel")
+    bmon.app.mount("/static", StaticFiles(directory=os.path.join(rootdir, "www.mon")), name="static")
+    bmon.templates = Jinja2Templates(directory=os.path.join(rootdir, "templates.mon"))
+
+    # do not (!) import this sooner
+    import bmon.mon_rest
+
+    # initialize FastApi
+
+
+    # start the webserver (note the logging configuration)
+    import uvicorn
+    uvicorn.run("bmon:app", host=args.host, port=args.port)

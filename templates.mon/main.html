@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Bubbles Monitor</title>
+    <link href="{{ url_for('static', path='/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='/css/bmon.css') }}" rel="stylesheet">
+</head>
+<body>
+<h1>Main Bubbles Monitor[{{i}}]</h1>
+
+<ul id="messages"></ul>
+
+<script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', path='/js/jquery-3.6.1.min.js') }}"></script>
+<script src="{{ url_for('static', path='/js/bmon.js') }}"></script>
+<script>
+    $(document).ready(function() {
+
+        var ws = new WebSocket("ws://localhost:8887/ws");
+        ws.onmessage = function(event) {
+            console.log("YES!!!!:" + event.data)
+            var messages = document.getElementById('messages')
+            var message = document.createElement('li')
+            var content = document.createTextNode(event.data)
+            message.appendChild(content)
+            messages.appendChild(message)
+        };
+        function sendMessage(event) {
+            var input = document.getElementById("messageText")
+            ws.send(input.value)
+            input.value = ''
+            event.preventDefault()
+        }
+
+
+    });
+</script>
+
+</body>
+</html>
