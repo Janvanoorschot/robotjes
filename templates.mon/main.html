@@ -9,7 +9,16 @@
 <body>
 <h1>Main Bubbles Monitor[{{i}}]</h1>
 
-<ul id="messages"></ul>
+<div id="container" class="container-fluid">
+    <div class="row">
+        <div id="module1" class="logmodule" data-module="warnings">
+        </div>
+    </div>
+    <div class="row">
+        <div id="module2" class="logmodule" data-module="errors">
+        </div>
+    </div>
+</div>
 
 <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url_for('static', path='/js/jquery-3.6.1.min.js') }}"></script>
@@ -17,13 +26,19 @@
 <script>
     $(document).ready(function() {
 
-        var bmon = $.fn.bmon.bubble_monitor();
+        var modules = {
+            'logmodule': $.fn.bmon.module.logmodule
+        }
 
-        var ws = new WebSocket("ws://localhost:8887/ws");
+        var bmon = $.fn.bmon.bubble_monitor($('#container'), modules);
+
+        //  Connect websocket
+        var ws = new WebSocket(location.origin.replace(/^http/, 'ws') + "/ws");
         ws.onmessage = function(event) {
             bmon.onmessage(event.data)
-        };
+        }
 
+        // connect timer
         setInterval(()=>{
             bmon.timer();
         }, 1000);

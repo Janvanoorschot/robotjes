@@ -2,18 +2,20 @@
 
     // create the robomind namespace 'rm'
     $.fn.bmon = {};
+    $.fn.bmon.module = {};
 
         var defaults = {
             aap: 'noot'
         };
 
         $.fn.bmon.bubble_monitor =
-            function() {
+            function(node, modules) {
                 var that = {};
                 for (n in defaults) {
                     that[n] = defaults[n];
                 }
-                that.node = "node";
+                that.node = node;
+                that.modules = modules;
 
                 // public API
                 that.start = function () {
@@ -21,18 +23,41 @@
                 };
 
                 that.timer = function () {
-                    console.log("timer");
                 };
 
                 that.onmessage = function (data) {
-                    console.log("onmessage");
                 };
+
+                populate(that)
 
                 return that;
             };
 
-        // Private functions
+        function populate(that) {
+            Object.entries(that.modules).forEach(([mname,mtype]) => {
+                let classname = `.${mname}`;
+                that.node.find(classname).each(function(ix) {
+                    console.log($(this).attr('id'));
+                });
+
+            })
+        }
+
         function doStart(that) {
         }
+
+    $.fn.bmon.module.logmodule =
+        function() {
+            var that = {};
+            for (n in defaults) {
+                that[n] = defaults[n];
+            }
+
+            // public API
+            that.start = function () {
+            };
+
+            return that;
+        };
 
 })(jQuery);
