@@ -17,23 +17,16 @@
 <script>
     $(document).ready(function() {
 
+        var bmon = $.fn.bmon.bubble_monitor();
+
         var ws = new WebSocket("ws://localhost:8887/ws");
         ws.onmessage = function(event) {
-            console.log("YES!!!!:" + event.data)
-            var messages = document.getElementById('messages')
-            var message = document.createElement('li')
-            var content = document.createTextNode(event.data)
-            message.appendChild(content)
-            messages.appendChild(message)
+            bmon.onmessage(event.data)
         };
-        function sendMessage(event) {
-            var input = document.getElementById("messageText")
-            ws.send(input.value)
-            input.value = ''
-            event.preventDefault()
-        }
 
-
+        setInterval(()=>{
+            bmon.timer();
+        }, 1000);
     });
 </script>
 

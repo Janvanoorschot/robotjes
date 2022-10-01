@@ -55,10 +55,10 @@ async def root(request: Request):
         request.session['i'] = 0
     return templates.TemplateResponse("main.html", {"request": request, "i": request.session['i']})
 
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    # remember the session <-> websocket relationship
     if 'session' in websocket.cookies:
         queue = Queue()
         sessionid = websocket.cookies['session']
