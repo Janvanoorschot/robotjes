@@ -19,6 +19,7 @@
             that.modules = {};
 
             that.timer = function () {
+                console.log("eikel");
             };
 
             that.onmessage = function (data) {
