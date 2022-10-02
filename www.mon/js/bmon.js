@@ -37,8 +37,7 @@
                 let node = $(this);
                 let args = node.attr("data-module");
                 console.log(args);
-                let module = mtype(node, args)
-                that.modules[node.attr('id')] = module;
+                that.modules[node.attr('id')] = mtype(node, args);
             });
 
         })
