@@ -19,15 +19,19 @@
             that.modules = {};
 
             that.timer = function () {
-                console.log("eikel");
             };
 
             that.onmessage = function (data) {
             };
 
-            populate(that)
-
-            return that;
+            if(populate(that)) {
+                Object.entries(that.modules).forEach(([k,v]) => {
+                    v.fill_test();
+                });
+                return that;
+            } else {
+                throw 'Failed to create Bubble Monitor';
+            }
         };
 
     function populate(that) {
@@ -40,18 +44,33 @@
                 console.log(args);
                 that.modules[node.attr('id')] = mtype(node, args);
             });
-
         })
+        return true;
     }
 
     $.fn.bmon.module.logmodule =
         function (node, args) {
             var that = {};
             that.node = node;
-            that.args = args;
+            that.keys = args.split(',');
 
             // public API
             that.apply = function (data) {
+                for(const item of data) {
+                    let row = that.node.append("<tr></tr>")
+                    for(const key of that.keys) {
+                        row.append(`<td>${item[key]}</td>`)
+                    }
+                }
+            };
+
+            that.fill_test = function () {
+                let dummy_data = [{
+                    'col1': 'data_col1',
+                    'col2': 'data_col2',
+                    'col3': 'data_col3'
+                }];
+                that.apply(dummy_data);
             };
 
             return that;
